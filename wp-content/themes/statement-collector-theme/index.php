@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || exit;
 
 get_header();
 ?>
-<main id="primary">
+<main id="primary" class="statement-page statement-container">
 	<?php if ( have_posts() ) : ?>
 		<?php while ( have_posts() ) : ?>
 			<?php the_post(); ?>

@@ -7,6 +7,7 @@ define( 'ABSPATH', __DIR__ . '/' );
 $statement_test_hooks        = array();
 $statement_test_supports     = array();
 $statement_test_text_domains = array();
+$statement_test_styles       = array();
 
 function add_action( string $hook, $callback ): void {
 	global $statement_test_hooks;
@@ -29,6 +30,19 @@ function get_template_directory(): string {
 
 function trailingslashit( string $path ): string {
 	return rtrim( $path, '/\\' ) . '/';
+}
+
+function get_theme_file_uri( string $path = '' ): string {
+	return 'https://example.test/wp-content/themes/statement-collector-theme/' . ltrim( $path, '/' );
+}
+
+function wp_enqueue_style( string $handle, string $source, array $dependencies = array(), $version = false ): void {
+	global $statement_test_styles;
+	$statement_test_styles[ $handle ] = array(
+		'source'       => $source,
+		'dependencies' => $dependencies,
+		'version'      => $version,
+	);
 }
 
 function statement_test_assert( bool $condition, string $message ): void {
@@ -56,11 +70,14 @@ statement_test_assert( isset( $statement_test_hooks['after_setup_theme'] ), 'The
 statement_test_assert( 2 === count( $statement_test_hooks['after_setup_theme'] ), 'Expected two theme setup callbacks.' );
 statement_test_assert( isset( $statement_test_hooks['plugins_loaded'] ), 'Plugin integration hook was not registered.' );
 statement_test_assert( 1 === count( $statement_test_hooks['plugins_loaded'] ), 'Plugin must bootstrap once.' );
+statement_test_assert( isset( $statement_test_hooks['wp_enqueue_scripts'] ), 'Theme asset hook was not registered.' );
+statement_test_assert( 1 === count( $statement_test_hooks['wp_enqueue_scripts'] ), 'Expected one theme asset callback.' );
 
 \Statement\Collector\Core\Plugin::boot();
 statement_test_assert( 1 === count( $statement_test_hooks['plugins_loaded'] ), 'Repeated plugin bootstrap registered duplicate hooks.' );
 
 statement_test_run_hook( 'after_setup_theme' );
+statement_test_run_hook( 'wp_enqueue_scripts' );
 statement_test_run_hook( 'plugins_loaded' );
 
 statement_test_assert( isset( $statement_test_supports['title-tag'] ), 'Title support was not registered.' );
@@ -68,6 +85,10 @@ statement_test_assert( isset( $statement_test_supports['post-thumbnails'] ), 'Fe
 statement_test_assert( isset( $statement_test_supports['html5'] ), 'HTML5 support was not registered.' );
 statement_test_assert( isset( $statement_test_supports['woocommerce'] ), 'WooCommerce presentation support was not registered.' );
 statement_test_assert( isset( $statement_test_text_domains['statement-collector-theme'] ), 'Theme text domain was not loaded.' );
+statement_test_assert( isset( $statement_test_styles['statement-collector-base'] ), 'Base stylesheet was not enqueued.' );
+statement_test_assert( isset( $statement_test_styles['statement-collector-layout'] ), 'Layout stylesheet was not enqueued.' );
+statement_test_assert( array( 'statement-collector-base' ) === $statement_test_styles['statement-collector-layout']['dependencies'], 'Layout stylesheet dependency is incorrect.' );
+statement_test_assert( STATEMENT_COLLECTOR_THEME_VERSION === $statement_test_styles['statement-collector-base']['version'], 'Stylesheet version must use the theme version.' );
 statement_test_assert( ! class_exists( 'WooCommerce', false ), 'Bootstrap must not require or create WooCommerce.' );
 
 fwrite( STDOUT, "PASS: M1 bootstrap smoke passed.\n" );

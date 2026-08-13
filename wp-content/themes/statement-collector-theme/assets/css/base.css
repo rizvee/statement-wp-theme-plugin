@@ -1,0 +1,99 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	color-scheme: light;
+	text-size-adjust: 100%;
+}
+
+body {
+	margin: 0;
+	background: var(--wp--preset--color--warm-white);
+	color: var(--wp--preset--color--near-black);
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: var(--wp--preset--font-size--body);
+	line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: var(--wp--preset--font-family--display);
+	font-weight: 400;
+	line-height: 1.1;
+}
+
+img,
+picture,
+svg,
+video {
+	display: block;
+	max-inline-size: 100%;
+	height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+	font: inherit;
+}
+
+a {
+	color: var(--wp--preset--color--ink-navy);
+	text-decoration-thickness: 0.08em;
+	text-underline-offset: 0.18em;
+}
+
+:focus-visible {
+	outline: 2px solid var(--wp--preset--color--ink-navy);
+	outline-offset: 3px;
+}
+
+.screen-reader-text {
+	position: absolute;
+	inline-size: 1px;
+	block-size: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+.screen-reader-text:focus {
+	z-index: 100000;
+	inset-block-start: var(--wp--preset--spacing--20);
+	inset-inline-start: var(--wp--preset--spacing--20);
+	inline-size: auto;
+	block-size: auto;
+	padding: var(--wp--preset--spacing--20) var(--wp--preset--spacing--30);
+	margin: 0;
+	overflow: visible;
+	clip: auto;
+	background: var(--wp--preset--color--warm-white);
+	color: var(--wp--preset--color--near-black);
+	white-space: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html:focus-within {
+		scroll-behavior: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		scroll-behavior: auto !important;
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+	}
+}

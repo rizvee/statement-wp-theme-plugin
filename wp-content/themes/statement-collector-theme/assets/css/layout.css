@@ -1,0 +1,34 @@
+.statement-container,
+.statement-container--wide,
+.statement-reading-width {
+	inline-size: 100%;
+	margin-inline: auto;
+	padding-inline: var(--wp--preset--spacing--30);
+}
+
+.statement-container {
+	max-inline-size: calc(var(--wp--style--global--content-size) + (2 * var(--wp--preset--spacing--30)));
+}
+
+.statement-container--wide {
+	max-inline-size: calc(var(--wp--style--global--wide-size) + (2 * var(--wp--preset--spacing--30)));
+}
+
+.statement-reading-width {
+	max-inline-size: var(--wp--style--global--content-size);
+}
+
+.statement-page {
+	min-block-size: 60vh;
+	padding-block: var(--wp--preset--spacing--50);
+}
+
+.statement-stack {
+	display: flex;
+	flex-direction: column;
+	gap: var(--statement-stack-space, var(--wp--preset--spacing--30));
+}
+
+.statement-stack > * {
+	margin-block: 0;
+}

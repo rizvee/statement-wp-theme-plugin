@@ -21,9 +21,18 @@ Status: complete (2026-08-14)
 
 ## M2 — Design System + Global Shell
 
+Status: complete (2026-08-14)
+
+- [x] Add `theme.json` v3 with the approved palette, restrained typography, spacing, and layout tokens.
+- [x] Add accessible global base/layout CSS and an isolated frontend asset loader.
+- [x] Add the minimum WordPress document shell without branded header, navigation, or footer components.
+- [x] Preserve plugin and commerce/domain scope boundaries.
+
+## M3 — Header + Mobile Navigation + Footer
+
 Status: next; not started
 
-- [ ] Define the approved visual tokens and global theme shell without starting commerce/domain behavior.
+- [ ] Build the branded global navigation shell on the verified M2 foundation.
 
 ## Later roadmap
 

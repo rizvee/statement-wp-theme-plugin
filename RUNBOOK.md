@@ -26,6 +26,7 @@ git status --short --branch
 git diff --check
 node scripts/php-lint.mjs
 node --test tests/m1-skeleton.test.mjs
+node --test tests/m2-design-system.test.mjs
 ```
 
 ## Packaging and release

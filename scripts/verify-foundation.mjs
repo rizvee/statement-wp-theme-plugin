@@ -25,6 +25,7 @@ const requiredFiles = [
   'scripts/lib/resolve-php.mjs',
   'scripts/php-lint.mjs',
   'tests/m1-skeleton.test.mjs',
+  'tests/m2-design-system.test.mjs',
   'tests/php/m1-bootstrap-smoke.php',
 ];
 
@@ -84,10 +85,16 @@ const runtimeRoots = [
   'wp-content/themes/statement-collector-theme',
   'wp-content/plugins/statement-collector-core',
 ];
-const m1RuntimeFiles = [
+const approvedRuntimeFiles = [
   'wp-content/themes/statement-collector-theme/style.css',
   'wp-content/themes/statement-collector-theme/functions.php',
   'wp-content/themes/statement-collector-theme/index.php',
+  'wp-content/themes/statement-collector-theme/header.php',
+  'wp-content/themes/statement-collector-theme/footer.php',
+  'wp-content/themes/statement-collector-theme/theme.json',
+  'wp-content/themes/statement-collector-theme/assets/css/base.css',
+  'wp-content/themes/statement-collector-theme/assets/css/layout.css',
+  'wp-content/themes/statement-collector-theme/inc/assets.php',
   'wp-content/themes/statement-collector-theme/inc/setup.php',
   'wp-content/themes/statement-collector-theme/inc/woocommerce.php',
   'wp-content/plugins/statement-collector-core/statement-collector-core.php',
@@ -95,14 +102,14 @@ const m1RuntimeFiles = [
 ];
 const runtimeFiles = runtimeRoots.flatMap((runtimeRoot) => walk(join(root, runtimeRoot)))
   .map((path) => relative(root, path).replaceAll('\\', '/'));
-const hasM1Runtime = m1RuntimeFiles.some((path) => runtimeFiles.includes(path));
+const hasRuntime = approvedRuntimeFiles.some((path) => runtimeFiles.includes(path));
 
-if (hasM1Runtime) {
-  for (const path of m1RuntimeFiles) {
-    if (!runtimeFiles.includes(path)) fail(`Missing M1 runtime file: ${path}`);
+if (hasRuntime) {
+  for (const path of approvedRuntimeFiles) {
+    if (!runtimeFiles.includes(path)) fail(`Missing approved runtime file: ${path}`);
   }
-  const unexpected = runtimeFiles.filter((path) => !m1RuntimeFiles.includes(path));
-  if (unexpected.length) fail(`Unexpected M1 runtime file: ${unexpected.join(', ')}`);
+  const unexpected = runtimeFiles.filter((path) => !approvedRuntimeFiles.includes(path));
+  if (unexpected.length) fail(`Unexpected runtime file: ${unexpected.join(', ')}`);
 } else {
   const unexpected = runtimeFiles.filter((path) => !path.endsWith('.gitkeep'));
   if (unexpected.length) fail(`Pre-M1 runtime root contains premature implementation: ${unexpected.join(', ')}`);
