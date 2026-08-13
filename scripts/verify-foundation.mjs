@@ -1,6 +1,6 @@
-import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, relative, resolve } from 'node:path';
+import { lintPhp } from './php-lint.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const failures = [];
@@ -22,6 +22,8 @@ const requiredFiles = [
   '.ai/checks/m0-foundation.md',
   '.ai/prompts/milestone-task.md',
   '.ai/skills/repository-verification.md',
+  'scripts/lib/resolve-php.mjs',
+  'scripts/php-lint.mjs',
 ];
 
 const requiredDirectories = [
@@ -45,7 +47,7 @@ function text(path) {
 function walk(directory, output = []) {
   if (!existsSync(directory)) return output;
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
-    if (entry.name === '.git' || entry.name === 'node_modules' || entry.name === 'vendor') continue;
+    if (entry.name === '.git' || entry.name === '.local-tools' || entry.name === 'node_modules' || entry.name === 'vendor') continue;
     const fullPath = join(directory, entry.name);
     if (entry.isDirectory()) walk(fullPath, output);
     else output.push(fullPath);
@@ -80,9 +82,11 @@ const runtimeRoots = [
   'wp-content/themes/statement-collector-theme',
   'wp-content/plugins/statement-collector-core',
 ];
-for (const runtimeRoot of runtimeRoots) {
-  const unexpected = walk(join(root, runtimeRoot)).map((path) => relative(root, path)).filter((path) => !path.endsWith('.gitkeep'));
-  if (unexpected.length) fail(`M0 runtime root contains premature implementation: ${unexpected.join(', ')}`);
+if (text('.ai/context/current-state.md').includes('M1 — Theme Skeleton + Core Plugin Skeleton')) {
+  for (const runtimeRoot of runtimeRoots) {
+    const unexpected = walk(join(root, runtimeRoot)).map((path) => relative(root, path)).filter((path) => !path.endsWith('.gitkeep'));
+    if (unexpected.length) fail(`Pre-M1 runtime root contains premature implementation: ${unexpected.join(', ')}`);
+  }
 }
 
 const allFiles = walk(root);
@@ -107,19 +111,18 @@ for (const path of allFiles) {
 const zips = allFiles.filter((path) => extname(path).toLowerCase() === '.zip').map((path) => relative(root, path));
 if (zips.length) fail(`Generated ZIPs are out of scope for M0: ${zips.join(', ')}`);
 
-const phpFiles = allFiles.filter((path) => extname(path).toLowerCase() === '.php');
-const phpProbe = spawnSync('php', ['--version'], { encoding: 'utf8', shell: process.platform === 'win32' });
-if (phpProbe.status === 0) {
-  for (const path of phpFiles) {
-    try {
-      execFileSync('php', ['-l', path], { stdio: 'pipe', shell: process.platform === 'win32' });
-    } catch (error) {
-      fail(`PHP syntax failed: ${relative(root, path)} (${String(error.stderr || error.message).trim()})`);
+const phpLint = lintPhp({ log: false });
+if (phpLint.available) {
+  if (!phpLint.ok) {
+    for (const failure of phpLint.failures) {
+      fail(`PHP syntax failed: ${relative(root, failure.file)} (${failure.output})`);
     }
   }
-  notes.push(`PHP available; linted ${phpFiles.length} PHP file(s).`);
+  notes.push(`PHP ${phpLint.php.version} available via ${phpLint.php.source}; linted ${phpLint.files.length} PHP file(s).`);
 } else {
-  notes.push(`LIMITATION: PHP unavailable; PHP lint not run (${phpFiles.length} PHP file(s) present).`);
+  const message = `PHP unavailable; PHP lint not run (${phpLint.files.length} PHP file(s) present).`;
+  if (phpLint.files.length) fail(message);
+  else notes.push(`LIMITATION: ${message}`);
 }
 
 for (const note of notes) console.log(note);

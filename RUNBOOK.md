@@ -17,11 +17,14 @@ node scripts/verify-foundation.mjs
 
 The script checks required structure, locked documentation signals, M0 runtime scope, obvious secret patterns, generated ZIP absence, and PHP syntax when both PHP and PHP files are present. Treat reported limitations as unavailable checks, not passes.
 
+PHP lint uses `scripts/php-lint.mjs`. It resolves `PHP_BIN` first, then ignored `.local-tools/php/php.exe` on Windows, then PHP on `PATH`. Project-local binaries are never committed.
+
 Also inspect:
 
 ```text
 git status --short --branch
 git diff --check
+node scripts/php-lint.mjs
 ```
 
 ## Packaging and release
