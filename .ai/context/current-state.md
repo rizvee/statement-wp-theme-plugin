@@ -1,6 +1,6 @@
 # Current State
 
-Updated: 2026-08-13
+Updated: 2026-08-14
 
 ## Repository
 
@@ -8,9 +8,10 @@ Updated: 2026-08-13
 - The M0 foundation baseline exists on `main`; the local PHP tooling checkpoint follows it.
 - `origin` is configured as `https://github.com/rizvee/statement-wp-theme-plugin.git`; it has not been pushed.
 - The initial audit found no existing source, instructions, secrets, generated artifacts, unrelated files, or prior scaffolding to preserve.
-- Theme and plugin directories exist but contain no runtime implementation.
-- No storefront, Drop, release-state, private-access, archive, WooCommerce customization, or visual UI feature has been started.
-- The next approved milestone is M1 — Theme Skeleton + Core Plugin Skeleton.
+- M1 is complete: the standalone theme and core plugin skeletons are both version `0.1.0`.
+- Theme setup, WooCommerce presentation support, and plugin integration bootstrap boundaries exist without commerce/domain functionality.
+- No storefront, Drop, release-state, private-access, archive, WooCommerce behavior, or designed visual UI has been started.
+- The next approved milestone is M2 — Design System + Global Shell; it has not started.
 
 ## Local environment
 
@@ -19,7 +20,8 @@ Updated: 2026-08-13
 - `scripts/php-lint.mjs` resolves `PHP_BIN`, then project-local PHP on Windows, then PHP on `PATH`.
 - Unavailable: Composer, WP-CLI.
 - WordPress, WooCommerce, PHP runtime, and hosting integration versions could not be discovered from this empty local repository.
-- PHP syntax verification is ready; there are currently zero first-party PHP files. WordPress runtime checks remain unavailable until a runtime and M1 source exist.
+- PHP syntax verification passes for all 6 first-party runtime PHP files.
+- The narrow bootstrap smoke passes without WooCommerce present. Genuine WordPress/WooCommerce activation remains unverified because no local WordPress runtime exists.
 
 ## Deployment state
 
@@ -27,4 +29,4 @@ Per the project brief, `https://mystatement.store/` is the WordPress.com Atomic 
 
 ## Verification
 
-`node scripts/verify-foundation.mjs` passes with project-local PHP 8.3.33 available and zero first-party PHP files. See `.ai/checks/m0-foundation.md`.
+M1 structural tests, PHP bootstrap smoke, first-party PHP lint, and `node scripts/verify-foundation.mjs` pass with project-local PHP 8.3.33. See `.ai/checks/m0-foundation.md`.

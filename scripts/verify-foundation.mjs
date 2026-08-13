@@ -24,6 +24,8 @@ const requiredFiles = [
   '.ai/skills/repository-verification.md',
   'scripts/lib/resolve-php.mjs',
   'scripts/php-lint.mjs',
+  'tests/m1-skeleton.test.mjs',
+  'tests/php/m1-bootstrap-smoke.php',
 ];
 
 const requiredDirectories = [
@@ -82,11 +84,28 @@ const runtimeRoots = [
   'wp-content/themes/statement-collector-theme',
   'wp-content/plugins/statement-collector-core',
 ];
-if (text('.ai/context/current-state.md').includes('M1 — Theme Skeleton + Core Plugin Skeleton')) {
-  for (const runtimeRoot of runtimeRoots) {
-    const unexpected = walk(join(root, runtimeRoot)).map((path) => relative(root, path)).filter((path) => !path.endsWith('.gitkeep'));
-    if (unexpected.length) fail(`Pre-M1 runtime root contains premature implementation: ${unexpected.join(', ')}`);
+const m1RuntimeFiles = [
+  'wp-content/themes/statement-collector-theme/style.css',
+  'wp-content/themes/statement-collector-theme/functions.php',
+  'wp-content/themes/statement-collector-theme/index.php',
+  'wp-content/themes/statement-collector-theme/inc/setup.php',
+  'wp-content/themes/statement-collector-theme/inc/woocommerce.php',
+  'wp-content/plugins/statement-collector-core/statement-collector-core.php',
+  'wp-content/plugins/statement-collector-core/src/Plugin.php',
+];
+const runtimeFiles = runtimeRoots.flatMap((runtimeRoot) => walk(join(root, runtimeRoot)))
+  .map((path) => relative(root, path).replaceAll('\\', '/'));
+const hasM1Runtime = m1RuntimeFiles.some((path) => runtimeFiles.includes(path));
+
+if (hasM1Runtime) {
+  for (const path of m1RuntimeFiles) {
+    if (!runtimeFiles.includes(path)) fail(`Missing M1 runtime file: ${path}`);
   }
+  const unexpected = runtimeFiles.filter((path) => !m1RuntimeFiles.includes(path));
+  if (unexpected.length) fail(`Unexpected M1 runtime file: ${unexpected.join(', ')}`);
+} else {
+  const unexpected = runtimeFiles.filter((path) => !path.endsWith('.gitkeep'));
+  if (unexpected.length) fail(`Pre-M1 runtime root contains premature implementation: ${unexpected.join(', ')}`);
 }
 
 const allFiles = walk(root);
@@ -109,7 +128,7 @@ for (const path of allFiles) {
 }
 
 const zips = allFiles.filter((path) => extname(path).toLowerCase() === '.zip').map((path) => relative(root, path));
-if (zips.length) fail(`Generated ZIPs are out of scope for M0: ${zips.join(', ')}`);
+if (zips.length) fail(`Generated ZIPs are out of scope: ${zips.join(', ')}`);
 
 const phpLint = lintPhp({ log: false });
 if (phpLint.available) {
@@ -133,4 +152,4 @@ if (failures.length) {
 }
 
 console.log(`PASS: ${requiredFiles.length} required files and ${requiredDirectories.length} required directories found.`);
-console.log(`PASS: locked architecture, business-rule, deployment, secret, package, and M0 scope checks passed.`);
+console.log(`PASS: locked architecture, business-rule, deployment, secret, package, and milestone scope checks passed.`);

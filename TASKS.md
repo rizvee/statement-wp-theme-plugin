@@ -12,12 +12,18 @@ Status: complete (2026-08-13)
 
 ## M1 — Theme Skeleton + Core Plugin Skeleton
 
+Status: complete (2026-08-14)
+
+- [x] Add the minimum valid standalone theme skeleton at version `0.1.0`.
+- [x] Add the minimum valid core plugin skeleton at version `0.1.0`.
+- [x] Establish separated bootstraps, graceful WooCommerce absence behavior, structural tests, PHP lint, and a narrow bootstrap smoke test.
+- [x] Keep storefront, Drop, private-access, archive, and inventory-domain features out of scope.
+
+## M2 — Design System + Global Shell
+
 Status: next; not started
 
-- [ ] Add the minimum valid standalone theme skeleton.
-- [ ] Add the minimum valid core plugin skeleton.
-- [ ] Establish versions, bootstrap boundaries, graceful WooCommerce absence behavior, and syntax checks.
-- [ ] Do not implement storefront, Drop, private-access, archive, or inventory-domain features.
+- [ ] Define the approved visual tokens and global theme shell without starting commerce/domain behavior.
 
 ## Later roadmap
 

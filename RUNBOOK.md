@@ -7,7 +7,7 @@
 3. Inspect `git status --short --branch` and the affected files before editing.
 4. Work inside the approved milestone and preserve unrelated changes.
 
-## Verify M0
+## Verify the repository
 
 From PowerShell or any shell with Node available:
 
@@ -15,7 +15,7 @@ From PowerShell or any shell with Node available:
 node scripts/verify-foundation.mjs
 ```
 
-The script checks required structure, locked documentation signals, M0 runtime scope, obvious secret patterns, generated ZIP absence, and PHP syntax when both PHP and PHP files are present. Treat reported limitations as unavailable checks, not passes.
+The script checks required structure, locked documentation signals, the current milestone runtime file set, obvious secret patterns, generated ZIP absence, and first-party PHP syntax. Treat reported limitations as unavailable checks, not passes.
 
 PHP lint uses `scripts/php-lint.mjs`. It resolves `PHP_BIN` first, then ignored `.local-tools/php/php.exe` on Windows, then PHP on `PATH`. Project-local binaries are never committed.
 
@@ -25,6 +25,7 @@ Also inspect:
 git status --short --branch
 git diff --check
 node scripts/php-lint.mjs
+node --test tests/m1-skeleton.test.mjs
 ```
 
 ## Packaging and release
