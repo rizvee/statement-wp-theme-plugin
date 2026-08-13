@@ -1,0 +1,46 @@
+# OS and editor noise
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Local environment and secrets
+.env*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.pfx
+auth.json
+credentials.json
+secrets.*
+!secrets.example.*
+
+# Dependency and build output
+node_modules/
+vendor/
+dist/
+build/
+.cache/
+.tmp/
+tmp/
+coverage/
+.phpunit.cache/
+.phpunit.result.cache
+
+# WordPress local/runtime data
+wp-config.php
+wp-content/uploads/
+wp-content/cache/
+wp-content/upgrade/
+wp-content/backups*/
+*.log
+
+# Generated packages
+releases/*.zip
+*.zip.tmp
