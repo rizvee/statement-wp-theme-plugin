@@ -124,7 +124,7 @@ final class Admin {
 			return;
 		}
 
-		self::save_drop( $product_id );
+		self::save_drop( $product );
 
 		if ( isset( $_POST[ Metadata::RELEASE_STATE_KEY ] ) && is_string( $_POST[ Metadata::RELEASE_STATE_KEY ] ) ) {
 			$requested_state = sanitize_text_field( wp_unslash( $_POST[ Metadata::RELEASE_STATE_KEY ] ) );
@@ -139,13 +139,20 @@ final class Admin {
 	/**
 	 * Assign zero or one verified Drop while preserving data on invalid input.
 	 */
-	private static function save_drop( int $product_id ): void {
+	private static function save_drop( $product ): void {
 		if ( ! array_key_exists( self::DROP_FIELD, $_POST ) || ! is_string( $_POST[ self::DROP_FIELD ] ) ) {
 			return;
 		}
 
-		$submitted = trim( wp_unslash( $_POST[ self::DROP_FIELD ] ) );
+		$product_id      = (int) $product->get_id();
+		$current_drop_id = self::get_current_drop_id( $product_id );
+		$is_locked       = $current_drop_id > 0 && ReleaseState::UPCOMING !== Metadata::get_release_state( $product );
+		$submitted       = trim( wp_unslash( $_POST[ self::DROP_FIELD ] ) );
 		if ( '' === $submitted ) {
+			if ( $is_locked ) {
+				return;
+			}
+
 			wp_set_object_terms( $product_id, array(), Taxonomy::KEY, false );
 			return;
 		}
@@ -160,6 +167,30 @@ final class Admin {
 			return;
 		}
 
+		if ( $is_locked ) {
+			return;
+		}
+
 		wp_set_object_terms( $product_id, array( $term_id ), Taxonomy::KEY, false );
+	}
+
+	/**
+	 * Return the first valid existing Statement Drop relationship.
+	 */
+	private static function get_current_drop_id( int $product_id ): int {
+		$assigned = wp_get_object_terms( $product_id, Taxonomy::KEY, array( 'fields' => 'ids' ) );
+		if ( is_wp_error( $assigned ) || empty( $assigned ) ) {
+			return 0;
+		}
+
+		foreach ( $assigned as $assigned_id ) {
+			$term_id = absint( $assigned_id );
+			$term    = $term_id > 0 ? get_term( $term_id, Taxonomy::KEY ) : null;
+			if ( $term && ! is_wp_error( $term ) && Taxonomy::KEY === $term->taxonomy ) {
+				return $term_id;
+			}
+		}
+
+		return 0;
 	}
 }

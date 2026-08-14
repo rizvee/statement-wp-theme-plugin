@@ -13,9 +13,10 @@ Updated: 2026-08-14
 - M3 is complete: the sticky responsive header uses a centered custom-logo/site-name fallback, `primary` and `footer` menu locations, native mobile-navigation and search dialogs, conditional WooCommerce Account/Bag links, and interaction-only vanilla JavaScript.
 - The restrained footer uses the approved brand message and configured WordPress menu; no contact, legal, newsletter, or social data is invented.
 - Account and Bag omit themselves when WooCommerce or their configured pages are unavailable. No mini-cart, cart count, cart fragments, or theme-owned product behavior exists.
-- M4 is complete in the core plugin: public non-hierarchical `statement_drop` terms attach to products through a controlled single-select admin field.
+- M4 is complete and integrity-hardened in the core plugin: public non-hierarchical `statement_drop` terms attach to products through a controlled single-select admin field.
 - Product metadata owns the canonical `UPCOMING`, `PRIVATE_ACCESS`, `LIVE`, `SOLD_OUT`, and `ARCHIVED` lifecycle plus an optional 80-character edition label.
-- Release-state saves are same/forward-only. `SOLD_OUT` and `ARCHIVED` override WooCommerce purchasability even when stock is positive; the implementation never mutates stock.
+- Release-state saves are same/forward-only. `SOLD_OUT` and `ARCHIVED` override WooCommerce purchasability even when stock is positive; variation purchasability inherits the canonical parent Statement release state, and the implementation never mutates stock or duplicates state on variations.
+- Established Drop history is editable while `UPCOMING` and immutable through normal saves from `PRIVATE_ACCESS` onward; one first valid recovery assignment remains possible when a released product has no valid Drop.
 - No Drop storefront/archive UI, homepage, private-access enforcement, piece totals, scheduling, or M5 presentation exists.
 - Theme and plugin versions remain `0.1.0`; internal milestones do not trigger package-version changes before an approved release task.
 - The next approved milestone is M5 — Homepage; it has not started.
@@ -36,4 +37,4 @@ Per the project brief, `https://mystatement.store/` is the WordPress.com Atomic 
 
 ## Verification
 
-M1–M4 structural tests, release-domain, terminal-purchasability, admin-integrity, WooCommerce-absence smoke, first-party PHP lint, and `node scripts/verify-foundation.mjs` pass with project-local PHP 8.3.33. Actual WordPress/WooCommerce product editing, taxonomy persistence, purchasability, and browser rendering remain unverified. See `.ai/checks/m0-foundation.md`.
+M1–M4 structural tests, release-domain, terminal and variable-product purchasability, historical Drop/admin integrity, WooCommerce-absence smoke, first-party PHP lint, and `node scripts/verify-foundation.mjs` pass with project-local PHP 8.3.33. Actual WordPress/WooCommerce product editing, taxonomy persistence, purchasability, and browser rendering remain unverified. See `.ai/checks/m0-foundation.md`.

@@ -6,6 +6,7 @@ define( 'ABSPATH', __DIR__ . '/' );
 
 $statement_assertions      = 0;
 $statement_assignments     = array();
+$statement_object_terms    = array();
 $statement_can_edit        = true;
 $statement_is_autosave     = false;
 $statement_is_revision     = false;
@@ -62,9 +63,17 @@ function is_wp_error( $value ): bool {
 	return false;
 }
 
+function wp_get_object_terms( int $object_id, string $taxonomy, array $arguments = array() ): array {
+	global $statement_object_terms;
+	return 'statement_drop' === $taxonomy ? ( $statement_object_terms[ $object_id ] ?? array() ) : array();
+}
+
 function wp_set_object_terms( int $object_id, array $terms, string $taxonomy, bool $append = false ): void {
-	global $statement_assignments;
+	global $statement_assignments, $statement_object_terms;
 	$statement_assignments[] = compact( 'object_id', 'terms', 'taxonomy', 'append' );
+	if ( 'statement_drop' === $taxonomy && ! $append ) {
+		$statement_object_terms[ $object_id ] = array_values( $terms );
+	}
 }
 
 function statement_assert_same( $expected, $actual, string $message ): void {
@@ -156,7 +165,8 @@ statement_assert_same( $assignment_count, count( $statement_assignments ), 'Wron
 
 $_POST['statement_collector_drop'] = '';
 Admin::save_fields( $product );
-statement_assert_same( array(), $statement_assignments[ $assignment_count ]['terms'], 'Empty Drop input must allow an unassigned product.' );
+statement_assert_same( $assignment_count, count( $statement_assignments ), 'Released product must reject historical Drop removal.' );
+statement_assert_same( array( 7 ), $statement_object_terms[ $product->get_id() ], 'Rejected removal must preserve the valid historical Drop.' );
 
 $assignment_count = count( $statement_assignments );
 unset( $_POST['statement_collector_drop'] );

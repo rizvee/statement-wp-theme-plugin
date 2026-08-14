@@ -39,12 +39,14 @@ Status: complete (2026-08-14)
 
 ## M4 — Drop Architecture + Product Metadata
 
-Status: complete (2026-08-14)
+Status: complete; integrity hardened (2026-08-14)
 
 - [x] Register the `statement_drop` product taxonomy with a controlled one-Drop admin field.
 - [x] Add canonical release-state and optional edition-label metadata through WooCommerce CRUD.
 - [x] Enforce same/forward-only lifecycle transitions and terminal purchasability locks.
 - [x] Verify malformed input, WooCommerce absence, and positive-stock terminal products.
+- [x] Inherit terminal parent release state for variations without duplicating lifecycle metadata.
+- [x] Lock established historical Drop relationships from `PRIVATE_ACCESS` onward while retaining bounded first-assignment recovery.
 
 ## M5 — Homepage
 

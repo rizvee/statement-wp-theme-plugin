@@ -15,16 +15,51 @@ final class Metadata {
 	public const EDITION_LABEL_MAX_LENGTH = 80;
 
 	/**
+	 * Resolve the product that canonically owns Statement release state.
+	 *
+	 * Variations inherit release state from their parent instead of carrying
+	 * duplicate lifecycle metadata.
+	 *
+	 * @param object $product WooCommerce product-like object.
+	 * @return object|null
+	 */
+	public static function get_release_owner( $product ) {
+		if ( ! is_object( $product ) ) {
+			return null;
+		}
+
+		$is_variation = is_a( $product, 'WC_Product_Variation' )
+			|| ( method_exists( $product, 'get_type' ) && 'variation' === $product->get_type() );
+		if ( ! $is_variation ) {
+			return $product;
+		}
+
+		if ( ! method_exists( $product, 'get_parent_id' ) || ! function_exists( 'wc_get_product' ) ) {
+			return null;
+		}
+
+		$parent_id = (int) $product->get_parent_id();
+		if ( $parent_id < 1 ) {
+			return null;
+		}
+
+		$parent = wc_get_product( $parent_id );
+
+		return is_object( $parent ) ? $parent : null;
+	}
+
+	/**
 	 * Read and normalize the product release state.
 	 *
 	 * @param object $product WooCommerce product-like object.
 	 */
 	public static function get_release_state( $product ): string {
-		if ( ! is_object( $product ) || ! method_exists( $product, 'get_meta' ) ) {
+		$release_owner = self::get_release_owner( $product );
+		if ( ! is_object( $release_owner ) || ! method_exists( $release_owner, 'get_meta' ) ) {
 			return ReleaseState::UPCOMING;
 		}
 
-		$persisted = $product->get_meta( self::RELEASE_STATE_KEY, true );
+		$persisted = $release_owner->get_meta( self::RELEASE_STATE_KEY, true );
 
 		return ReleaseState::normalize( is_string( $persisted ) ? $persisted : null );
 	}
@@ -35,16 +70,17 @@ final class Metadata {
 	 * @param object $product WooCommerce product-like object.
 	 */
 	public static function set_release_state( $product, string $requested_state ): bool {
-		if ( ! is_object( $product ) || ! method_exists( $product, 'update_meta_data' ) ) {
+		$release_owner = self::get_release_owner( $product );
+		if ( ! is_object( $release_owner ) || ! method_exists( $release_owner, 'update_meta_data' ) ) {
 			return false;
 		}
 
-		$current_state = self::get_release_state( $product );
+		$current_state = self::get_release_state( $release_owner );
 		if ( ! ReleaseState::can_transition( $current_state, $requested_state ) ) {
 			return false;
 		}
 
-		$product->update_meta_data( self::RELEASE_STATE_KEY, $requested_state );
+		$release_owner->update_meta_data( self::RELEASE_STATE_KEY, $requested_state );
 
 		return true;
 	}

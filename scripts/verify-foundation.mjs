@@ -32,6 +32,7 @@ const requiredFiles = [
   'tests/php/m4-release-state.php',
   'tests/php/m4-purchasability.php',
   'tests/php/m4-product-admin.php',
+  'tests/php/m4-drop-history.php',
   'tests/php/m4-woo-absence-smoke.php',
 ];
 
@@ -79,6 +80,8 @@ const contentSignals = [
   ['.ai/context/business-rules.md', 'statement_drop'],
   ['.ai/context/business-rules.md', 'backward transitions are rejected'],
   ['.ai/context/business-rules.md', 'positive stock or later stock adjustments cannot reopen purchasing'],
+  ['.ai/context/business-rules.md', 'immutable through normal product saves'],
+  ['.ai/context/current-state.md', 'canonical parent Statement release state'],
   ['.ai/context/architecture.md', 'statement-collector-theme'],
   ['.ai/context/architecture.md', 'statement-collector-core'],
   ['.ai/context/deployment-rules.md', 'https://mystatement.store/'],

@@ -19,6 +19,7 @@ Canonical lifecycle: `UPCOMING` → `PRIVATE_ACCESS` → `LIVE` → `SOLD_OUT` �
 ## Product and Drop integrity
 
 - Each Statement product belongs to one historical Drop; it may remain unassigned while in preparation, and the controlled product UI stores zero or one `statement_drop` term.
+- While `UPCOMING`, an assigned Drop may be changed or cleared. From `PRIVATE_ACCESS` onward, an established valid Drop is immutable through normal product saves: replacement and removal are rejected. A released product with no valid historical Drop may receive one first valid assignment, which then becomes immutable.
 - A Drop may contain many products. Drop terms are admin-created data, never hardcoded releases.
 - The product owns its release state and optional concise edition label through WooCommerce metadata APIs.
 - Edition labels and future piece numbers must not expose or imply a public production total.

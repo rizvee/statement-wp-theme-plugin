@@ -67,8 +67,12 @@ test('metadata centralizes canonical state and edition keys through WooCommerce 
   assert.match(metadata, /update_meta_data\s*\(/);
   assert.match(metadata, /delete_meta_data\s*\(/);
   assert.match(metadata, /can_transition\s*\(/);
+  assert.match(metadata, /function\s+get_release_owner\s*\(/);
+  assert.match(metadata, /get_parent_id\s*\(/);
+  assert.match(metadata, /wc_get_product\s*\(/);
   assert.match(metadata, /sanitize_text_field\s*\(/);
   assert.match(metadata, /EDITION_LABEL_MAX_LENGTH\s*=\s*80/);
+  assert.equal((metadata.match(/update_meta_data\s*\(\s*self::RELEASE_STATE_KEY/g) ?? []).length, 1);
   assert.doesNotMatch(metadata, /get_post_meta|update_post_meta|add_post_meta|production_cap|edition_total|max_pieces|piece_number|restock/i);
 });
 
@@ -90,7 +94,10 @@ test('product admin uses controlled fields and preserves invalid historical inpu
   assert.match(admin, /sanitize_text_field\s*\(/);
   assert.match(admin, /absint\s*\(/);
   assert.match(admin, /get_term\s*\(/);
+  assert.match(admin, /wp_get_object_terms\s*\(/);
   assert.match(admin, /wp_set_object_terms\s*\(/);
+  assert.match(admin, /Metadata::get_release_state\s*\(/);
+  assert.match(admin, /ReleaseState::UPCOMING/);
   assert.doesNotMatch(admin, /wp_insert_term|register_post_type|multiple\s*=>\s*true/i);
 });
 
