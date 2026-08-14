@@ -63,6 +63,7 @@ Version: 0.1.0
 define( 'STATEMENT_COLLECTOR_CORE_VERSION', '0.1.0' );
 `;
   writeFileSync(resolve(mockStagingDir, 'statement-collector-core.php'), mockHeaderContent, 'utf8');
+  mkdirSync(resolve(mockStagingDir, 'src'), { recursive: true });
   writeFileSync(resolve(mockStagingDir, 'src/Plugin.php'), '<?php class Plugin {}', 'utf8');
 
   execSync(`tar -caf "${mockZip}" -C "${mockStagingParent}" "statement-collector-core"`, { cwd: root, stdio: 'pipe' });
