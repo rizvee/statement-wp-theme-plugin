@@ -141,19 +141,23 @@ Status: complete (2026-08-15)
 
 ## M13 — Runtime Integration Preparation & Verification
 
-Status: Phase 1 complete (2026-08-15)
+Status: Phase 1, Phase 2, Phase 3A, & Phase 4A Local Readiness complete (2026-08-15)
 
 - [x] Create deterministic packaging scripts (`package-theme.mjs`, `package-plugin.mjs`, `package-all.mjs`) generating single-root ZIP artifacts in `dist/`.
 - [x] Implement package content verification (`verify-package.mjs`) checking root directory, required runtime files, packaged PHP linting, and dev/secret exclusions.
 - [x] Enforce package exclusion rules for `.git/`, `.github/`, `.ai/`, `tests/`, `scripts/`, `docs/`, `.local-tools/`, `node_modules/`, `dist/`, `coverage/`, `tmp/`, `logs/`, `php.ini`, `.env`, `package-lock.json`, and OS/IDE metadata.
-- [x] Support candidate versioning (`0.13.0-rc.1`) and generate `dist/manifest.json` with SHA-256 checksums and `deployment_authorized = false`.
+- [x] Support candidate versioning (`0.13.0-rc.2`) and generate `dist/manifest.json` with SHA-256 checksums and `deployment_authorized = false`.
 - [x] Create operator preflight checklist (`docs/atomic-integration-preflight.md`) for WordPress, WooCommerce, theme/plugin, and secret configuration.
 - [x] Create emergency rollback runbook (`docs/atomic-rollback-runbook.md`) covering plugin, theme, checkout, and private edge cache failures.
 - [x] Establish structured integration test checklist (`docs/runtime-integration-checklist.md`) with 19 test cases (`M13-PA-01` through `M13-RS-01`).
 - [x] Create defect tracking log template (`docs/runtime-integration-log.md`) and release candidate record template (`docs/runtime-release-candidate.md`).
 - [x] Build dedicated Node packaging test suite (`tests/m13-packaging.test.mjs`) validating zero remote deployment calls and manifest safety.
-- [x] Enforce STOP GATE boundary: LOCAL PREPARATION COMPLETE / ATOMIC VALIDATION NOT STARTED.
+- [x] Phase 2: Verify `statement-collector-core` candidate `0.13.0-rc.2` bootstrap on Atomic.
+- [x] Phase 3A: Build temporary integration fixture plugin `statement-integration-fixtures` (`0.1.1`) and seed/verify LIVE/SOLD_OUT dataset on Atomic.
+- [x] Phase 4A: Perform local theme runtime-readiness audit and contract verification (`docs/theme-atomic-runtime-readiness.md` and `tests/m13-theme-runtime-readiness.test.mjs`).
+- [x] Enforce STOP GATE boundary: THEME LOCAL READINESS COMPLETE / ATOMIC THEME ACTIVATION NOT STARTED.
 
 ## Later roadmap
 
-After M13 Phase 1 local preparation is approved by the user, proceed to controlled Phase 2 integration on WordPress.com Atomic environment (`mystatement.store`).
+After M13 Phase 4A local preparation is approved by the user, proceed to controlled Phase 4B theme upload and activation on WordPress.com Atomic environment (`mystatement.store`).
+
