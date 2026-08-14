@@ -5,7 +5,7 @@
 This preflight checklist records evidence gathered from read-only inspection and controlled runtime testing of the target WordPress.com Atomic environment (`mystatement.store`).
 
 > [!IMPORTANT]
-> **Platform Auto-Activation Notice:** Custom plugin installation on this WordPress.com Atomic site may automatically activate the plugin upon upload completion. All operator preflight checklists and rollback procedures MUST be fully verified before pressing Install/Upload.
+> **Platform Auto-Activation Notice:** Custom plugin installation on this WordPress.com Atomic site automatically activates the plugin upon upload completion. All operator preflight checklists and rollback procedures MUST be fully verified before pressing Install/Upload.
 
 ---
 
@@ -16,6 +16,7 @@ This preflight checklist records evidence gathered from read-only inspection and
 - [x] Site Timezone: `Australia/Sydney`
 - [x] Permalink Structure: `/%postname%/` (WordPress default structure)
 - [x] Access Privacy State: **PUBLICLY REACHABLE / SEARCH INDEXING DISCOURAGED** (`<meta name='robots' content='noindex, nofollow' />` present; platform setting `blog_public = 0`)
+- [!] Fixture Testing Gate: **M13-SAFETY-01 = BLOCKED FOR FIXTURE TESTING** (Controlled products, Drops, grants, or orders require true access-restricted/Coming Soon state).
 
 ---
 
@@ -45,21 +46,21 @@ This preflight checklist records evidence gathered from read-only inspection and
 - [x] Active Theme: `Assembler` (`wp-content/themes/assembler/`) — **UNCHANGED**
 - [x] Fallback Theme: Twenty Twenty-Four / Twenty Twenty-Three present on platform
 - [x] Active Plugins: WooCommerce 11.0.1, WooPayments, Jetpack, Elementor 4.2.2, MailPoet, Akismet, WPComSH (Atomic mu-plugins)
-- [x] Installed Core Plugin: `statement-collector-core` active (Initial manual upload; version reported as `0.1.0` due to packaging header defect `M13-ISSUE-02`; hotfixed in local candidate `0.13.0-rc.2`)
+- [x] Installed Core Plugin: `statement-collector-core` active at **Version 0.13.0-rc.2** (Replaced candidate `0.1.0`; verified matching header & constant).
 - [x] Elementor / Legacy Content: **CONFIRMED INTACT & PRESERVED** (Homepage ID 53 built with Elementor)
 
 ---
 
 ## 5. Background Jobs & Cache
 
-- [x] Action Scheduler: Available on platform via WooCommerce Core
+- [x] Action Scheduler: Available on platform via WooCommerce Core; operating normally
 - [x] Edge / Server Cache: Atomic edge proxy caching active with `noindex` headers for private site
 
 ---
 
 ## 6. Private Access Configuration (wp-config.php)
 
-- [ ] `STATEMENT_ACCESS_ENCRYPTION_ACTIVE_VERSION`: **NOT CONFIGURED** (Phase 2 local preparation; no production secrets created)
+- [ ] `STATEMENT_ACCESS_ENCRYPTION_ACTIVE_VERSION`: **NOT CONFIGURED** (Phase 2B runtime validation; no production secrets created)
 - [ ] `STATEMENT_ACCESS_ENCRYPTION_KEYS`: **NOT CONFIGURED**
 - [ ] `STATEMENT_ACCESS_IDENTITY_KEY`: **NOT CONFIGURED**
 - [ ] `STATEMENT_ACCESS_RATE_LIMIT_KEY`: **NOT CONFIGURED**
@@ -72,4 +73,4 @@ This preflight checklist records evidence gathered from read-only inspection and
 
 - [x] Atomic site automatic backups active on WordPress.com platform
 - [x] Previous theme (`Assembler`) and Elementor content remain untouched
-- [x] Installed plugin directory `statement-collector-core` is canonical; replacement requires explicit upload of candidate `0.13.0-rc.2`.
+- [x] Installed plugin directory `statement-collector-core` is canonical; version `0.13.0-rc.2` is active and operational.

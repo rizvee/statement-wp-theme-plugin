@@ -4,10 +4,10 @@
 
 | Test ID | Category | Feature | Description | Status | Evidence / Notes |
 |---------|----------|---------|-------------|--------|------------------|
-| `M13-PA-01` | Bootstrap | Core Plugin Activation | Upload and activate `statement-collector-core` on Atomic without fatal error. | **PASS** | Auto-activated on Atomic; admin screens (Statement Access, Drops, Product Editor) operational. (Version reported 0.1.0 in initial rc.1 upload; hotfixed in local candidate `0.13.0-rc.2`). |
-| `M13-PA-02` | Bootstrap | Theme Activation | Upload and activate `statement-collector-theme` on Atomic. | **NOT RUN** | Theme upload strictly excluded in Phase 2/2A. |
-| `M13-DB-01` | Database | Schema Creation | Verify 5 operational access tables created in MySQL database. | **UNKNOWN** | Direct database table inspection not accessible via HTTP REST API. |
-| `M13-DB-02` | Database | Schema Idempotency | Deactivate and reactivate Core; confirm no table duplicate fatal. | **NOT RUN** | Pending replacement with `0.13.0-rc.2`. |
+| `M13-PA-01` | Bootstrap | Core Plugin Activation | Upload and activate `statement-collector-core` on Atomic without fatal error. | **PASS** | `statement-collector-core` active at version `0.13.0-rc.2`; admin screens (Statement Access, Drops, Product Editor) operational. |
+| `M13-PA-02` | Bootstrap | Theme Activation | Upload and activate `statement-collector-theme` on Atomic. | **NOT RUN** | Theme upload strictly excluded in Phase 2/2A/2B. |
+| `M13-DB-01` | Database | Schema Creation | Verify 5 operational access tables created in MySQL database. | **UNKNOWN** | Direct database table inspection inaccessible via HTTP REST API without DB admin tools. |
+| `M13-DB-02` | Database | Schema Idempotency | Deactivate and reactivate Core; confirm no table duplicate fatal. | **NOT RUN** | Skipped on live Atomic site to avoid unnecessary disruption after auto-activation. |
 | `M13-API-01` | REST API | WP REST Bootstrap | WP REST API root (`/wp-json/`) responds HTTP 200 without Core disruption. | **PASS** | Responded HTTP 200; namespaces `wp/v2`, `wc/v3` present. |
 | `M13-API-02` | Store API | Woo Store API Bootstrap | Store API `/wp-json/wc/store/v1/products` responds HTTP 200 without Core disruption. | **PASS** | Responded HTTP 200; 0 public products exposed. |
 | `M13-API-03` | REST API | PRIVATE_ACCESS REST Privacy | Verify `PRIVATE_ACCESS` products omitted from REST API queries for unauthorized users. | **PENDING** | Requires controlled private inventory fixtures in Phase 3. |
