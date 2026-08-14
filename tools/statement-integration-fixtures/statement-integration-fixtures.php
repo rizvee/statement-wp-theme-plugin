@@ -2,13 +2,13 @@
 /*
 Plugin Name: Statement Integration Fixtures
 Description: Temporary administrator-only runtime fixture tool for Statement Atomic integration testing.
-Version: 0.1.0
+Version: 0.1.1
 Text Domain: statement-integration-fixtures
 */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'STATEMENT_INTEGRATION_FIXTURES_VERSION', '0.1.0' );
+define( 'STATEMENT_INTEGRATION_FIXTURES_VERSION', '0.1.1' );
 define( 'STATEMENT_INTEGRATION_FIXTURES_FILE', __FILE__ );
 define( 'STATEMENT_INTEGRATION_FIXTURES_PATH', plugin_dir_path( __FILE__ ) );
 

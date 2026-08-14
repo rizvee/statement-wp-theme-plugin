@@ -22,6 +22,106 @@ class FixtureService {
 		);
 	}
 
+	public static function get_seeding_state(): string {
+		$manifest = get_option( self::MANIFEST_OPTION, false );
+		if ( is_array( $manifest ) && ! empty( $manifest['product_ids'] ) ) {
+			$all_exist = true;
+			foreach ( (array) $manifest['product_ids'] as $pid ) {
+				if ( ! get_post( $pid ) ) {
+					$all_exist = false;
+					break;
+				}
+			}
+			if ( $all_exist ) {
+				return 'SEEDED';
+			}
+		}
+
+		$discovered = self::discover_existing_fixtures();
+		if ( null !== $discovered ) {
+			return 'RECOVERY_REQUIRED';
+		}
+
+		return 'NOT_SEEDED';
+	}
+
+	public static function discover_existing_fixtures(): ?array {
+		if ( ! function_exists( 'wc_get_product_id_by_sku' ) ) {
+			return null;
+		}
+
+		$p1_id = wc_get_product_id_by_sku( 'TEST-LD01-MJ' );
+		$p2_id = wc_get_product_id_by_sku( 'TEST-LD01-SO' );
+		$p3_id = wc_get_product_id_by_sku( 'TEST-LD01-TJ' );
+
+		if ( $p1_id < 1 || $p2_id < 1 || $p3_id < 1 ) {
+			return null;
+		}
+
+		$v1_id = wc_get_product_id_by_sku( 'TEST-LD01-MJ-S' );
+		$v2_id = wc_get_product_id_by_sku( 'TEST-LD01-MJ-M' );
+		$v3_id = wc_get_product_id_by_sku( 'TEST-LD01-MJ-L' );
+
+		if ( $v1_id < 1 || $v2_id < 1 || $v3_id < 1 ) {
+			return null;
+		}
+
+		$cat_term  = get_term_by( 'slug', 'test-outerwear', 'product_cat' );
+		$tag_term  = get_term_by( 'slug', 'test-integration', 'product_tag' );
+		$drop_term = get_term_by( 'slug', 'test-live-drop-01', 'statement_drop' );
+
+		if ( ! $cat_term || ! $tag_term || ! $drop_term ) {
+			return null;
+		}
+
+		return array(
+			'category_id'    => (int) $cat_term->term_id,
+			'product_tag_id' => (int) $tag_term->term_id,
+			'drop_id'        => (int) $drop_term->term_id,
+			'product_ids'    => array( (int) $p1_id, (int) $p2_id, (int) $p3_id ),
+			'variation_ids'  => array( (int) $v1_id, (int) $v2_id, (int) $v3_id ),
+			'skus'           => array( 'TEST-LD01-MJ', 'TEST-LD01-MJ-S', 'TEST-LD01-MJ-M', 'TEST-LD01-MJ-L', 'TEST-LD01-SO', 'TEST-LD01-TJ' ),
+		);
+	}
+
+	public static function adopt_existing_fixtures(): array {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			return array( 'success' => false, 'message' => 'Unauthorized capability check failed.' );
+		}
+
+		$discovered = self::discover_existing_fixtures();
+		if ( null === $discovered ) {
+			return array( 'success' => false, 'message' => 'Adoption failed: Discovered fixtures are incomplete or do not match expected SKUs and terms.' );
+		}
+
+		$previous_currency = get_option( 'woocommerce_currency', 'AUD' );
+		if ( 'AUD' !== $previous_currency ) {
+			update_option( 'woocommerce_currency', 'AUD' );
+		}
+
+		$manifest = array(
+			'schema_version'    => '1.0.0',
+			'created_at'        => current_time( 'mysql' ),
+			'plugin_version'    => STATEMENT_INTEGRATION_FIXTURES_VERSION,
+			'previous_currency' => 'USD',
+			'current_currency'  => 'AUD',
+			'category_id'       => $discovered['category_id'],
+			'product_tag_id'    => $discovered['product_tag_id'],
+			'drop_id'           => $discovered['drop_id'],
+			'product_ids'       => $discovered['product_ids'],
+			'variation_ids'     => $discovered['variation_ids'],
+			'skus'              => $discovered['skus'],
+		);
+
+		update_option( self::MANIFEST_OPTION, $manifest );
+
+		return array(
+			'success'  => true,
+			'message'  => 'Successfully adopted existing integration fixtures and saved manifest.',
+			'manifest' => $manifest,
+		);
+	}
+
 	public static function check_collisions(): array {
 		$collisions = array();
 
@@ -63,9 +163,12 @@ class FixtureService {
 			return array( 'success' => false, 'message' => 'Preflight failed: WooCommerce or Statement Core missing.' );
 		}
 
-		$existing_manifest = get_option( self::MANIFEST_OPTION, false );
-		if ( $existing_manifest ) {
+		$state = self::get_seeding_state();
+		if ( 'SEEDED' === $state ) {
 			return array( 'success' => false, 'message' => 'Fixtures already seeded according to manifest.' );
+		}
+		if ( 'RECOVERY_REQUIRED' === $state ) {
+			return array( 'success' => false, 'message' => 'Existing fixture records detected! Please use Adopt Existing Test Fixtures.' );
 		}
 
 		$collisions = self::check_collisions();

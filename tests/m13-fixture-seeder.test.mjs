@@ -5,6 +5,7 @@ import test from 'node:test';
 
 const root = resolve(import.meta.dirname, '..');
 const pluginDir = resolve(root, 'tools', 'statement-integration-fixtures');
+const coreDir = resolve(root, 'wp-content', 'plugins', 'statement-collector-core');
 
 test('Temporary Fixture Plugin files exist in tools/statement-integration-fixtures/', () => {
   const requiredFiles = [
@@ -21,11 +22,12 @@ test('Temporary Fixture Plugin files exist in tools/statement-integration-fixtur
   }
 });
 
-test('Fixture Plugin activation is strictly side-effect free with zero auto-seeding', () => {
+test('Fixture Plugin version is 0.1.1 and activation is strictly side-effect free with zero auto-seeding', () => {
   const mainPhp = readFileSync(resolve(pluginDir, 'statement-integration-fixtures.php'), 'utf8');
 
   assert.match(mainPhp, /Plugin Name:\s*Statement Integration Fixtures/);
-  assert.match(mainPhp, /Version:\s*0\.1\.0/);
+  assert.match(mainPhp, /Version:\s*0\.1\.1/);
+  assert.match(mainPhp, /STATEMENT_INTEGRATION_FIXTURES_VERSION['"]\s*,\s*['"]0\.1\.1['"]/);
 
   // Must not call FixtureService::create or seed automatically on activation or plugins_loaded
   assert.doesNotMatch(mainPhp, /FixtureService::create/i, 'Main plugin file must not auto-create fixtures on boot/activation');
@@ -37,11 +39,72 @@ test('AdminPage requires manage_woocommerce capability and checks nonces on all 
 
   assert.match(adminPhp, /manage_woocommerce/, 'AdminPage must require manage_woocommerce capability');
   assert.match(adminPhp, /check_admin_referer\(\s*['"]statement_fixtures_create['"]\s*\)/, 'Create action must check nonce');
+  assert.match(adminPhp, /check_admin_referer\(\s*['"]statement_fixtures_adopt['"]\s*\)/, 'Adopt action must check nonce');
   assert.match(adminPhp, /check_admin_referer\(\s*['"]statement_fixtures_cleanup['"]\s*\)/, 'Cleanup action must check nonce');
   assert.match(adminPhp, /check_admin_referer\(\s*['"]statement_fixtures_restore_currency['"]\s*\)/, 'Restore currency action must check nonce');
 });
 
-test('FixtureService specifies exact approved taxonomies, slugs, SKUs, and AUD currency', () => {
+test('VerificationService uses WC_Product::is_purchasable() and does NOT reference nonexistent Purchasability::is_purchasable()', () => {
+  const verifyPhp = readFileSync(resolve(pluginDir, 'src', 'VerificationService.php'), 'utf8');
+
+  // Must NOT call Purchasability::is_purchasable()
+  assert.doesNotMatch(
+    verifyPhp,
+    /Purchasability::is_purchasable/,
+    'VerificationService MUST NOT call nonexistent method Purchasability::is_purchasable()'
+  );
+
+  // Must call $product->is_purchasable() to test real WooCommerce + Statement Core filter
+  assert.match(
+    verifyPhp,
+    /\$product->is_purchasable\(\)/,
+    'VerificationService must call $product->is_purchasable() to invoke real woocommerce_is_purchasable filter'
+  );
+
+  // Must contain try/catch Throwable containment
+  assert.match(verifyPhp, /try\s*\{[\s\S]*\}[\s\S]*catch\s*\(\s*\\Throwable/m, 'VerificationService must catch Throwable to prevent white-screens');
+});
+
+test('Contract-drift check: Fixture Tool references only real static methods and properties in Statement Core', () => {
+  const fixtureSourceFiles = [
+    resolve(pluginDir, 'src', 'FixtureService.php'),
+    resolve(pluginDir, 'src', 'VerificationService.php'),
+    resolve(pluginDir, 'src', 'AdminPage.php'),
+    resolve(pluginDir, 'src', 'CleanupService.php'),
+  ];
+
+  const coreMetadataPhp = readFileSync(resolve(coreDir, 'src', 'Product', 'Metadata.php'), 'utf8');
+  const corePurchasabilityPhp = readFileSync(resolve(coreDir, 'src', 'Release', 'Purchasability.php'), 'utf8');
+  const coreReleaseStatePhp = readFileSync(resolve(coreDir, 'src', 'Release', 'ReleaseState.php'), 'utf8');
+
+  for (const file of fixtureSourceFiles) {
+    const content = readFileSync(file, 'utf8');
+
+    // Check Metadata calls
+    if (content.includes('Metadata::set_release_state')) {
+      assert.ok(coreMetadataPhp.includes('function set_release_state'), 'Core Metadata::set_release_state must exist');
+    }
+    if (content.includes('Metadata::get_release_state')) {
+      assert.ok(coreMetadataPhp.includes('function get_release_state'), 'Core Metadata::get_release_state must exist');
+    }
+    if (content.includes('Metadata::set_edition_label')) {
+      assert.ok(coreMetadataPhp.includes('function set_edition_label'), 'Core Metadata::set_edition_label must exist');
+    }
+    if (content.includes('Metadata::get_edition_label')) {
+      assert.ok(coreMetadataPhp.includes('function get_edition_label'), 'Core Metadata::get_edition_label must exist');
+    }
+
+    // Verify Purchasability has no is_purchasable method
+    assert.ok(!corePurchasabilityPhp.includes('function is_purchasable'), 'Core Purchasability class does NOT have function is_purchasable');
+
+    // Check ReleaseState calls
+    if (content.includes('ReleaseState::is_terminal')) {
+      assert.ok(coreReleaseStatePhp.includes('function is_terminal'), 'Core ReleaseState::is_terminal must exist');
+    }
+  }
+});
+
+test('FixtureService specifies exact approved taxonomies, slugs, SKUs, AUD currency, and state detection', () => {
   const fixturePhp = readFileSync(resolve(pluginDir, 'src', 'FixtureService.php'), 'utf8');
 
   // Taxonomies
@@ -72,6 +135,20 @@ test('FixtureService specifies exact approved taxonomies, slugs, SKUs, and AUD c
 
   // Stock contract for Product 3 Terminal positive-stock test
   assert.match(fixturePhp, /set_stock_quantity\(\s*5\s*\)/, 'Terminal product must retain stock quantity 5');
+
+  // State & Adoption logic
+  assert.match(fixturePhp, /function get_seeding_state/, 'FixtureService must have get_seeding_state method');
+  assert.match(fixturePhp, /function discover_existing_fixtures/, 'FixtureService must have discover_existing_fixtures method');
+  assert.match(fixturePhp, /function adopt_existing_fixtures/, 'FixtureService must have adopt_existing_fixtures method');
+  assert.match(fixturePhp, /'RECOVERY_REQUIRED'/, 'FixtureService must support RECOVERY_REQUIRED state');
+});
+
+test('AdminPage includes Throwable containment around request handling', () => {
+  const adminPhp = readFileSync(resolve(pluginDir, 'src', 'AdminPage.php'), 'utf8');
+
+  assert.match(adminPhp, /try\s*\{[\s\S]*\}[\s\S]*catch\s*\(\s*\\Throwable/m, 'AdminPage must wrap request processing in Throwable catch');
+  assert.match(adminPhp, /'RECOVERY_REQUIRED' === \$state/, 'AdminPage must check for RECOVERY_REQUIRED state');
+  assert.match(adminPhp, /Adopt Existing Test Fixtures/, 'AdminPage must provide Adopt button when recovery is required');
 });
 
 test('CleanupService deletes strictly IDs recorded in manifest and preserves AUD currency by default', () => {

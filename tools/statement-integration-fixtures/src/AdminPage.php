@@ -29,38 +29,55 @@ class AdminPage {
 
 		$result_notice = null;
 
-		// Handle Form Submissions
+		// Handle Form Submissions with Throwable safety
 		if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['statement_fixtures_action'] ) ) {
-			$action = sanitize_text_field( wp_unslash( $_POST['statement_fixtures_action'] ) );
+			try {
+				$action = sanitize_text_field( wp_unslash( $_POST['statement_fixtures_action'] ) );
 
-			if ( 'create' === $action ) {
-				check_admin_referer( 'statement_fixtures_create' );
-				$result_notice = FixtureService::create();
-			} elseif ( 'cleanup' === $action ) {
-				check_admin_referer( 'statement_fixtures_cleanup' );
-				$result_notice = CleanupService::cleanup();
-			} elseif ( 'restore_currency' === $action ) {
-				check_admin_referer( 'statement_fixtures_restore_currency' );
-				$result_notice = CleanupService::restore_currency();
+				if ( 'create' === $action ) {
+					check_admin_referer( 'statement_fixtures_create' );
+					$result_notice = FixtureService::create();
+				} elseif ( 'adopt' === $action ) {
+					check_admin_referer( 'statement_fixtures_adopt' );
+					$result_notice = FixtureService::adopt_existing_fixtures();
+				} elseif ( 'cleanup' === $action ) {
+					check_admin_referer( 'statement_fixtures_cleanup' );
+					$result_notice = CleanupService::cleanup();
+				} elseif ( 'restore_currency' === $action ) {
+					check_admin_referer( 'statement_fixtures_restore_currency' );
+					$result_notice = CleanupService::restore_currency();
+				}
+			} catch ( \Throwable $e ) {
+				$result_notice = array(
+					'success' => false,
+					'message' => 'Action failed safely: ' . $e->getMessage(),
+				);
 			}
 		}
 
 		$env          = FixtureService::is_environment_ready();
+		$state        = FixtureService::get_seeding_state();
 		$collisions   = FixtureService::check_collisions();
 		$verification = VerificationService::verify();
 		?>
 		<div class="wrap">
-			<h1>Statement Integration Fixtures</h1>
+			<h1>Statement Integration Fixtures (v0.1.1)</h1>
 			<p>Temporary administrator-only runtime fixture tool for Statement Atomic integration testing.</p>
 
 			<?php if ( $result_notice ) : ?>
-				<div class="notice notice-<?php echo $result_notice['success'] ? 'success' : 'error'; ?> is-dismissible">
+				<div class="notice notice-<?php echo ! empty( $result_notice['success'] ) ? 'success' : 'error'; ?> is-dismissible">
 					<p><strong><?php echo esc_html( $result_notice['message'] ); ?></strong></p>
 				</div>
 			<?php endif; ?>
 
+			<?php if ( ! empty( $verification['error'] ) ) : ?>
+				<div class="notice notice-error inline">
+					<p><strong>VERIFICATION FAILED:</strong> <?php echo esc_html( $verification['message'] ); ?></p>
+				</div>
+			<?php endif; ?>
+
 			<div class="card" style="max-width: 900px; margin-top: 20px;">
-				<h2>1. Environment Preflight</h2>
+				<h2>1. Environment Preflight & Seeding State</h2>
 				<table class="widefat striped" style="margin-bottom: 15px;">
 					<tbody>
 						<tr>
@@ -84,8 +101,10 @@ class AdminPage {
 						<tr>
 							<td><strong>Seeding Status:</strong></td>
 							<td>
-								<?php if ( $verification['seeded'] ) : ?>
-									<span style="color:blue;">SEEDED (Manifest active)</span>
+								<?php if ( 'SEEDED' === $state ) : ?>
+									<span style="color:blue;"><strong>SEEDED</strong> (Manifest active)</span>
+								<?php elseif ( 'RECOVERY_REQUIRED' === $state ) : ?>
+									<span style="color:orange;"><strong>RECOVERY REQUIRED</strong> (Orphaned fixtures detected on site)</span>
 								<?php else : ?>
 									<span style="color:gray;">NOT SEEDED</span>
 								<?php endif; ?>
@@ -94,7 +113,18 @@ class AdminPage {
 					</tbody>
 				</table>
 
-				<?php if ( ! empty( $collisions ) && ! $verification['seeded'] ) : ?>
+				<?php if ( 'RECOVERY_REQUIRED' === $state ) : ?>
+					<div class="notice notice-warning inline" style="margin-bottom: 15px;">
+						<p><strong>Existing Fixtures Detected:</strong> The site already contains product records with matching SKUs and terms, but no active manifest option was found. Click <strong>Adopt Existing Test Fixtures</strong> below to discover and verify existing records without duplicating data.</p>
+						<form method="post" action="">
+							<?php wp_nonce_field( 'statement_fixtures_adopt' ); ?>
+							<input type="hidden" name="statement_fixtures_action" value="adopt">
+							<?php submit_button( 'Adopt Existing Test Fixtures', 'primary', 'submit_adopt', false ); ?>
+						</form>
+					</div>
+				<?php endif; ?>
+
+				<?php if ( ! empty( $collisions ) && 'NOT_SEEDED' === $state ) : ?>
 					<div class="notice notice-warning inline">
 						<p><strong>Potential Collisions Detected:</strong></p>
 						<ul>
@@ -105,23 +135,25 @@ class AdminPage {
 					</div>
 				<?php endif; ?>
 
-				<form method="post" action="" style="margin-top: 15px;">
-					<?php wp_nonce_field( 'statement_fixtures_create' ); ?>
-					<input type="hidden" name="statement_fixtures_action" value="create">
-					<?php
-					$disable_create = ! $env['can_create'] || $verification['seeded'] || ! empty( $collisions );
-					submit_button(
-						'Create Approved Test Fixtures',
-						'primary',
-						'submit_create',
-						true,
-						$disable_create ? array( 'disabled' => 'disabled' ) : array()
-					);
-					?>
-				</form>
+				<?php if ( 'NOT_SEEDED' === $state ) : ?>
+					<form method="post" action="" style="margin-top: 15px;">
+						<?php wp_nonce_field( 'statement_fixtures_create' ); ?>
+						<input type="hidden" name="statement_fixtures_action" value="create">
+						<?php
+						$disable_create = ! $env['can_create'] || ! empty( $collisions );
+						submit_button(
+							'Create Approved Test Fixtures',
+							'primary',
+							'submit_create',
+							true,
+							$disable_create ? array( 'disabled' => 'disabled' ) : array()
+						);
+						?>
+					</form>
+				<?php endif; ?>
 			</div>
 
-			<?php if ( $verification['seeded'] ) : ?>
+			<?php if ( ! empty( $verification['seeded'] ) && ! empty( $verification['products'] ) ) : ?>
 				<div class="card" style="max-width: 900px; margin-top: 20px;">
 					<h2>2. Verified Fixtures Summary</h2>
 					<p>Store Currency: <strong><?php echo esc_html( $verification['current_currency'] ); ?></strong> (Previous: <?php echo esc_html( $verification['previous_currency'] ); ?>)</p>
@@ -169,7 +201,9 @@ class AdminPage {
 						</tbody>
 					</table>
 				</div>
+			<?php endif; ?>
 
+			<?php if ( 'SEEDED' === $state || 'RECOVERY_REQUIRED' === $state || ! empty( $verification['seeded'] ) ) : ?>
 				<div class="card" style="max-width: 900px; margin-top: 20px; border-left: 4px solid #dc3232;">
 					<h2>3. Cleanup & Recovery Actions</h2>
 					<form method="post" action="" style="display: inline-block; margin-right: 20px;" onsubmit="return confirm('Are you sure you want to delete all seeded test products, tags, categories, and drops recorded in the manifest?');">
