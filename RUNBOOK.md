@@ -27,6 +27,8 @@ git diff --check
 node scripts/php-lint.mjs
 node --test tests/m1-skeleton.test.mjs
 node --test tests/m2-design-system.test.mjs
+node --test tests/m3-global-navigation.test.mjs
+node --check wp-content/themes/statement-collector-theme/assets/js/navigation.js
 ```
 
 ## Packaging and release

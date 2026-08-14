@@ -7,4 +7,5 @@ define( 'STATEMENT_COLLECTOR_THEME_PATH', trailingslashit( get_template_director
 
 require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/setup.php';
 require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/assets.php';
+require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/navigation.php';
 require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/woocommerce.php';

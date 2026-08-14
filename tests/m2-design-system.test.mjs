@@ -81,7 +81,7 @@ test('base and layout CSS provide accessible global primitives only', () => {
   assert.match(layout, /\.statement-stack\b/);
 });
 
-test('asset module enqueues only the two local stylesheets', () => {
+test('asset module preserves the two foundational local stylesheets', () => {
   const path = resolve(themeRoot, 'inc', 'assets.php');
   assert.equal(existsSync(path), true, 'missing inc/assets.php');
   const assets = read('inc/assets.php');
@@ -92,7 +92,7 @@ test('asset module enqueues only the two local stylesheets', () => {
   assert.match(assets, /wp_enqueue_style\s*\(/);
   assert.match(assets, /assets\/css\/base\.css/);
   assert.match(assets, /assets\/css\/layout\.css/);
-  assert.doesNotMatch(assets, /wp_enqueue_script\s*\(/);
+  assert.doesNotMatch(assets, /https?:\/\//i);
 });
 
 test('document shell exposes WordPress lifecycle hooks and aligned skip target', () => {
@@ -110,13 +110,17 @@ test('document shell exposes WordPress lifecycle hooks and aligned skip target',
   assert.match(index, /get_footer\s*\(/);
 });
 
-test('M2 theme contains no M3+ scope or external assets', () => {
+test('theme retains the M2 no-external-assets and no-commerce-feature boundaries', () => {
   const files = walk(themeRoot);
-  const sourceFiles = files.filter((path) => ['.php', '.css'].includes(extname(path)));
+  const sourceFiles = files.filter((path) => ['.php', '.css', '.js'].includes(extname(path)));
   const source = sourceFiles.map((path) => readFileSync(path, 'utf8')).join('\n');
+  const javascriptFiles = files
+    .filter((path) => extname(path).toLowerCase() === '.js')
+    .map((path) => path.replaceAll('\\', '/'));
 
-  assert.equal(files.some((path) => extname(path).toLowerCase() === '.js'), false, 'JavaScript is out of scope');
+  assert.equal(javascriptFiles.length, 1, 'only the approved M3 navigation script should exist');
+  assert.match(javascriptFiles[0], /assets\/js\/navigation\.js$/);
   assert.doesNotMatch(source, /@font-face|fonts\.googleapis|use\.typekit|https?:\/\//i);
-  assert.doesNotMatch(source, /wp_nav_menu|register_nav_menu|mobile[-_ ]?(?:menu|drawer)|mini[-_ ]?cart|product[-_ ]?card/i);
-  assert.doesNotMatch(source, /account[-_ ]?menu|class=["'][^"']*search[-_ ]?form|announcement[-_ ]?bar/i);
+  assert.doesNotMatch(source, /mini[-_ ]?cart|product[-_ ]?card|register_post_type|register_taxonomy|register_rest_route|wp_ajax_/i);
+  assert.doesNotMatch(source, /@import|fetch\s*\(|XMLHttpRequest|announcement[-_ ]?bar/i);
 });

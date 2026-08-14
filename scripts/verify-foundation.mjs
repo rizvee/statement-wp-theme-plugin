@@ -26,6 +26,7 @@ const requiredFiles = [
   'scripts/php-lint.mjs',
   'tests/m1-skeleton.test.mjs',
   'tests/m2-design-system.test.mjs',
+  'tests/m3-global-navigation.test.mjs',
   'tests/php/m1-bootstrap-smoke.php',
 ];
 
@@ -94,9 +95,17 @@ const approvedRuntimeFiles = [
   'wp-content/themes/statement-collector-theme/theme.json',
   'wp-content/themes/statement-collector-theme/assets/css/base.css',
   'wp-content/themes/statement-collector-theme/assets/css/layout.css',
+  'wp-content/themes/statement-collector-theme/assets/css/header.css',
+  'wp-content/themes/statement-collector-theme/assets/css/footer.css',
+  'wp-content/themes/statement-collector-theme/assets/js/navigation.js',
   'wp-content/themes/statement-collector-theme/inc/assets.php',
+  'wp-content/themes/statement-collector-theme/inc/navigation.php',
   'wp-content/themes/statement-collector-theme/inc/setup.php',
   'wp-content/themes/statement-collector-theme/inc/woocommerce.php',
+  'wp-content/themes/statement-collector-theme/template-parts/header/site-header.php',
+  'wp-content/themes/statement-collector-theme/template-parts/header/mobile-navigation.php',
+  'wp-content/themes/statement-collector-theme/template-parts/header/search-dialog.php',
+  'wp-content/themes/statement-collector-theme/template-parts/footer/site-footer.php',
   'wp-content/plugins/statement-collector-core/statement-collector-core.php',
   'wp-content/plugins/statement-collector-core/src/Plugin.php',
 ];

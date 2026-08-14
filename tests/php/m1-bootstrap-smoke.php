@@ -8,6 +8,9 @@ $statement_test_hooks        = array();
 $statement_test_supports     = array();
 $statement_test_text_domains = array();
 $statement_test_styles       = array();
+$statement_test_scripts      = array();
+$statement_test_script_data  = array();
+$statement_test_menus        = array();
 
 function add_action( string $hook, $callback ): void {
 	global $statement_test_hooks;
@@ -22,6 +25,15 @@ function add_theme_support( string $feature, ...$arguments ): void {
 function load_theme_textdomain( string $domain, string $path ): void {
 	global $statement_test_text_domains;
 	$statement_test_text_domains[ $domain ] = $path;
+}
+
+function __( string $text, string $domain = 'default' ): string {
+	return $text;
+}
+
+function register_nav_menus( array $locations ): void {
+	global $statement_test_menus;
+	$statement_test_menus = array_merge( $statement_test_menus, $locations );
 }
 
 function get_template_directory(): string {
@@ -43,6 +55,21 @@ function wp_enqueue_style( string $handle, string $source, array $dependencies =
 		'dependencies' => $dependencies,
 		'version'      => $version,
 	);
+}
+
+function wp_enqueue_script( string $handle, string $source, array $dependencies = array(), $version = false, $in_footer = false ): void {
+	global $statement_test_scripts;
+	$statement_test_scripts[ $handle ] = array(
+		'source'       => $source,
+		'dependencies' => $dependencies,
+		'version'      => $version,
+		'in_footer'    => $in_footer,
+	);
+}
+
+function wp_script_add_data( string $handle, string $key, $value ): void {
+	global $statement_test_script_data;
+	$statement_test_script_data[ $handle ][ $key ] = $value;
 }
 
 function statement_test_assert( bool $condition, string $message ): void {
@@ -82,13 +109,23 @@ statement_test_run_hook( 'plugins_loaded' );
 
 statement_test_assert( isset( $statement_test_supports['title-tag'] ), 'Title support was not registered.' );
 statement_test_assert( isset( $statement_test_supports['post-thumbnails'] ), 'Featured-image support was not registered.' );
+statement_test_assert( isset( $statement_test_supports['custom-logo'] ), 'Custom-logo support was not registered.' );
 statement_test_assert( isset( $statement_test_supports['html5'] ), 'HTML5 support was not registered.' );
 statement_test_assert( isset( $statement_test_supports['woocommerce'] ), 'WooCommerce presentation support was not registered.' );
+statement_test_assert( isset( $statement_test_menus['primary'] ), 'Primary navigation location was not registered.' );
+statement_test_assert( isset( $statement_test_menus['footer'] ), 'Footer navigation location was not registered.' );
 statement_test_assert( isset( $statement_test_text_domains['statement-collector-theme'] ), 'Theme text domain was not loaded.' );
 statement_test_assert( isset( $statement_test_styles['statement-collector-base'] ), 'Base stylesheet was not enqueued.' );
 statement_test_assert( isset( $statement_test_styles['statement-collector-layout'] ), 'Layout stylesheet was not enqueued.' );
+statement_test_assert( isset( $statement_test_styles['statement-collector-header'] ), 'Header stylesheet was not enqueued.' );
+statement_test_assert( isset( $statement_test_styles['statement-collector-footer'] ), 'Footer stylesheet was not enqueued.' );
+statement_test_assert( isset( $statement_test_scripts['statement-collector-navigation'] ), 'Navigation script was not enqueued.' );
 statement_test_assert( array( 'statement-collector-base' ) === $statement_test_styles['statement-collector-layout']['dependencies'], 'Layout stylesheet dependency is incorrect.' );
 statement_test_assert( STATEMENT_COLLECTOR_THEME_VERSION === $statement_test_styles['statement-collector-base']['version'], 'Stylesheet version must use the theme version.' );
+statement_test_assert( true === $statement_test_scripts['statement-collector-navigation']['in_footer'], 'Navigation script must load in the footer.' );
+statement_test_assert( 'defer' === $statement_test_script_data['statement-collector-navigation']['strategy'], 'Navigation script must use the defer strategy.' );
+statement_test_assert( null === \Statement\Collector\Theme\get_account_url(), 'Account helper must be unavailable without WooCommerce.' );
+statement_test_assert( null === \Statement\Collector\Theme\get_cart_url(), 'Cart helper must be unavailable without WooCommerce.' );
 statement_test_assert( ! class_exists( 'WooCommerce', false ), 'Bootstrap must not require or create WooCommerce.' );
 
 fwrite( STDOUT, "PASS: M1 bootstrap smoke passed.\n" );

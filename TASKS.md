@@ -30,10 +30,19 @@ Status: complete (2026-08-14)
 
 ## M3 — Header + Mobile Navigation + Footer
 
+Status: complete (2026-08-14)
+
+- [x] Add the sticky desktop/mobile header with centered native site identity and WordPress-driven menus.
+- [x] Add accessible native-dialog navigation and search interactions with lightweight vanilla JavaScript.
+- [x] Add conditional WooCommerce Account/Bag links without cart behavior or hardcoded routes.
+- [x] Add the restrained WordPress-driven footer and verify M1–M3 regressions.
+
+## M4 — Drop Architecture + Product Metadata
+
 Status: next; not started
 
-- [ ] Build the branded global navigation shell on the verified M2 foundation.
+- [ ] Define the first durable Drop and product-metadata domain boundaries in the core plugin.
 
 ## Later roadmap
 
-After M1, define approved milestones for presentation, Drops/release lifecycle, permanent archive enforcement, private access, admin/WooCommerce integration, testing, packaging, staging verification, and launch. Keep each milestone independently scoped and verified.
+After M4, continue through separately approved release-lifecycle, permanent archive enforcement, private access, admin/WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.
