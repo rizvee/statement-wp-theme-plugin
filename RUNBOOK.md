@@ -37,6 +37,7 @@ node --test tests/m9-checkout.test.mjs
 node --test tests/m10-private-access.test.mjs
 node --test tests/m11-terminal-archive.test.mjs
 node --test tests/m12-collector-provenance.test.mjs
+node --test tests/m13-packaging.test.mjs
 node --check wp-content/themes/statement-collector-theme/assets/js/navigation.js
 ```
 
@@ -56,17 +57,24 @@ Before deployment acceptance:
 
 Do not replace Cart/Checkout Blocks or edit live page content automatically from this repository workflow.
 
-## Packaging and release
+## Packaging and Release Candidates (M13)
 
-M0 does not produce packages. Future approved packaging must create:
+Package creation produces deterministic integration candidates in `dist/`:
 
-- `statement-collector-theme-vX.Y.Z.zip`
-- `statement-collector-core-vX.Y.Z.zip`
+- `dist/statement-collector-theme-0.13.0-rc.1.zip`
+- `dist/statement-collector-core-0.13.0-rc.1.zip`
+- `dist/manifest.json`
 
-Each ZIP must contain only its installable runtime directory and exclude Git data, repository AI/dev files, unnecessary tests, local caches, secrets, `node_modules`, and unrelated build artifacts. Generated ZIPs belong under `releases/` and are ignored by Git.
+Operator Command:
 
-Manual upload to the WordPress.com Atomic integration/production site is a separate, confirmation-gated operation. Never auto-deploy or modify live files from this repository.
+```text
+node scripts/package-all.mjs
+```
+
+Each ZIP contains exactly one top-level runtime directory (`statement-collector-theme` or `statement-collector-core`) and excludes `.git`, `.github`, `.ai`, `tests`, `scripts`, `docs`, `.local-tools`, `node_modules`, `dist`, `coverage`, `tmp`, `logs`, `php.ini`, `.env`, `package-lock.json`, and OS/editor metadata. Generated ZIPs are ignored by Git.
+
+Manual upload to the WordPress.com Atomic integration site is a separate, confirmation-gated operation. Never auto-deploy, push, or modify live files automatically.
 
 ## Recovery
 
-Do not rewrite Git history or discard uncommitted user work. If a future site release fails, retain the current Assembler/Elementor homepage as the rollback fallback until the replacement has been verified.
+Do not rewrite Git history or discard uncommitted user work. If a future site release fails, follow `docs/atomic-rollback-runbook.md` and retain the current Elementor homepage as the rollback fallback until the replacement has been verified.

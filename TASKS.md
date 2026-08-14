@@ -139,6 +139,21 @@ Status: complete (2026-08-15)
 - [x] Enrich WooCommerce customer transactional emails with frozen provenance data independent of marketing unsubscribe flags.
 - [x] Maintain strict scarcity model (**Crafted. Limited. Never Restocked.**) with zero collector numbers, production caps, or certificate generation.
 
+## M13 — Runtime Integration Preparation & Verification
+
+Status: Phase 1 complete (2026-08-15)
+
+- [x] Create deterministic packaging scripts (`package-theme.mjs`, `package-plugin.mjs`, `package-all.mjs`) generating single-root ZIP artifacts in `dist/`.
+- [x] Implement package content verification (`verify-package.mjs`) checking root directory, required runtime files, packaged PHP linting, and dev/secret exclusions.
+- [x] Enforce package exclusion rules for `.git/`, `.github/`, `.ai/`, `tests/`, `scripts/`, `docs/`, `.local-tools/`, `node_modules/`, `dist/`, `coverage/`, `tmp/`, `logs/`, `php.ini`, `.env`, `package-lock.json`, and OS/IDE metadata.
+- [x] Support candidate versioning (`0.13.0-rc.1`) and generate `dist/manifest.json` with SHA-256 checksums and `deployment_authorized = false`.
+- [x] Create operator preflight checklist (`docs/atomic-integration-preflight.md`) for WordPress, WooCommerce, theme/plugin, and secret configuration.
+- [x] Create emergency rollback runbook (`docs/atomic-rollback-runbook.md`) covering plugin, theme, checkout, and private edge cache failures.
+- [x] Establish structured integration test checklist (`docs/runtime-integration-checklist.md`) with 19 test cases (`M13-PA-01` through `M13-RS-01`).
+- [x] Create defect tracking log template (`docs/runtime-integration-log.md`) and release candidate record template (`docs/runtime-release-candidate.md`).
+- [x] Build dedicated Node packaging test suite (`tests/m13-packaging.test.mjs`) validating zero remote deployment calls and manifest safety.
+- [x] Enforce STOP GATE boundary: LOCAL PREPARATION COMPLETE / ATOMIC VALIDATION NOT STARTED.
+
 ## Later roadmap
 
-After M12, continue through separately approved WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.
+After M13 Phase 1 local preparation is approved by the user, proceed to controlled Phase 2 integration on WordPress.com Atomic environment (`mystatement.store`).

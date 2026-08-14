@@ -89,8 +89,9 @@ function text(path) {
 
 function walk(directory, output = []) {
   if (!existsSync(directory)) return output;
+  const ignoredDirs = new Set(['.git', '.local-tools', 'node_modules', 'vendor', 'dist', 'tmp', 'coverage']);
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
-    if (entry.name === '.git' || entry.name === '.local-tools' || entry.name === 'node_modules' || entry.name === 'vendor') continue;
+    if (ignoredDirs.has(entry.name)) continue;
     const fullPath = join(directory, entry.name);
     if (entry.isDirectory()) walk(fullPath, output);
     else output.push(fullPath);
