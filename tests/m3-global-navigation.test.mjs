@@ -165,7 +165,6 @@ test('M3 runtime stays within global-shell scope', () => {
     /add[_ -]?to[_ -]?cart/i,
     /private[_ -]?access/i,
     /reminder[_ -]?email/i,
-    /product[_ -]?card/i,
     /checkout/i,
     /newsletter/i,
   ];

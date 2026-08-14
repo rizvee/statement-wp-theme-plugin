@@ -82,7 +82,7 @@ test('core Public API owns read-only public eligibility and canonical Drop resol
   assert.match(publicApi, /get_the_terms\s*\(/);
   assert.doesNotMatch(publicApi, /update_meta_data|delete_meta_data|->save\s*\(|wp_set_object_terms|wp_delete_object_term/i);
   assert.match(themeSource, /Statement\\Collector\\Core\\PublicApi/);
-  assert.doesNotMatch(themeSource, /_statement_release_state|_statement_edition_label|ReleaseState::|statement_drop/);
+  assert.doesNotMatch(themeSource, /_statement_release_state|_statement_edition_label|ReleaseState::/);
 });
 
 test('hero uses the native featured image and only links to a valid LIVE destination', () => {
@@ -100,7 +100,8 @@ test('hero uses the native featured image and only links to a valid LIVE destina
 test('homepage selection uses bounded WooCommerce objects and renders restrained product data', () => {
   const home = readTheme('inc/home.php');
   const products = readTheme('template-parts/home/products.php');
-  const combined = `${home}\n${products}`;
+  const card = readTheme('template-parts/product/card.php');
+  const combined = `${home}\n${products}\n${card}`;
 
   assert.match(home, /wc_get_products\s*\(/);
   assert.match(home, /['"]status['"]\s*=>\s*['"]publish['"]/);
@@ -110,8 +111,9 @@ test('homepage selection uses bounded WooCommerce objects and renders restrained
   assert.match(home, /HOME_PRODUCT_LIMIT\s*=\s*4/);
   assert.match(home, /PublicApi::is_publicly_live\s*\(/);
   assert.match(home, /PublicApi::get_drop\s*\(/);
+  assert.match(products, /get_template_part\(\s*['"]template-parts\/product\/card['"]/);
   for (const method of ['get_image_id', 'get_image', 'get_name', 'get_permalink', 'get_price_html']) {
-    assert.match(products, new RegExp(`${method}\\s*\\(`));
+    assert.match(card, new RegExp(`${method}\\s*\\(`));
   }
   assert.doesNotMatch(combined, /\$wpdb|WP_Query|SELECT\s+.+FROM|add[_ -]?to[_ -]?cart|rating|review|quick[_ -]?(?:add|view)|swatch|stock[_ -]?count/i);
 });
@@ -152,6 +154,9 @@ test('home stylesheet is conditional, token-driven, responsive, and adds no Java
 
 test('M5 runtime remains absence-safe, privacy-safe, and inside homepage scope', () => {
   const homePhp = readTheme('inc/home.php');
+  const homeSource = requiredThemeFiles
+    .map((path) => readTheme(path))
+    .join('\n');
   const themeSource = walk(themeRoot)
     .filter((path) => ['.php', '.css', '.js'].includes(extname(path).toLowerCase()))
     .map((path) => readFileSync(path, 'utf8'))
@@ -161,5 +166,5 @@ test('M5 runtime remains absence-safe, privacy-safe, and inside homepage scope',
   assert.match(homePhp, /function_exists\(\s*['"]wc_get_products['"]\s*\)/);
   assert.doesNotMatch(themeSource, /PRIVATE_ACCESS|_statement_release_state|register_rest_route|wp_ajax_|Action Scheduler|magic[_ -]?link|access[_ -]?session/i);
   assert.doesNotMatch(themeSource, /elementor|\bACF\b|carousel|slider|animation[_ -]?library|homepage[_ -]?(?:option|setting)|mini[-_ ]?cart|cart[_ -]?count|checkout/i);
-  assert.doesNotMatch(themeSource, /template-(?:product|shop)|single-product|archive-product/i);
+  assert.doesNotMatch(homeSource, /template-(?:product|shop)|single-product|archive-product/i);
 });

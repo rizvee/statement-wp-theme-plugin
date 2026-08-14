@@ -16,7 +16,7 @@ Primary brand message: **Crafted. Limited. Never Restocked.**
 
 Canonical lifecycle: `UPCOMING` → `PRIVATE_ACCESS` → `LIVE` → `SOLD_OUT` → `ARCHIVED`. Normal saves may remain in the same state or move forward; backward transitions are rejected. Private-access policy is not implemented yet.
 
-Normal public homepage exposure is restricted to `LIVE`. `UPCOMING`, `PRIVATE_ACCESS`, `SOLD_OUT`, and `ARCHIVED` are excluded from active homepage presentation; `PRIVATE_ACCESS` requires a future explicitly access-aware context.
+Normal public Homepage, Shop, and Drop storefront exposure is restricted to `LIVE`. Public Shop/Drop queries enforce this before results and pagination; missing state plus `UPCOMING`, `PRIVATE_ACCESS`, `SOLD_OUT`, and `ARCHIVED` are excluded. `PRIVATE_ACCESS` requires a future explicitly access-aware context.
 
 ## Product and Drop integrity
 

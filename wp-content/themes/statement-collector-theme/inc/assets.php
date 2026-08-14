@@ -8,6 +8,9 @@ defined( 'ABSPATH' ) || exit;
  * Enqueue the global frontend assets.
  */
 function enqueue_assets(): void {
+	$is_home    = function_exists( 'is_front_page' ) && is_front_page();
+	$is_catalog = is_statement_catalog();
+
 	wp_enqueue_style(
 		'statement-collector-base',
 		get_theme_file_uri( 'assets/css/base.css' ),
@@ -36,11 +39,29 @@ function enqueue_assets(): void {
 		STATEMENT_COLLECTOR_THEME_VERSION
 	);
 
-	if ( function_exists( 'is_front_page' ) && is_front_page() ) {
+	if ( $is_home || $is_catalog ) {
+		wp_enqueue_style(
+			'statement-collector-product-card',
+			get_theme_file_uri( 'assets/css/product-card.css' ),
+			array( 'statement-collector-base', 'statement-collector-layout' ),
+			STATEMENT_COLLECTOR_THEME_VERSION
+		);
+	}
+
+	if ( $is_home ) {
 		wp_enqueue_style(
 			'statement-collector-home',
 			get_theme_file_uri( 'assets/css/home.css' ),
-			array( 'statement-collector-base', 'statement-collector-layout' ),
+			array( 'statement-collector-product-card' ),
+			STATEMENT_COLLECTOR_THEME_VERSION
+		);
+	}
+
+	if ( $is_catalog ) {
+		wp_enqueue_style(
+			'statement-collector-catalog',
+			get_theme_file_uri( 'assets/css/catalog.css' ),
+			array( 'statement-collector-product-card' ),
 			STATEMENT_COLLECTOR_THEME_VERSION
 		);
 	}

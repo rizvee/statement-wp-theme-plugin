@@ -18,6 +18,12 @@ Durable business/domain layer only. It owns the `statement_drop` product taxonom
 
 The plugin must gracefully handle WooCommerce absence and must not depend on a specific theme for domain correctness.
 
+## Catalog boundary
+
+- Core applies canonical public release eligibility to the main WooCommerce Shop and `statement_drop` queries before results; it preserves WooCommerce meta constraints and does not post-filter products.
+- WooCommerce remains responsible for native catalog query mechanics, loop cardinality, and pagination.
+- The theme owns catalog markup, shared product-card presentation, and contextual removal of generic result-count, ordering, and sidebar UI; it does not interpret release metadata.
+
 ## Extension boundaries
 
 - Use WordPress/WooCommerce public hooks and APIs; never edit core.

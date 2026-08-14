@@ -121,6 +121,6 @@ test('theme retains the M2 no-external-assets and no-commerce-feature boundaries
   assert.equal(javascriptFiles.length, 1, 'only the approved M3 navigation script should exist');
   assert.match(javascriptFiles[0], /assets\/js\/navigation\.js$/);
   assert.doesNotMatch(source, /@font-face|fonts\.googleapis|use\.typekit|https?:\/\//i);
-  assert.doesNotMatch(source, /mini[-_ ]?cart|product[-_ ]?card|register_post_type|register_taxonomy|register_rest_route|wp_ajax_/i);
+  assert.doesNotMatch(source, /mini[-_ ]?cart|register_post_type|register_taxonomy|register_rest_route|wp_ajax_/i);
   assert.doesNotMatch(source, /@import|fetch\s*\(|XMLHttpRequest|announcement[-_ ]?bar/i);
 });

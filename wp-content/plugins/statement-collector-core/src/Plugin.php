@@ -35,5 +35,6 @@ final class Plugin {
 
 		Product\Admin::boot();
 		Release\Purchasability::boot();
+		Catalog\Visibility::boot();
 	}
 }

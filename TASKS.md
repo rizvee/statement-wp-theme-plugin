@@ -59,10 +59,19 @@ Status: complete (2026-08-14)
 
 ## M6 — Shop + Drop Storefront
 
+Status: complete (2026-08-14)
+
+- [x] Restrict public Shop and `statement_drop` main queries to canonical `LIVE` products before pagination.
+- [x] Keep WooCommerce's native Shop query/pagination and the taxonomy relationship authoritative.
+- [x] Add a shared Home/Shop/Drop product card, restrained catalog styling, and privacy-safe empty states.
+- [x] Preserve WooCommerce absence safety and exclude Add to Cart, quick-commerce, and later access/archive behavior.
+
+## M7 — Product Detail Page
+
 Status: next; not started
 
-- [ ] Build the approved Shop and Drop storefront presentation on the verified public release boundary.
+- [ ] Build the approved product-detail presentation without starting cart or private-access behavior.
 
 ## Later roadmap
 
-After M6, continue through separately approved product-detail, cart, private-access, archive presentation, WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.
+After M7, continue through separately approved cart, private-access, archive presentation, WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.

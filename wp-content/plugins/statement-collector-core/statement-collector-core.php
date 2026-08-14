@@ -15,6 +15,7 @@ require_once __DIR__ . '/src/Release/ReleaseState.php';
 require_once __DIR__ . '/src/Product/Metadata.php';
 require_once __DIR__ . '/src/Drop/Taxonomy.php';
 require_once __DIR__ . '/src/PublicApi.php';
+require_once __DIR__ . '/src/Catalog/Visibility.php';
 require_once __DIR__ . '/src/Product/Admin.php';
 require_once __DIR__ . '/src/Release/Purchasability.php';
 require_once __DIR__ . '/src/Plugin.php';

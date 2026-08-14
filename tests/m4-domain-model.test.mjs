@@ -122,7 +122,7 @@ test('theme remains presentation-only and free of M4 domain ownership', () => {
     .map((path) => readFileSync(path, 'utf8'))
     .join('\n');
 
-  assert.doesNotMatch(themeSource, /statement_drop|_statement_release_state|_statement_edition_label|woocommerce_is_purchasable|ReleaseState::/i);
+  assert.doesNotMatch(themeSource, /register_taxonomy|_statement_release_state|_statement_edition_label|woocommerce_is_purchasable|ReleaseState::/i);
 });
 
 test('M4 plugin runtime contains no later-milestone or forbidden production model', () => {
