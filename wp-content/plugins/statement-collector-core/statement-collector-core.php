@@ -41,6 +41,11 @@ require_once __DIR__ . '/src/Cart/Integrity.php';
 require_once __DIR__ . '/src/Product/Access.php';
 require_once __DIR__ . '/src/Product/Admin.php';
 require_once __DIR__ . '/src/Release/Purchasability.php';
+require_once __DIR__ . '/src/Order/Provenance.php';
+require_once __DIR__ . '/src/Order/Completion.php';
+require_once __DIR__ . '/src/Order/AdminOrderView.php';
+require_once __DIR__ . '/src/Order/CustomerOrderView.php';
+require_once __DIR__ . '/src/Order/EmailIntegration.php';
 require_once __DIR__ . '/src/Plugin.php';
 
 if ( function_exists( 'register_activation_hook' ) ) {

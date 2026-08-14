@@ -34,6 +34,9 @@ node --test tests/m6-catalog.test.mjs
 node --test tests/m7-product-detail.test.mjs
 node --test tests/m8-cart-bag.test.mjs
 node --test tests/m9-checkout.test.mjs
+node --test tests/m10-private-access.test.mjs
+node --test tests/m11-terminal-archive.test.mjs
+node --test tests/m12-collector-provenance.test.mjs
 node --check wp-content/themes/statement-collector-theme/assets/js/navigation.js
 ```
 

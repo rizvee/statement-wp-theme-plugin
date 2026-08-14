@@ -48,5 +48,9 @@ final class Plugin {
 		Access\ReminderService::boot();
 		Access\AdminUi::boot();
 		Access\RetentionService::boot();
+		Order\Provenance::boot();
+		Order\AdminOrderView::boot();
+		Order\CustomerOrderView::boot();
+		Order\EmailIntegration::boot();
 	}
 }

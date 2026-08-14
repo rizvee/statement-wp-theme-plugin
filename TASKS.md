@@ -125,6 +125,20 @@ Status: complete (2026-08-15)
 - [x] Filter WooCommerce structured data offer availability to `OutOfStock` for terminal items.
 - [x] Protect core brand scarcity model (**Crafted. Limited. Never Restocked.**) with zero waitlist or restock logic.
 
+## M12 — Collector Provenance & Order Experience
+
+Status: complete (2026-08-15)
+
+- [x] Create write-once purchase provenance service capturing schema version, product ID, variation ID, Drop ID, Drop name, edition label, piece title, release state, and timestamp during order line item creation.
+- [x] Enforce immutability so subsequent product edits, Drop name changes, or source deletions do not alter historical order item provenance.
+- [x] Maintain explicit boundary separating order purchase provenance from certified collector ownership and authenticity certificate generation.
+- [x] Coexist cleanly with M10 Private Access audit metadata without duplicating PII, session tokens, or payment secrets.
+- [x] Provide future-facing commercial completion helper (`Completion::is_commercially_completed`) evaluating `processing` and `completed` order statuses.
+- [x] Add read-only Statement Provenance presentation to WooCommerce admin order item screens with zero edit inputs.
+- [x] Enhance customer order details and Order Received (Thank You) experience with status-aware banners and "Continue Exploring" navigation.
+- [x] Enrich WooCommerce customer transactional emails with frozen provenance data independent of marketing unsubscribe flags.
+- [x] Maintain strict scarcity model (**Crafted. Limited. Never Restocked.**) with zero collector numbers, production caps, or certificate generation.
+
 ## Later roadmap
 
-After M11, continue through separately approved WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.
+After M12, continue through separately approved WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.

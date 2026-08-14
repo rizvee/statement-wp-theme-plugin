@@ -35,6 +35,7 @@ const requiredFiles = [
   'tests/m9-checkout.test.mjs',
   'tests/m10-private-access.test.mjs',
   'tests/m11-terminal-archive.test.mjs',
+  'tests/m12-collector-provenance.test.mjs',
   'tests/php/m1-bootstrap-smoke.php',
   'tests/php/m4-release-state.php',
   'tests/php/m4-purchasability.php',
@@ -62,8 +63,10 @@ const requiredFiles = [
   'tests/php/m10-eligibility-gate.php',
   'tests/php/m10-atomicity-api-protection.php',
   'tests/php/m11-terminal-archive.php',
+  'tests/php/m12-collector-provenance.php',
   '.ai/context/private-access-m10.md',
   '.ai/context/archive-terminal-m11.md',
+  '.ai/context/collector-provenance-m12.md',
 ];
 
 const requiredDirectories = [
@@ -222,6 +225,11 @@ const approvedRuntimeFiles = [
   'wp-content/plugins/statement-collector-core/src/Access/AdminUi.php',
   'wp-content/plugins/statement-collector-core/src/Access/RetentionService.php',
   'wp-content/plugins/statement-collector-core/src/Access/CacheHardening.php',
+  'wp-content/plugins/statement-collector-core/src/Order/Provenance.php',
+  'wp-content/plugins/statement-collector-core/src/Order/Completion.php',
+  'wp-content/plugins/statement-collector-core/src/Order/AdminOrderView.php',
+  'wp-content/plugins/statement-collector-core/src/Order/CustomerOrderView.php',
+  'wp-content/plugins/statement-collector-core/src/Order/EmailIntegration.php',
 ];
 const runtimeFiles = runtimeRoots.flatMap((runtimeRoot) => walk(join(root, runtimeRoot)))
   .map((path) => relative(root, path).replaceAll('\\', '/'));
