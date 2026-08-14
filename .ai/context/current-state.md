@@ -10,11 +10,11 @@ Updated: 2026-08-15
 - M1 is complete: standalone theme and core plugin skeletons are version `0.1.0`.
 - M2 is complete: `theme.json` v3 defines palette, typography, spacing, layout tokens; frontend asset boundary active.
 - M3 is complete: header, mobile navigation, search dialog, conditional WooCommerce Account/Bag links, and footer active.
-- M4 is complete: `statement_drop` product taxonomy, release-state metadata, same/forward-only transitions, terminal locks, and variation lifecycle inheritance active.
-- M5 is complete: bespoke editorial homepage with featured-image hero and active LIVE Drop selection.
-- M6 is complete: native WooCommerce Shop and Drop storefront archives constrained to canonical `LIVE` products.
+- M4 is complete: `statement_drop` product taxonomy, release-state metadata, same/forward-only transitions, terminal locks, and variation lifecycle inheritance active; variation purchasability inherits canonical parent Statement release state.
+- M5 is complete: bespoke editorial homepage with featured-image hero and active LIVE Drop selection; selected homepage pieces are bounded to four products.
+- M6 is complete: native WooCommerce Shop and Drop storefront archives constrained to canonical `LIVE` products before result counts and pagination are calculated.
 - M7 is complete: ordinary product detail pages and Add-to-Cart requests restricted to canonical `LIVE` products with 404 fallbacks.
-- M8 is complete: Cart & Bag experience with LIVE-only cart line revalidation, server-rendered quantity count, and classic Cart override omitting coupons.
+- M8 is complete: Cart & Bag experience with LIVE-only cart line revalidation, server-rendered quantity count, classic Cart override omitting coupons, and one generic lifecycle-neutral notice on removal.
 - M9 is complete: classic WooCommerce Checkout override with M8 Cart Integrity final checkout gate.
 - M10 is complete: private access architecture with versioned database schema (5 operational tables), encrypted grant tokens, email/IP rate limiting, POST/303 PRG gate, edge cache hardening, Make Drop Live admin workflow, and Action Scheduler reminders.
 - M11 is complete: terminal release lifecycle (`LIVE` -> `SOLD_OUT` -> `ARCHIVED`), permanent commerce locks, public permalink viewability, active catalog ordering, dedicated Archive page, and scarcity invariant protection (**Crafted. Limited. Never Restocked.**).
@@ -35,4 +35,4 @@ Per the project brief, `https://mystatement.store/` is the WordPress.com Atomic 
 
 ## Verification
 
-M1–M13 Node structural tests (92 subtests + packaging tests), PHP assertions (40 assertions in `m12-collector-provenance.php`), PHP lint (71 PHP files), `verify-foundation.mjs`, and `package-all.mjs` pass cleanly.
+M1–M13 Node structural tests (98 subtests + packaging tests), PHP assertions (40 assertions in `m12-collector-provenance.php`), PHP lint (71 PHP files), `verify-foundation.mjs`, and `package-all.mjs` pass cleanly.

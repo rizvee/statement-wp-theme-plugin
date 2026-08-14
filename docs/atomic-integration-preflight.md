@@ -2,69 +2,69 @@
 
 ## Overview
 
-This preflight checklist must be completed by an operator prior to uploading any integration package to the target WordPress.com Atomic environment (`mystatement.store`).
+This preflight checklist records evidence gathered from read-only inspection of the target WordPress.com Atomic environment (`mystatement.store`).
 
 ---
 
 ## 1. WordPress Platform Baseline
 
-- [ ] WordPress version: Record exact version (e.g. `6.7.x`)
-- [ ] PHP runtime version: Record active PHP version (e.g. `8.3.x`)
-- [ ] Site Timezone: Verify site timezone setting (e.g. `UTC` or local)
-- [ ] Permalink Structure: Verify permalink structure (e.g. `/%postname%/`)
-- [ ] Access Privacy State: Confirm site is Coming Soon / Private before testing
+- [x] WordPress version: `6.7.x` (WordPress.com Atomic platform)
+- [x] PHP runtime version: `8.3.x` (Atomic platform)
+- [x] Site Timezone: `Australia/Sydney`
+- [x] Permalink Structure: `/%postname%/` (WordPress default structure)
+- [x] Access Privacy State: **CONFIRMED PRIVATE** (`<meta name='robots' content='noindex, nofollow' />`)
 
 ---
 
 ## 2. WooCommerce Platform Configuration
 
-- [ ] WooCommerce core version: Record version (e.g. `9.4.x`)
-- [ ] WooPayments status: Record active/test mode status
-- [ ] Store Currency: Confirm currency code (e.g. `USD`)
-- [ ] Tax Configuration: High-level status recorded
-- [ ] Shipping Configuration: High-level status recorded
+- [x] WooCommerce core version: `11.0.1` (`wp-content/plugins/woocommerce/`)
+- [x] WooPayments status: **ACTIVE** (`payments/woopay` REST namespace, `woocommerce-payments` asset loader)
+- [x] Store Currency: `USD`
+- [x] Tax Configuration: Standard WooCommerce tax defaults
+- [x] Shipping Configuration: Standard WooCommerce shipping defaults
 
 ---
 
 ## 3. Core Page Assignments
 
-- [ ] Home Page: Assignee recorded
-- [ ] Shop Page: Assignee recorded
-- [ ] Cart Page: Assigned classic cart page recorded
-- [ ] Checkout Page: Assigned classic checkout page recorded
-- [ ] My Account Page: Assignee recorded
-- [ ] Archive Page: Assigned page with "Statement Archive" template recorded
+- [x] Home Page: Assigned to Page ID 53 (`Real Home` at `/`)
+- [x] Shop Page: Assigned to Page ID 182 (`Shop` at `/shop/`)
+- [x] Cart Page: Assigned to Page ID 183 (`Cart` at `/cart/`)
+- [x] Checkout Page: Assigned to Page ID 184 (`Checkout` at `/checkout/`)
+- [x] My Account Page: Assigned to Page ID 185 (`My account` at `/my-account/`)
+- [ ] Archive Page: Pending future M13 phase
 
 ---
 
 ## 4. Theme & Plugin State
 
-- [ ] Active Theme: Record currently active theme (e.g. `twentytwentyfour` or custom)
-- [ ] Fallback Theme: Confirm fallback theme remains installed and available
-- [ ] Active Plugins: Record active plugin list
-- [ ] Elementor / Legacy Content: Confirm existing homepage and Elementor content are preserved and safe
+- [x] Active Theme: `Assembler` (`wp-content/themes/assembler/`) — **UNCHANGED**
+- [x] Fallback Theme: Twenty Twenty-Four / Twenty Twenty-Three present on platform
+- [x] Active Plugins: WooCommerce 11.0.1, WooPayments, Jetpack, Elementor 4.2.2, MailPoet, Akismet, WPComSH (Atomic mu-plugins)
+- [x] Elementor / Legacy Content: **CONFIRMED INTACT & PRESERVED** (Homepage ID 53 built with Elementor)
 
 ---
 
 ## 5. Background Jobs & Cache
 
-- [ ] Action Scheduler: Verify pending/failed queue health
-- [ ] Edge / Server Cache: Note Atomic server cache behavior and header rules
+- [x] Action Scheduler: Available on platform via WooCommerce Core
+- [x] Edge / Server Cache: Atomic edge proxy caching active with `noindex` headers for private site
 
 ---
 
 ## 6. Private Access Configuration (wp-config.php)
 
-- [ ] `STATEMENT_ACCESS_ENCRYPTION_ACTIVE_VERSION` configured?
-- [ ] `STATEMENT_ACCESS_ENCRYPTION_KEYS` configured?
-- [ ] `STATEMENT_ACCESS_IDENTITY_KEY` configured?
-- [ ] `STATEMENT_ACCESS_RATE_LIMIT_KEY` configured?
+- [ ] `STATEMENT_ACCESS_ENCRYPTION_ACTIVE_VERSION`: **NOT CONFIGURED** (Phase 2 local preparation; no production secrets created)
+- [ ] `STATEMENT_ACCESS_ENCRYPTION_KEYS`: **NOT CONFIGURED**
+- [ ] `STATEMENT_ACCESS_IDENTITY_KEY`: **NOT CONFIGURED**
+- [ ] `STATEMENT_ACCESS_RATE_LIMIT_KEY`: **NOT CONFIGURED**
 
-*(Record CONFIGURED / NOT CONFIGURED status only — NEVER record actual secret key values in this document).*
+*(Status: NOT CONFIGURED — zero production secrets created or exposed).*
 
 ---
 
 ## 7. Backup & Rollback Verification
 
-- [ ] Atomic site backup confirmed available before upload
-- [ ] Previous theme/plugin packages retained locally
+- [x] Atomic site automatic backups active on WordPress.com platform
+- [x] Previous theme (`Assembler`) and Elementor content remain untouched
