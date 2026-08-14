@@ -68,7 +68,7 @@ final class Integrity {
 			return $message;
 		}
 
-		if ( self::$session_notice_seen || self::has_removal_notice() ) {
+		if ( self::$session_notice_seen || self::has_removal_notice( self::get_removal_notice_type() ) ) {
 			return '';
 		}
 
@@ -136,18 +136,26 @@ final class Integrity {
 	 * Add one lifecycle-neutral notice while preserving native Woo notice storage.
 	 */
 	private static function add_removal_notice_once(): void {
-		if ( ! function_exists( 'wc_add_notice' ) || self::has_removal_notice() ) {
+		$notice_type = self::get_removal_notice_type();
+		if ( ! function_exists( 'wc_add_notice' ) || self::has_removal_notice( $notice_type ) ) {
 			return;
 		}
 
-		wc_add_notice( self::REMOVAL_NOTICE, 'notice' );
+		wc_add_notice( self::REMOVAL_NOTICE, $notice_type );
 	}
 
-	private static function has_removal_notice(): bool {
+	/**
+	 * Checkout processing only stops order creation for error notices.
+	 */
+	private static function get_removal_notice_type(): string {
+		return defined( 'WOOCOMMERCE_CHECKOUT' ) && WOOCOMMERCE_CHECKOUT ? 'error' : 'notice';
+	}
+
+	private static function has_removal_notice( string $notice_type ): bool {
 		if ( ! function_exists( 'wc_has_notice' ) ) {
 			return false;
 		}
 
-		return wc_has_notice( self::REMOVAL_NOTICE, 'notice' ) || wc_has_notice( self::REMOVAL_NOTICE, 'error' );
+		return wc_has_notice( self::REMOVAL_NOTICE, $notice_type );
 	}
 }

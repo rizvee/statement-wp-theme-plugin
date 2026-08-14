@@ -36,6 +36,12 @@ The plugin must gracefully handle WooCommerce absence and must not depend on a s
 - WooCommerce owns cart sessions, quantities, removal URLs, totals, notices, and checkout routing.
 - The theme owns server-rendered Bag count presentation and the classic Cart template/CSS. It does not interpret lifecycle metadata, mutate stock, or add cart networking.
 
+## Checkout boundary
+
+- Core reuses Cart Integrity on WooCommerce's final cart-check boundary; stale non-`LIVE` lines produce a blocking lifecycle-neutral checkout error before native order creation.
+- WooCommerce owns customer fields, shipping methods, payment gateways, validation, totals, terms/privacy, nonces, order creation, and payment processing.
+- The theme owns one classic Checkout form composition and conditional CSS. It removes only coupon-entry presentation, adds no checkout JavaScript, and does not interpret release metadata.
+
 ## Extension boundaries
 
 - Use WordPress/WooCommerce public hooks and APIs; never edit core.

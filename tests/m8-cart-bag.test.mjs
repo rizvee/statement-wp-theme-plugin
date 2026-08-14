@@ -135,7 +135,7 @@ test('Cart stylesheet is conditional, token-driven, responsive, and sticky only 
   assert.doesNotMatch(css, /#[0-9a-f]{3,8}\b|@import|https?:\/\/|url\s*\(|gradient|box-shadow|border-radius\s*:\s*999/i);
 });
 
-test('M8 adds no JavaScript or extra WooCommerce override surface', () => {
+test('M8 adds no JavaScript or extra Cart override surface', () => {
   const scripts = walk(themeRoot)
     .filter((path) => extname(path).toLowerCase() === '.js')
     .map((path) => relative(themeRoot, path).replaceAll('\\', '/'));
@@ -145,7 +145,10 @@ test('M8 adds no JavaScript or extra WooCommerce override surface', () => {
     .sort();
 
   assert.deepEqual(scripts, ['assets/js/navigation.js']);
-  assert.deepEqual(overrides, ['cart/cart.php', 'content-product.php', 'content-single-product.php']);
+  assert.deepEqual(
+    overrides.filter((path) => !path.startsWith('checkout/')),
+    ['cart/cart.php', 'content-product.php', 'content-single-product.php'],
+  );
 });
 
 test('M8 runtime remains inside Cart and Bag scope', () => {

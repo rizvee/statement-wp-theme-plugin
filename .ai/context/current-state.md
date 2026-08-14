@@ -32,9 +32,13 @@ Updated: 2026-08-14
 - M8 is complete: Bag remains a direct WooCommerce Cart link and shows a safe server-rendered quantity only when positive. No cart drawer, fragments, AJAX, subtotal preview, or new JavaScript exists.
 - Restored and current cart lines are revalidated against canonical `LIVE`; variations inherit the parent release lifecycle. Stale non-LIVE or unresolved lines are removed or rejected with one generic lifecycle-neutral notice and without stock or metadata mutation.
 - The classic WooCommerce Cart presentation retains native product data, quantity controls, removal URLs, form nonce, totals, and checkout route. Statement Cart omits coupon-entry and cross-sell presentation without changing stored coupon/cross-sell data.
-- The Cart page uses conditional responsive CSS, a desktop-only sticky order summary, and restrained native empty-cart hooks. M9 Checkout is not started.
+- The Cart page uses conditional responsive CSS, a desktop-only sticky order summary, and restrained native empty-cart hooks.
+- M9 is complete: one focused `checkout/form-checkout.php` override composes the normal classic WooCommerce Checkout into a responsive customer/order-summary layout while preserving native billing, shipping, order notes, order review, payment, terms/privacy, validation, nonce, and order-processing hooks.
+- M8 Cart Integrity is the final checkout lifecycle gate. WooCommerce invokes it through `woocommerce_check_cart_items`; stale non-`LIVE` lines, including variations resolved through their canonical parent, are removed with one blocking lifecycle-neutral error before native order creation may proceed.
+- Checkout coupon-entry presentation is omitted only on the normal cart-backed Checkout. The coupon engine, applied discounts, native login, express/pay hook compatibility, payment gateways, and shipping methods remain untouched.
+- Checkout styling excludes order-pay and order-received contexts. No custom checkout fields, shipping/payment integration, order creation, or first-party checkout JavaScript was added.
 - Theme and plugin versions remain `0.1.0`; internal milestones do not trigger package-version changes before an approved release task.
-- The next approved milestone is M9 — Checkout; it has not started.
+- The next approved milestone is M10 — Private Access; it has not started.
 
 ## Local environment
 
@@ -43,7 +47,7 @@ Updated: 2026-08-14
 - `scripts/php-lint.mjs` resolves `PHP_BIN`, then project-local PHP on Windows, then PHP on `PATH`.
 - Unavailable: Composer, WP-CLI.
 - WordPress, WooCommerce, PHP runtime, and hosting integration versions could not be discovered from this empty local repository.
-- PHP syntax verification passes for all 42 first-party runtime PHP files.
+- PHP syntax verification passes for all 44 first-party runtime PHP files.
 - The narrow bootstrap smoke passes without WooCommerce present. Genuine WordPress/WooCommerce activation remains unverified because no local WordPress runtime exists.
 
 ## Deployment state
@@ -52,4 +56,4 @@ Per the project brief, `https://mystatement.store/` is the WordPress.com Atomic 
 
 ## Verification
 
-M1–M8 structural tests, release-domain, terminal and variable-product purchasability, historical Drop/admin integrity, public eligibility, homepage/catalog privacy, direct product access, Add-to-Cart validation, cart lifecycle reconciliation, Bag count, dependency-absence smoke, first-party PHP lint, and `node scripts/verify-foundation.mjs` pass with project-local PHP 8.3.33. Actual WordPress/WooCommerce product editing, taxonomy persistence/routing, populated catalog/product/cart behavior, Cart session restoration, Add-to-Cart requests, and browser rendering remain unverified. The live WordPress Cart page's classic-flow configuration is also unverified. See `.ai/checks/m0-foundation.md`.
+M1–M9 structural tests, release-domain, terminal and variable-product purchasability, historical Drop/admin integrity, public eligibility, homepage/catalog privacy, direct product access, Add-to-Cart validation, cart/final-checkout lifecycle reconciliation, Bag count, dependency-absence smoke, first-party PHP lint, and `node scripts/verify-foundation.mjs` pass with project-local PHP 8.3.33. Actual WordPress/WooCommerce product editing, taxonomy persistence/routing, populated catalog/product/cart/checkout behavior, Cart session restoration, Add-to-Cart requests, Woo checkout AJAX, gateways, shipping methods, and browser rendering remain unverified. The live WordPress Cart and Checkout pages' classic-flow configurations are also unverified. See `.ai/checks/m0-foundation.md`.

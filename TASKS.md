@@ -86,10 +86,17 @@ Status: complete (2026-08-14)
 
 ## M9 — Checkout
 
-Status: next; not started
+Status: complete (2026-08-14)
 
-- [ ] Build the approved Checkout presentation without starting private-access, archive, payment-gateway, or shipping integration work.
+- [x] Reuse M8 Cart Integrity as the final canonical `LIVE` checkout gate and emit a blocking lifecycle-neutral error when stale lines are removed during checkout processing.
+- [x] Add one focused classic WooCommerce Checkout override with native customer fields, order review, payment, shipping, validation, and order processing intact.
+- [x] Add responsive Statement Checkout CSS, omit only coupon-entry presentation, and introduce no first-party checkout JavaScript.
+- [x] Preserve order-pay/order-received flows and keep payment gateways, shipping methods, account policy, and private access out of scope.
+
+## M10 — Private Access
+
+Status: next; not started
 
 ## Later roadmap
 
-After M9, continue through separately approved private-access, archive presentation, WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.
+After M10, continue through separately approved archive presentation, WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.

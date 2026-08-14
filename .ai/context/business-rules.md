@@ -22,6 +22,8 @@ Ordinary public product pages and Add-to-Cart requests are also restricted to ca
 
 A product must remain canonically `LIVE` to remain in the normal public cart and proceed toward checkout. Restored or current non-LIVE cart lines fail closed and are removed with lifecycle-neutral public messaging; variations inherit the parent product's canonical state.
 
+A Statement product must still be canonically `LIVE` at final checkout validation before normal public order creation may proceed. Checkout rejection remains lifecycle-neutral and additive to native WooCommerce validation.
+
 ## Product and Drop integrity
 
 - Each Statement product belongs to one historical Drop; it may remain unassigned while in preparation, and the controlled product UI stores zero or one `statement_drop` term.

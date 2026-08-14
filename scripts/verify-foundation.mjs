@@ -32,6 +32,7 @@ const requiredFiles = [
   'tests/m6-catalog.test.mjs',
   'tests/m7-product-detail.test.mjs',
   'tests/m8-cart-bag.test.mjs',
+  'tests/m9-checkout.test.mjs',
   'tests/php/m1-bootstrap-smoke.php',
   'tests/php/m4-release-state.php',
   'tests/php/m4-purchasability.php',
@@ -51,6 +52,8 @@ const requiredFiles = [
   'tests/php/m8-cart-integrity.php',
   'tests/php/m8-bag-count.php',
   'tests/php/m8-cart-absence.php',
+  'tests/php/m9-checkout-lifecycle.php',
+  'tests/php/m9-checkout-absence.php',
 ];
 
 const requiredDirectories = [
@@ -107,6 +110,8 @@ const contentSignals = [
   ['.ai/context/architecture.md', 'Core revalidates restored and current cart lines'],
   ['.ai/context/business-rules.md', 'remain canonically `LIVE` to remain in the normal public cart'],
   ['.ai/context/current-state.md', 'one generic lifecycle-neutral notice'],
+  ['.ai/context/business-rules.md', 'final checkout validation before normal public order creation'],
+  ['.ai/context/architecture.md', 'final cart-check boundary'],
   ['.ai/context/business-rules.md', 'Ordinary public product pages and Add-to-Cart requests are also restricted to canonical `LIVE` state'],
   ['.ai/context/architecture.md', 'statement-collector-theme'],
   ['.ai/context/architecture.md', 'statement-collector-core'],
@@ -116,6 +121,7 @@ const contentSignals = [
   ['TASKS.md', 'M4 — Drop Architecture + Product Metadata'],
   ['TASKS.md', 'M6 — Shop + Drop Storefront'],
   ['TASKS.md', 'M8 — Cart + Bag Experience'],
+  ['TASKS.md', 'M9 — Checkout'],
 ];
 
 for (const [path, signal] of contentSignals) {
@@ -143,6 +149,7 @@ const approvedRuntimeFiles = [
   'wp-content/themes/statement-collector-theme/assets/css/catalog.css',
   'wp-content/themes/statement-collector-theme/assets/css/product.css',
   'wp-content/themes/statement-collector-theme/assets/css/cart.css',
+  'wp-content/themes/statement-collector-theme/assets/css/checkout.css',
   'wp-content/themes/statement-collector-theme/assets/js/navigation.js',
   'wp-content/themes/statement-collector-theme/inc/assets.php',
   'wp-content/themes/statement-collector-theme/inc/navigation.php',
@@ -150,6 +157,7 @@ const approvedRuntimeFiles = [
   'wp-content/themes/statement-collector-theme/inc/catalog.php',
   'wp-content/themes/statement-collector-theme/inc/product.php',
   'wp-content/themes/statement-collector-theme/inc/cart.php',
+  'wp-content/themes/statement-collector-theme/inc/checkout.php',
   'wp-content/themes/statement-collector-theme/inc/setup.php',
   'wp-content/themes/statement-collector-theme/inc/woocommerce.php',
   'wp-content/themes/statement-collector-theme/template-parts/header/site-header.php',
@@ -170,6 +178,7 @@ const approvedRuntimeFiles = [
   'wp-content/themes/statement-collector-theme/woocommerce/content-product.php',
   'wp-content/themes/statement-collector-theme/woocommerce/content-single-product.php',
   'wp-content/themes/statement-collector-theme/woocommerce/cart/cart.php',
+  'wp-content/themes/statement-collector-theme/woocommerce/checkout/form-checkout.php',
   'wp-content/plugins/statement-collector-core/statement-collector-core.php',
   'wp-content/plugins/statement-collector-core/src/Plugin.php',
   'wp-content/plugins/statement-collector-core/src/PublicApi.php',
