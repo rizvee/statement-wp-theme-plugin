@@ -39,10 +39,19 @@ Status: complete (2026-08-14)
 
 ## M4 — Drop Architecture + Product Metadata
 
+Status: complete (2026-08-14)
+
+- [x] Register the `statement_drop` product taxonomy with a controlled one-Drop admin field.
+- [x] Add canonical release-state and optional edition-label metadata through WooCommerce CRUD.
+- [x] Enforce same/forward-only lifecycle transitions and terminal purchasability locks.
+- [x] Verify malformed input, WooCommerce absence, and positive-stock terminal products.
+
+## M5 — Homepage
+
 Status: next; not started
 
-- [ ] Define the first durable Drop and product-metadata domain boundaries in the core plugin.
+- [ ] Build the first approved storefront homepage presentation on the verified domain foundation.
 
 ## Later roadmap
 
-After M4, continue through separately approved release-lifecycle, permanent archive enforcement, private access, admin/WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.
+After M5, continue through separately approved storefront, private-access, archive presentation, WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.

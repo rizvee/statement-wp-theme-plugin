@@ -28,8 +28,11 @@ node scripts/php-lint.mjs
 node --test tests/m1-skeleton.test.mjs
 node --test tests/m2-design-system.test.mjs
 node --test tests/m3-global-navigation.test.mjs
+node --test tests/m4-domain-model.test.mjs
 node --check wp-content/themes/statement-collector-theme/assets/js/navigation.js
 ```
+
+Run each PHP fixture under `tests/php/` through the executable reported by `node scripts/lib/resolve-php.mjs`; the runtime linter intentionally covers installable theme/plugin PHP only.
 
 ## Packaging and release
 

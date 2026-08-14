@@ -14,7 +14,7 @@ The theme must not own durable release, access, archive, token, or inventory-dom
 
 ## `statement-collector-core`
 
-Durable business/domain layer only. Later approved milestones may add Drops, release states, product-to-Drop relationships, piece/edition metadata, permanent sold-out/archive enforcement, private email access, secure tokens/sessions, access tracking, reminder eligibility, admin fields, WooCommerce integration, and collector functionality.
+Durable business/domain layer only. It owns the `statement_drop` product taxonomy, controlled product metadata, forward-only release states, and terminal WooCommerce purchasability lock. Later approved milestones may add private email access, secure tokens/sessions, access tracking, reminder eligibility, archive presentation integrations, and collector functionality.
 
 The plugin must gracefully handle WooCommerce absence and must not depend on a specific theme for domain correctness.
 

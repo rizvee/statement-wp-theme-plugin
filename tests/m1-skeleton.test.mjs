@@ -26,7 +26,6 @@ const forbiddenRuntimeSignals = [
   /wp_schedule_(?:event|single_event)\s*\(/i,
   /as_schedule_(?:single|recurring)_action\s*\(/i,
   /woocommerce_(?:product_set_stock|reduce_order_stock|restore_order_stock)/i,
-  /\bDrop\b/,
   /private[_ -]?access/i,
   /magic[_ -]?link/i,
   /email[_ -]?reminder/i,
@@ -78,7 +77,7 @@ test('plugin skeleton exposes metadata and a namespaced one-time bootstrap', () 
   assert.match(pluginClass, /static\s+function\s+boot\s*\(/);
 });
 
-test('M1 runtime contains no forbidden commerce or domain registration', () => {
+test('base bootstraps contain no forbidden later-milestone registration', () => {
   const source = runtimeSource();
   for (const signal of forbiddenRuntimeSignals) {
     assert.doesNotMatch(source, signal);

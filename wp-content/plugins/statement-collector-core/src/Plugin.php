@@ -24,9 +24,16 @@ final class Plugin {
 	}
 
 	/**
-	 * Future integrations attach here after WordPress plugins load.
+	 * Register domain integrations after WordPress plugins load.
 	 */
 	public static function register_integrations(): void {
-		// Intentionally empty until an approved domain milestone.
+		Drop\Taxonomy::boot();
+
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return;
+		}
+
+		Product\Admin::boot();
+		Release\Purchasability::boot();
 	}
 }

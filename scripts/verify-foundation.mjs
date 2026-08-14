@@ -27,7 +27,12 @@ const requiredFiles = [
   'tests/m1-skeleton.test.mjs',
   'tests/m2-design-system.test.mjs',
   'tests/m3-global-navigation.test.mjs',
+  'tests/m4-domain-model.test.mjs',
   'tests/php/m1-bootstrap-smoke.php',
+  'tests/php/m4-release-state.php',
+  'tests/php/m4-purchasability.php',
+  'tests/php/m4-product-admin.php',
+  'tests/php/m4-woo-absence-smoke.php',
 ];
 
 const requiredDirectories = [
@@ -71,11 +76,15 @@ const contentSignals = [
   ['.ai/context/business-rules.md', 'NEVER RESTOCKED'],
   ['.ai/context/business-rules.md', 'PERMANENT ARCHIVE'],
   ['.ai/context/business-rules.md', 'normal WooCommerce stock manipulation'],
+  ['.ai/context/business-rules.md', 'statement_drop'],
+  ['.ai/context/business-rules.md', 'backward transitions are rejected'],
+  ['.ai/context/business-rules.md', 'positive stock or later stock adjustments cannot reopen purchasing'],
   ['.ai/context/architecture.md', 'statement-collector-theme'],
   ['.ai/context/architecture.md', 'statement-collector-core'],
   ['.ai/context/deployment-rules.md', 'https://mystatement.store/'],
   ['.ai/context/deployment-rules.md', 'Never auto-deploy'],
   ['TASKS.md', 'M1 — Theme Skeleton + Core Plugin Skeleton'],
+  ['TASKS.md', 'M4 — Drop Architecture + Product Metadata'],
 ];
 
 for (const [path, signal] of contentSignals) {
@@ -108,6 +117,11 @@ const approvedRuntimeFiles = [
   'wp-content/themes/statement-collector-theme/template-parts/footer/site-footer.php',
   'wp-content/plugins/statement-collector-core/statement-collector-core.php',
   'wp-content/plugins/statement-collector-core/src/Plugin.php',
+  'wp-content/plugins/statement-collector-core/src/Drop/Taxonomy.php',
+  'wp-content/plugins/statement-collector-core/src/Product/Admin.php',
+  'wp-content/plugins/statement-collector-core/src/Product/Metadata.php',
+  'wp-content/plugins/statement-collector-core/src/Release/ReleaseState.php',
+  'wp-content/plugins/statement-collector-core/src/Release/Purchasability.php',
 ];
 const runtimeFiles = runtimeRoots.flatMap((runtimeRoot) => walk(join(root, runtimeRoot)))
   .map((path) => relative(root, path).replaceAll('\\', '/'));

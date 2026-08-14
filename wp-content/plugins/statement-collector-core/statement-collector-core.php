@@ -11,6 +11,11 @@ defined( 'ABSPATH' ) || exit;
 define( 'STATEMENT_COLLECTOR_CORE_VERSION', '0.1.0' );
 define( 'STATEMENT_COLLECTOR_CORE_FILE', __FILE__ );
 
+require_once __DIR__ . '/src/Release/ReleaseState.php';
+require_once __DIR__ . '/src/Product/Metadata.php';
+require_once __DIR__ . '/src/Drop/Taxonomy.php';
+require_once __DIR__ . '/src/Product/Admin.php';
+require_once __DIR__ . '/src/Release/Purchasability.php';
 require_once __DIR__ . '/src/Plugin.php';
 
 \Statement\Collector\Core\Plugin::boot();
