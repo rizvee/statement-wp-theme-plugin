@@ -30,6 +30,21 @@ test('Domain rules preserve permanent viewability for direct SOLD_OUT and ARCHIV
   assert.ok(accessPhp.includes('return true'), 'Access.php must return true for viewable states.');
 });
 
+test('Catalog visibility orders LIVE before SOLD_OUT and handles historical Drop resolution', () => {
+  const visibilityPhp = readFileSync(resolve(pluginRoot, 'src', 'Catalog', 'Visibility.php'), 'utf8');
+  assert.ok(visibilityPhp.includes('is_past_drop'), 'Visibility.php must check for past drops on taxonomy queries.');
+  assert.ok(visibilityPhp.includes('meta_value'), 'Visibility.php must configure meta_value orderby.');
+  assert.ok(visibilityPhp.includes('filter_structured_data_offer'), 'Visibility.php must register structured data filter.');
+  assert.ok(visibilityPhp.includes('OutOfStock'), 'Visibility.php must set OutOfStock availability for terminal items.');
+});
+
+test('PublicApi implements strict is_past_drop classification', () => {
+  const publicApiPhp = readFileSync(resolve(pluginRoot, 'src', 'PublicApi.php'), 'utf8');
+  assert.ok(publicApiPhp.includes('is_past_drop'), 'PublicApi.php must contain is_past_drop method.');
+  assert.ok(publicApiPhp.includes('get_past_drops'), 'PublicApi.php must contain get_past_drops method.');
+  assert.ok(publicApiPhp.includes('ReleaseState::ARCHIVED === $state'), 'PublicApi.php must require ARCHIVED state for past drop qualification.');
+});
+
 test('Single product summary template omits Add-to-Bag for terminal states and shows status badge', () => {
   const summaryPhp = readFileSync(resolve(themeRoot, 'template-parts', 'product', 'summary.php'), 'utf8');
   assert.ok(summaryPhp.includes('$is_terminal'), 'summary.php must check for terminal states.');

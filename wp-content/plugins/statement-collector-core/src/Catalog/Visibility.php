@@ -25,6 +25,7 @@ final class Visibility {
 
 		self::$booted = true;
 		add_action( 'woocommerce_product_query', array( self::class, 'apply_live_constraint' ), 10, 2 );
+		add_filter( 'woocommerce_structured_data_product_offer', array( self::class, 'filter_structured_data_offer' ), 10, 2 );
 		add_filter( 'rest_product_query', array( self::class, 'filter_public_rest_query' ), 10, 2 );
 		add_filter( 'woocommerce_rest_product_object_query', array( self::class, 'filter_public_rest_query' ), 10, 2 );
 		add_filter( 'woocommerce_store_api_product_query_args', array( self::class, 'filter_public_store_api_query' ), 10, 2 );
@@ -54,13 +55,53 @@ final class Visibility {
 			$meta_query = array( $meta_query );
 		}
 
+		$target_states = array( ReleaseState::LIVE, ReleaseState::SOLD_OUT );
+
+		if ( method_exists( $query, 'is_tax' ) && $query->is_tax( Taxonomy::KEY ) ) {
+			$queried = method_exists( $query, 'get_queried_object' ) ? $query->get_queried_object() : null;
+			$term_id = is_object( $queried ) && isset( $queried->term_id ) ? (int) $queried->term_id : 0;
+			if ( $term_id > 0 && class_exists( '\Statement\Collector\Core\PublicApi' ) && \Statement\Collector\Core\PublicApi::is_past_drop( $term_id ) ) {
+				$target_states = array( ReleaseState::ARCHIVED );
+			}
+		}
+
 		$meta_query[] = array(
 			'key'     => Metadata::RELEASE_STATE_KEY,
-			'value'   => array( ReleaseState::LIVE, ReleaseState::SOLD_OUT ),
+			'value'   => $target_states,
 			'compare' => 'IN',
 		);
 
 		$query->set( 'meta_query', $meta_query );
+
+		if ( in_array( ReleaseState::LIVE, $target_states, true ) && in_array( ReleaseState::SOLD_OUT, $target_states, true ) ) {
+			$query->set( 'meta_key', Metadata::RELEASE_STATE_KEY );
+			$query->set(
+				'orderby',
+				array(
+					'meta_value' => 'ASC',
+					'date'       => 'DESC',
+				)
+			);
+		}
+	}
+
+	/**
+	 * Ensure WooCommerce product structured data never advertises terminal items as in-stock.
+	 *
+	 * @param array  $offer   Incoming schema offer array.
+	 * @param object $product WooCommerce product object.
+	 * @return array
+	 */
+	public static function filter_structured_data_offer( array $offer, $product ): array {
+		$owner = Metadata::get_release_owner( $product );
+		if ( is_object( $owner ) ) {
+			$state = Metadata::get_release_state( $owner );
+			if ( ReleaseState::is_terminal( $state ) ) {
+				$offer['availability'] = 'https://schema.org/OutOfStock';
+			}
+		}
+
+		return $offer;
 	}
 
 	/**

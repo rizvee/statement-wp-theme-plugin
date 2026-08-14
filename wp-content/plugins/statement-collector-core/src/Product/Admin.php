@@ -59,8 +59,13 @@ final class Admin {
 		}
 
 		$assigned = wp_get_object_terms( $product->get_id(), Taxonomy::KEY, array( 'fields' => 'ids' ) );
-		$drop_id  = ! is_wp_error( $assigned ) && ! empty( $assigned ) ? (string) reset( $assigned ) : '';
-		$states   = array_combine( ReleaseState::all(), ReleaseState::all() );
+		$current_state = Metadata::get_release_state( $product );
+		$states        = array();
+		foreach ( ReleaseState::all() as $st ) {
+			if ( ReleaseState::can_transition( $current_state, $st ) ) {
+				$states[ $st ] = $st;
+			}
+		}
 
 		echo '<div class="options_group statement-collector-product-data">';
 		wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
@@ -81,7 +86,7 @@ final class Admin {
 				'description' => __( 'Release states move forward only.', 'statement-collector-core' ),
 				'desc_tip'    => true,
 				'options'     => $states,
-				'value'       => Metadata::get_release_state( $product ),
+				'value'       => $current_state,
 			)
 		);
 		woocommerce_wp_text_input(

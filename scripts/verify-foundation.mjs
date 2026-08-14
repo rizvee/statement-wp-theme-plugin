@@ -63,6 +63,7 @@ const requiredFiles = [
   'tests/php/m10-atomicity-api-protection.php',
   'tests/php/m11-terminal-archive.php',
   '.ai/context/private-access-m10.md',
+  '.ai/context/archive-terminal-m11.md',
 ];
 
 const requiredDirectories = [

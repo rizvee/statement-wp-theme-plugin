@@ -111,6 +111,20 @@ Status: complete (2026-08-14)
 - [x] Add WooCommerce admin grant management UI with masked email reporting and re-grant support.
 - [x] Add privacy data retention cleanup for expired tokens, rate limits, and inactive grants.
 
+## M11 — Archive & Terminal Presentation
+
+Status: complete (2026-08-15)
+
+- [x] Enforce forward-only terminal transitions (`LIVE` -> `SOLD_OUT` -> `ARCHIVED`) and reject invalid backward mutations.
+- [x] Establish permanent commerce lock override so positive WooCommerce stock cannot restore purchasability for `SOLD_OUT` or `ARCHIVED` products.
+- [x] Maintain permanent direct product permalink viewability for `SOLD_OUT` and `ARCHIVED` items without returning 404s.
+- [x] Update active catalog queries to include `LIVE` and `SOLD_OUT` items ordered with `LIVE` first, while excluding `ARCHIVED` items for dedicated Archive presentation.
+- [x] Resolve fully historical Drop pages (`is_past_drop`) to render their `ARCHIVED` items instead of leaving them empty.
+- [x] Omit Add to Bag forms and quantity selectors on terminal product pages, rendering restrained status badges (**SOLD OUT** or **ARCHIVED**).
+- [x] Add dedicated `page-archive.php` template displaying archived product grids and historical past Drop terms.
+- [x] Filter WooCommerce structured data offer availability to `OutOfStock` for terminal items.
+- [x] Protect core brand scarcity model (**Crafted. Limited. Never Restocked.**) with zero waitlist or restock logic.
+
 ## Later roadmap
 
-After M10, continue through separately approved archive presentation, WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.
+After M11, continue through separately approved WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.

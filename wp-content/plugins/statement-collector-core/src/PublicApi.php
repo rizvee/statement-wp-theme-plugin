@@ -129,7 +129,55 @@ final class PublicApi {
 	}
 
 	/**
-	 * Retrieves past Drop taxonomy terms.
+	 * Whether a Drop taxonomy term is a Past Drop (contains ONLY ARCHIVED pieces and at least one ARCHIVED piece).
+	 *
+	 * @param int $term_id Drop term ID.
+	 */
+	public static function is_past_drop( int $term_id ): bool {
+		if ( $term_id < 1 || ! function_exists( 'get_posts' ) ) {
+			return false;
+		}
+
+		$product_ids = get_posts(
+			array(
+				'post_type'      => 'product',
+				'posts_per_page' => -1,
+				'post_status'    => 'publish',
+				'fields'         => 'ids',
+				'tax_query'      => array(
+					array(
+						'taxonomy' => Taxonomy::KEY,
+						'field'    => 'term_id',
+						'terms'    => $term_id,
+					),
+				),
+			)
+		);
+
+		if ( empty( $product_ids ) || ! is_array( $product_ids ) ) {
+			return false;
+		}
+
+		$has_archived = false;
+
+		foreach ( $product_ids as $pid ) {
+			$product = function_exists( 'wc_get_product' ) ? wc_get_product( $pid ) : null;
+			$state   = Metadata::get_release_state( $product );
+
+			if ( in_array( $state, array( ReleaseState::LIVE, ReleaseState::SOLD_OUT, ReleaseState::PRIVATE_ACCESS, ReleaseState::UPCOMING ), true ) ) {
+				return false;
+			}
+
+			if ( ReleaseState::ARCHIVED === $state ) {
+				$has_archived = true;
+			}
+		}
+
+		return $has_archived;
+	}
+
+	/**
+	 * Retrieves past Drop taxonomy terms (drops with ONLY ARCHIVED pieces).
 	 *
 	 * @return array
 	 */
@@ -142,9 +190,22 @@ final class PublicApi {
 			array(
 				'taxonomy'   => Taxonomy::KEY,
 				'hide_empty' => false,
+				'orderby'    => 'term_id',
+				'order'      => 'DESC',
 			)
 		);
 
-		return is_array( $terms ) ? $terms : array();
+		if ( ! is_array( $terms ) || empty( $terms ) ) {
+			return array();
+		}
+
+		$past_drops = array();
+		foreach ( $terms as $term ) {
+			if ( is_object( $term ) && isset( $term->term_id ) && self::is_past_drop( (int) $term->term_id ) ) {
+				$past_drops[] = $term;
+			}
+		}
+
+		return $past_drops;
 	}
 }
