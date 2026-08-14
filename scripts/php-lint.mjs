@@ -29,6 +29,7 @@ export function lintPhp({ roots, log = true } = {}) {
     : [
         resolve(projectRoot, 'wp-content', 'themes', 'statement-collector-theme'),
         resolve(projectRoot, 'wp-content', 'plugins', 'statement-collector-core'),
+        resolve(projectRoot, 'tools'),
       ];
   const files = [...new Set(requestedRoots.flatMap((path) => collectPhpFiles(path)))].sort();
   const php = resolvePhp();
