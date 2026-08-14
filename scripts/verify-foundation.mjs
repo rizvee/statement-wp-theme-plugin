@@ -59,6 +59,7 @@ const requiredFiles = [
   'tests/php/m10-grants-sessions-tokens.php',
   'tests/php/m10-dropconfig-precheck.php',
   'tests/php/m10-eligibility-gate.php',
+  'tests/php/m10-atomicity-api-protection.php',
   '.ai/context/private-access-m10.md',
 ];
 

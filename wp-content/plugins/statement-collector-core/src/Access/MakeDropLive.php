@@ -119,17 +119,37 @@ final class MakeDropLive {
 			);
 		}
 
-		$transitioned = 0;
-		foreach ( $private_access_pids as $pid ) {
-			$product = wc_get_product( $pid );
-			if ( $product ) {
+		$transitioned_products = array();
+		try {
+			foreach ( $private_access_pids as $pid ) {
+				$product = wc_get_product( $pid );
+				if ( ! $product ) {
+					throw new \RuntimeException( "Product {$pid} could not be loaded." );
+				}
 				Metadata::update_release_state( $product, ReleaseState::LIVE );
-				$product->save();
-				++$transitioned;
+				$saved = $product->save();
+				if ( false === $saved ) {
+					throw new \RuntimeException( "Product {$pid} save failed." );
+				}
+				$transitioned_products[] = $product;
 			}
+		} catch ( \Throwable $e ) {
+			// Roll back any products transitioned before failure
+			foreach ( $transitioned_products as $p ) {
+				Metadata::update_release_state( $p, ReleaseState::PRIVATE_ACCESS );
+				$p->save();
+			}
+
+			return array(
+				'ok'                 => false,
+				'transitioned_count' => 0,
+				'message'            => 'Make Drop Live failed during mutation: ' . $e->getMessage() . ' All changes rolled back.',
+			);
 		}
 
-		// Invalidate access return tokens & cancel pending reminders for drop
+		$transitioned = count( $transitioned_products );
+
+		// Invalidate access return tokens & cancel pending reminders for drop ONLY AFTER 100% successful transitions
 		global $wpdb;
 		if ( isset( $wpdb ) ) {
 			$now_str = date( 'Y-m-d H:i:s', $now_ts );

@@ -25,6 +25,9 @@ final class Visibility {
 
 		self::$booted = true;
 		add_action( 'woocommerce_product_query', array( self::class, 'apply_live_constraint' ), 10, 2 );
+		add_filter( 'rest_product_query', array( self::class, 'filter_public_rest_query' ), 10, 2 );
+		add_filter( 'woocommerce_rest_product_object_query', array( self::class, 'filter_public_rest_query' ), 10, 2 );
+		add_filter( 'woocommerce_store_api_product_query_args', array( self::class, 'filter_public_store_api_query' ), 10, 2 );
 	}
 
 	/**
@@ -118,5 +121,57 @@ final class Visibility {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Filters public WP REST API and WooCommerce REST API product queries to exclude non-LIVE products for unauthenticated users.
+	 *
+	 * @param array $args Query args.
+	 * @return array
+	 */
+	public static function filter_public_rest_query( array $args, $request = null ): array {
+		if ( function_exists( 'current_user_can' ) && current_user_can( 'edit_products' ) ) {
+			return $args;
+		}
+
+		$meta_query = $args['meta_query'] ?? array();
+		if ( ! is_array( $meta_query ) ) {
+			$meta_query = array();
+		}
+
+		$meta_query[] = array(
+			'key'     => Metadata::RELEASE_STATE_KEY,
+			'value'   => ReleaseState::LIVE,
+			'compare' => '=',
+		);
+
+		$args['meta_query'] = $meta_query;
+		return $args;
+	}
+
+	/**
+	 * Filters WooCommerce Store API product collection query args to exclude non-LIVE products.
+	 *
+	 * @param array $args Query args.
+	 * @return array
+	 */
+	public static function filter_public_store_api_query( array $args, $request = null ): array {
+		if ( function_exists( 'current_user_can' ) && current_user_can( 'edit_products' ) ) {
+			return $args;
+		}
+
+		$meta_query = $args['meta_query'] ?? array();
+		if ( ! is_array( $meta_query ) ) {
+			$meta_query = array();
+		}
+
+		$meta_query[] = array(
+			'key'     => Metadata::RELEASE_STATE_KEY,
+			'value'   => ReleaseState::LIVE,
+			'compare' => '=',
+		);
+
+		$args['meta_query'] = $meta_query;
+		return $args;
 	}
 }

@@ -43,4 +43,8 @@ require_once __DIR__ . '/src/Product/Admin.php';
 require_once __DIR__ . '/src/Release/Purchasability.php';
 require_once __DIR__ . '/src/Plugin.php';
 
+if ( function_exists( 'register_activation_hook' ) ) {
+	register_activation_hook( STATEMENT_COLLECTOR_CORE_FILE, array( \Statement\Collector\Core\Access\Schema::class, 'install' ) );
+}
+
 \Statement\Collector\Core\Plugin::boot();

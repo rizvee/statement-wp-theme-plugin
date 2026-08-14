@@ -20,11 +20,6 @@ final class Plugin {
 		}
 
 		self::$booted = true;
-
-		if ( defined( 'STATEMENT_COLLECTOR_CORE_FILE' ) ) {
-			register_activation_hook( STATEMENT_COLLECTOR_CORE_FILE, array( Access\Schema::class, 'install' ) );
-		}
-
 		add_action( 'plugins_loaded', array( self::class, 'register_integrations' ) );
 	}
 
