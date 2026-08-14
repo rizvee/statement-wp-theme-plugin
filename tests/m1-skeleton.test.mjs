@@ -50,7 +50,7 @@ test('theme skeleton exposes the required standalone metadata and files', () => 
   const style = read(resolve(themeRoot, 'style.css'));
   assert.match(style, /^Theme Name:\s*Statement Collector(?:'s)? Piece$/m);
   assert.match(style, /^Description:\s*\S.+$/m);
-  assert.match(style, /^Version:\s*0\.1\.0$/m);
+  assert.match(style, /^Version:\s*\S+$/m);
   assert.match(style, /^Text Domain:\s*statement-collector-theme$/m);
   assert.doesNotMatch(style, /^Template\s*:/mi);
 });
@@ -72,7 +72,7 @@ test('plugin skeleton exposes metadata and a namespaced one-time bootstrap', () 
   const entrypoint = read(resolve(pluginRoot, 'statement-collector-core.php'));
   const pluginClass = read(resolve(pluginRoot, 'src', 'Plugin.php'));
   assert.match(entrypoint, /^Plugin Name:\s*Statement Collector Core$/m);
-  assert.match(entrypoint, /^Version:\s*0\.1\.0$/m);
+  assert.match(entrypoint, /^Version:\s*\S+$/m);
   assert.match(entrypoint, /^Text Domain:\s*statement-collector-core$/m);
   assert.match(entrypoint, /defined\(\s*'ABSPATH'\s*\)/);
   assert.match(pluginClass, /namespace\s+Statement\\Collector\\Core\s*;/);

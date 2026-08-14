@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.13.0-rc.1';
+const defaultVersion = '0.13.0-rc.2';
 
 export const approvedPluginFiles = [
   'statement-collector-core.php',
@@ -48,6 +48,20 @@ export const approvedPluginFiles = [
 
 export function packagePlugin(version = defaultVersion) {
   const sourceRoot = join(root, 'wp-content', 'plugins', 'statement-collector-core');
+  const mainPluginFile = join(sourceRoot, 'statement-collector-core.php');
+  if (!existsSync(mainPluginFile)) {
+    throw new Error(`Missing main plugin file: ${mainPluginFile}`);
+  }
+  const mainContent = readFileSync(mainPluginFile, 'utf8');
+  const headerMatch = mainContent.match(/^[ \t\/*#]*Version:\s*(.+)$/m);
+  if (!headerMatch || headerMatch[1].trim() !== version) {
+    throw new Error(`Plugin header Version mismatch in source file. Found "${headerMatch ? headerMatch[1].trim() : 'NONE'}", expected "${version}".`);
+  }
+  const constMatch = mainContent.match(/define\(\s*['"]STATEMENT_COLLECTOR_CORE_VERSION['"]\s*,\s*['"]([^'"]+)['"]\s*\);/);
+  if (!constMatch || constMatch[1] !== version) {
+    throw new Error(`STATEMENT_COLLECTOR_CORE_VERSION constant mismatch in source file. Found "${constMatch ? constMatch[1] : 'NONE'}", expected "${version}".`);
+  }
+
   const distDir = join(root, 'dist');
   const stagingParent = join(root, 'tmp', 'pkg-plugin');
   const stagingDir = join(stagingParent, 'statement-collector-core');

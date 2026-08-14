@@ -6,7 +6,7 @@ import { packageTheme } from './package-theme.mjs';
 import { verifyPackage } from './verify-package.mjs';
 
 const root = resolve(import.meta.dirname, '..');
-const candidateVersion = '0.13.0-rc.1';
+const candidateVersion = '0.13.0-rc.2';
 
 export function packageAll(options = {}) {
   const silent = options.silent ?? false;
@@ -28,13 +28,13 @@ export function packageAll(options = {}) {
   const pluginPkg = packagePlugin(candidateVersion);
 
   log('Step 4: Verifying packaged theme ZIP artifact...');
-  const themeVerify = verifyPackage(themePkg.path);
+  const themeVerify = verifyPackage(themePkg.path, candidateVersion);
   if (!themeVerify.ok) {
     throw new Error(`Packaged theme verification failed:\n  ${themeVerify.errors.join('\n  ')}`);
   }
 
   log('Step 5: Verifying packaged plugin ZIP artifact...');
-  const pluginVerify = verifyPackage(pluginPkg.path);
+  const pluginVerify = verifyPackage(pluginPkg.path, candidateVersion);
   if (!pluginVerify.ok) {
     throw new Error(`Packaged plugin verification failed:\n  ${pluginVerify.errors.join('\n  ')}`);
   }
@@ -53,8 +53,17 @@ export function packageAll(options = {}) {
     generated_at: new Date().toISOString(),
     git_commit: gitCommit,
     branch: gitBranch,
-    theme_version: themePkg.version,
-    plugin_version: pluginPkg.version,
+    candidate_version: candidateVersion,
+    theme: {
+      candidate_version: themePkg.version,
+      header_version: themeVerify.headerVersion,
+      runtime_version: themeVerify.constantVersion,
+    },
+    plugin: {
+      candidate_version: pluginPkg.version,
+      header_version: pluginVerify.headerVersion,
+      runtime_version: pluginVerify.constantVersion,
+    },
     environment: 'integration-candidate',
     deployment_authorized: false,
     artifacts: [
@@ -66,6 +75,8 @@ export function packageAll(options = {}) {
         sha256: themePkg.sha256,
         file_count: themePkg.fileCount,
         php_count: themePkg.phpCount,
+        header_version: themeVerify.headerVersion,
+        runtime_version: themeVerify.constantVersion,
         verification: 'PASS',
       },
       {
@@ -76,6 +87,8 @@ export function packageAll(options = {}) {
         sha256: pluginPkg.sha256,
         file_count: pluginPkg.fileCount,
         php_count: pluginPkg.phpCount,
+        header_version: pluginVerify.headerVersion,
+        runtime_version: pluginVerify.constantVersion,
         verification: 'PASS',
       },
     ],

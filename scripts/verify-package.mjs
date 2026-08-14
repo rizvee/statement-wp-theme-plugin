@@ -58,9 +58,16 @@ function walkDir(dir, fileList = []) {
   return fileList;
 }
 
-export function verifyPackage(zipPath) {
+export function verifyPackage(zipPath, targetExpectedVersion = null) {
   if (!existsSync(zipPath)) {
     return { ok: false, errors: [`ZIP file does not exist: ${zipPath}`] };
+  }
+
+  let expectedVersion = targetExpectedVersion;
+  if (!expectedVersion) {
+    const filename = zipPath.replace(/\\/g, '/').split('/').pop();
+    const verMatch = filename.match(/-(.+)\.zip$/i);
+    if (verMatch) expectedVersion = verMatch[1];
   }
 
   const extractDir = join(root, 'tmp', `verify-pkg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`);
@@ -68,6 +75,8 @@ export function verifyPackage(zipPath) {
   mkdirSync(extractDir, { recursive: true });
 
   const errors = [];
+  let headerVersion = 'UNKNOWN';
+  let constantVersion = 'UNKNOWN';
 
   try {
     const tarCmd = `tar -xf "${zipPath}" -C "${extractDir}"`;
@@ -93,6 +102,35 @@ export function verifyPackage(zipPath) {
           errors.push(`Packaged theme missing required file: ${req}`);
         }
       }
+
+      const stylePath = join(packageRoot, 'style.css');
+      if (existsSync(stylePath)) {
+        const styleText = readFileSync(stylePath, 'utf8');
+        const hMatch = styleText.match(/^[ \t\/*#]*Version:\s*(.+)$/m);
+        if (hMatch) headerVersion = hMatch[1].trim();
+        else errors.push(`Packaged theme style.css missing Version header.`);
+      }
+
+      const fnPath = join(packageRoot, 'functions.php');
+      if (existsSync(fnPath)) {
+        const fnText = readFileSync(fnPath, 'utf8');
+        const cMatch = fnText.match(/define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]([^'"]+)['"]\s*\);/);
+        if (cMatch) constantVersion = cMatch[1];
+        else errors.push(`Packaged theme functions.php missing STATEMENT_COLLECTOR_THEME_VERSION constant.`);
+      }
+
+      if (headerVersion !== constantVersion) {
+        errors.push(`Packaged theme version mismatch between style.css header ("${headerVersion}") and STATEMENT_COLLECTOR_THEME_VERSION ("${constantVersion}").`);
+      }
+
+      if (expectedVersion) {
+        if (headerVersion !== expectedVersion) {
+          errors.push(`Packaged theme style.css Version mismatch. Found "${headerVersion}", expected "${expectedVersion}".`);
+        }
+        if (constantVersion !== expectedVersion) {
+          errors.push(`Packaged theme STATEMENT_COLLECTOR_THEME_VERSION constant mismatch. Found "${constantVersion}", expected "${expectedVersion}".`);
+        }
+      }
     }
 
     if ('statement-collector-core' === packageRootName) {
@@ -100,6 +138,31 @@ export function verifyPackage(zipPath) {
       for (const req of requiredPlugin) {
         if (!existsSync(join(packageRoot, req))) {
           errors.push(`Packaged plugin missing required file: ${req}`);
+        }
+      }
+
+      const pluginMainPath = join(packageRoot, 'statement-collector-core.php');
+      if (existsSync(pluginMainPath)) {
+        const mainText = readFileSync(pluginMainPath, 'utf8');
+        const hMatch = mainText.match(/^[ \t\/*#]*Version:\s*(.+)$/m);
+        if (hMatch) headerVersion = hMatch[1].trim();
+        else errors.push(`Packaged plugin statement-collector-core.php missing Version header.`);
+
+        const cMatch = mainText.match(/define\(\s*['"]STATEMENT_COLLECTOR_CORE_VERSION['"]\s*,\s*['"]([^'"]+)['"]\s*\);/);
+        if (cMatch) constantVersion = cMatch[1];
+        else errors.push(`Packaged plugin statement-collector-core.php missing STATEMENT_COLLECTOR_CORE_VERSION constant.`);
+      }
+
+      if (headerVersion !== constantVersion) {
+        errors.push(`Packaged plugin version mismatch between statement-collector-core.php header ("${headerVersion}") and STATEMENT_COLLECTOR_CORE_VERSION ("${constantVersion}").`);
+      }
+
+      if (expectedVersion) {
+        if (headerVersion !== expectedVersion) {
+          errors.push(`Packaged plugin statement-collector-core.php Version mismatch. Found "${headerVersion}", expected "${expectedVersion}".`);
+        }
+        if (constantVersion !== expectedVersion) {
+          errors.push(`Packaged plugin STATEMENT_COLLECTOR_CORE_VERSION constant mismatch. Found "${constantVersion}", expected "${expectedVersion}".`);
         }
       }
     }
@@ -149,6 +212,8 @@ export function verifyPackage(zipPath) {
       rootFolder: packageRootName,
       fileCount: allPackagedFiles.length,
       phpCount: allPackagedFiles.filter((f) => f.endsWith('.php')).length,
+      headerVersion,
+      constantVersion,
     };
   } finally {
     if (existsSync(extractDir)) rmSync(extractDir, { recursive: true, force: true });

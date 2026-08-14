@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.13.0-rc.1';
+const defaultVersion = '0.13.0-rc.2';
 
 export const approvedThemeFiles = [
   'style.css',
@@ -58,6 +58,24 @@ export const approvedThemeFiles = [
 
 export function packageTheme(version = defaultVersion) {
   const sourceRoot = join(root, 'wp-content', 'themes', 'statement-collector-theme');
+  const styleCssFile = join(sourceRoot, 'style.css');
+  if (!existsSync(styleCssFile)) {
+    throw new Error(`Missing theme style.css file: ${styleCssFile}`);
+  }
+  const styleContent = readFileSync(styleCssFile, 'utf8');
+  const headerMatch = styleContent.match(/^[ \t\/*#]*Version:\s*(.+)$/m);
+  if (!headerMatch || headerMatch[1].trim() !== version) {
+    throw new Error(`Theme header Version mismatch in source style.css. Found "${headerMatch ? headerMatch[1].trim() : 'NONE'}", expected "${version}".`);
+  }
+  const functionsFile = join(sourceRoot, 'functions.php');
+  if (existsSync(functionsFile)) {
+    const fnContent = readFileSync(functionsFile, 'utf8');
+    const constMatch = fnContent.match(/define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]([^'"]+)['"]\s*\);/);
+    if (!constMatch || constMatch[1] !== version) {
+      throw new Error(`STATEMENT_COLLECTOR_THEME_VERSION constant mismatch in source functions.php. Found "${constMatch ? constMatch[1] : 'NONE'}", expected "${version}".`);
+    }
+  }
+
   const distDir = join(root, 'dist');
   const stagingParent = join(root, 'tmp', 'pkg-theme');
   const stagingDir = join(stagingParent, 'statement-collector-theme');

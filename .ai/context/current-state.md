@@ -19,8 +19,8 @@ Updated: 2026-08-15
 - M10 is complete: private access architecture with versioned database schema (5 operational tables), encrypted grant tokens, email/IP rate limiting, POST/303 PRG gate, edge cache hardening, Make Drop Live admin workflow, and Action Scheduler reminders.
 - M11 is complete: terminal release lifecycle (`LIVE` -> `SOLD_OUT` -> `ARCHIVED`), permanent commerce locks, public permalink viewability, active catalog ordering, dedicated Archive page, and scarcity invariant protection (**Crafted. Limited. Never Restocked.**).
 - M12 is complete: purchase provenance (`_statement_provenance_version`, `_statement_product_id_at_purchase`, etc.) captured write-once during order line item creation; frozen across product/Drop edits; status-aware Thank You and customer order view; plain-text and HTML email integration; and commercial completion helper.
-- M13 Phase 1 is complete: deterministic packaging scripts (`package-theme.mjs`, `package-plugin.mjs`, `package-all.mjs`), package verification (`verify-package.mjs`), RC versioning (`0.13.0-rc.1`), package manifest (`dist/manifest.json`), operator preflight checklist (`docs/atomic-integration-preflight.md`), emergency rollback runbook (`docs/atomic-rollback-runbook.md`), runtime integration checklist (`docs/runtime-integration-checklist.md` with 19 test cases), issue log (`docs/runtime-integration-log.md`), release candidate record (`docs/runtime-release-candidate.md`), context document (`.ai/context/runtime-integration-m13.md`), and packaging test suite (`tests/m13-packaging.test.mjs`).
-- **Phase 1 STOP GATE**: LOCAL PREPARATION COMPLETE / ATOMIC VALIDATION NOT STARTED. Upload to WordPress.com Atomic requires EXPLICIT HUMAN OPERATOR APPROVAL.
+- M13 Phase 1 & 2A complete: deterministic packaging scripts (`package-theme.mjs`, `package-plugin.mjs`, `package-all.mjs`), package verification (`verify-package.mjs`), version authority enforcement (`0.13.0-rc.2`), package manifest (`dist/manifest.json`), operator preflight checklist (`docs/atomic-integration-preflight.md`), emergency rollback runbook (`docs/atomic-rollback-runbook.md`), runtime integration checklist (`docs/runtime-integration-checklist.md`), issue log (`docs/runtime-integration-log.md`), release candidate record (`docs/runtime-release-candidate.md`), context document (`.ai/context/runtime-integration-m13.md`), and packaging test suite (`tests/m13-packaging.test.mjs`).
+- **Phase 2A STOP GATE**: RC-2 candidate artifacts generated locally (`dist/statement-collector-core-0.13.0-rc.2.zip` and `dist/statement-collector-theme-0.13.0-rc.2.zip`). Manual upload/replacement of installed version `0.1.0` on WordPress.com Atomic requires EXPLICIT HUMAN OPERATOR APPROVAL.
 
 ## Local environment
 
@@ -31,8 +31,8 @@ Updated: 2026-08-15
 
 ## Deployment state
 
-Per the project brief, `https://mystatement.store/` is the WordPress.com Atomic integration/production site and remains Coming Soon/private. Phase 1 did NOT upload, deploy, push, tag, or modify the live site in any way.
+`https://mystatement.store/` is hosted on WordPress.com Atomic. Core plugin `statement-collector-core` is installed and active (initial upload reported version `0.1.0` due to header defect `M13-ISSUE-02`). Corrected candidate `0.13.0-rc.2` is verified locally in `dist/` and ready for upload.
 
 ## Verification
 
-M1–M13 Node structural tests (98 subtests + packaging tests), PHP assertions (40 assertions in `m12-collector-provenance.php`), PHP lint (71 PHP files), `verify-foundation.mjs`, and `package-all.mjs` pass cleanly.
+M1–M13 Node structural tests (99 subtests + packaging tests including version mismatch negative test), PHP assertions (40 assertions in `m12-collector-provenance.php`), PHP lint (71 PHP files), `verify-foundation.mjs`, and `package-all.mjs` pass cleanly.
