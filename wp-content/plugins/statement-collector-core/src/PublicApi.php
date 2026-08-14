@@ -31,6 +31,17 @@ final class PublicApi {
 	}
 
 	/**
+	 * Return the canonical product owner's optional edition label.
+	 *
+	 * @param object $product WooCommerce product-like object.
+	 */
+	public static function get_edition_label( $product ): string {
+		$release_owner = Metadata::get_release_owner( $product );
+
+		return Metadata::get_edition_label( $release_owner );
+	}
+
+	/**
 	 * Return the canonical product owner's first valid Statement Drop.
 	 *
 	 * @param object $product WooCommerce product-like object.

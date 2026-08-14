@@ -152,9 +152,21 @@ test('local assets are enqueued and dialog JavaScript remains interaction-only',
 });
 
 test('M3 runtime stays within global-shell scope', () => {
-  const source = walk(themeRoot)
-    .filter((path) => ['.php', '.css', '.js'].includes(extname(path).toLowerCase()))
-    .map((path) => readFileSync(path, 'utf8'))
+  const m3Files = [
+    'header.php',
+    'footer.php',
+    'inc/setup.php',
+    'inc/navigation.php',
+    'assets/css/header.css',
+    'assets/css/footer.css',
+    'assets/js/navigation.js',
+    'template-parts/header/mobile-navigation.php',
+    'template-parts/header/search-dialog.php',
+    'template-parts/header/site-header.php',
+    'template-parts/footer/site-footer.php',
+  ];
+  const source = m3Files
+    .map((path) => read(path))
     .join('\n');
   const forbidden = [
     /register_post_type\s*\(/i,

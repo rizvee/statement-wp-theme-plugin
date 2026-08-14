@@ -24,9 +24,13 @@ Updated: 2026-08-14
 - M6 is complete: the native WooCommerce Shop archive and native `statement_drop` taxonomy archives are constrained to canonical `LIVE` products at the main-query boundary before result counts and pagination are calculated.
 - Existing WooCommerce meta constraints are preserved. Missing state plus `UPCOMING`, `PRIVATE_ACCESS`, `SOLD_OUT`, and `ARCHIVED` fail closed on normal public Shop/Drop queries.
 - Home, Shop, and Drop reuse one presentation-only product card for image, name, canonical Drop name, and price. Catalog UI removes result count, ordering, and sidebar while retaining notices, loop semantics, and native pagination.
-- No Add to Cart, quick-add, catalog JavaScript, private-access enforcement, terminal archive presentation, or product-detail redesign was added. M7 has not started.
+- No quick-add, catalog JavaScript, private-access enforcement, or terminal archive presentation was added.
+- M7 is complete: ordinary direct product requests are available only for canonical `LIVE` products; other lifecycle states receive a real uncached 404, while a capable editor's explicit preview remains available.
+- Crafted Add-to-Cart requests are independently validated against canonical parent release state. Only `LIVE` preserves WooCommerce's prior validation result; all other or unresolved states fail closed with one lifecycle-neutral notice.
+- The focused product page delegates image gallery, price, excerpt, and simple/variable purchase mechanics to native WooCommerce APIs. It exposes only actual Drop and optional edition-label provenance through the read-only core API.
+- Product CSS is conditional and responsive, with a mobile scroll-snap gallery and desktop gallery/purchase layout. No product JavaScript, custom variation UI, cart drawer, review/related-product UI, or stock mutation was added.
 - Theme and plugin versions remain `0.1.0`; internal milestones do not trigger package-version changes before an approved release task.
-- The next approved milestone is M7 — Product Detail Page; it has not started.
+- The next approved milestone is M8 — Cart + Bag Experience; it has not started.
 
 ## Local environment
 
@@ -35,7 +39,7 @@ Updated: 2026-08-14
 - `scripts/php-lint.mjs` resolves `PHP_BIN`, then project-local PHP on Windows, then PHP on `PATH`.
 - Unavailable: Composer, WP-CLI.
 - WordPress, WooCommerce, PHP runtime, and hosting integration versions could not be discovered from this empty local repository.
-- PHP syntax verification passes for all 33 first-party runtime PHP files.
+- PHP syntax verification passes for all 39 first-party runtime PHP files.
 - The narrow bootstrap smoke passes without WooCommerce present. Genuine WordPress/WooCommerce activation remains unverified because no local WordPress runtime exists.
 
 ## Deployment state
@@ -44,4 +48,4 @@ Per the project brief, `https://mystatement.store/` is the WordPress.com Atomic 
 
 ## Verification
 
-M1–M6 structural tests, release-domain, terminal and variable-product purchasability, historical Drop/admin integrity, public eligibility, homepage selection/privacy, catalog query composition/privacy, dependency-absence smoke, first-party PHP lint, and `node scripts/verify-foundation.mjs` pass with project-local PHP 8.3.33. Actual WordPress/WooCommerce product editing, taxonomy persistence/routing, populated catalog pagination, purchasability, and browser rendering remain unverified. See `.ai/checks/m0-foundation.md`.
+M1–M7 structural tests, release-domain, terminal and variable-product purchasability, historical Drop/admin integrity, public eligibility, homepage/catalog privacy, direct product access, Add-to-Cart validation, dependency-absence smoke, first-party PHP lint, and `node scripts/verify-foundation.mjs` pass with project-local PHP 8.3.33. Actual WordPress/WooCommerce product editing, taxonomy persistence/routing, populated catalog/product behavior, variation interaction, Add-to-Cart requests, and browser rendering remain unverified. See `.ai/checks/m0-foundation.md`.

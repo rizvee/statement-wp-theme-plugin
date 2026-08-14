@@ -5,6 +5,7 @@ declare(strict_types=1);
 define( 'ABSPATH', __DIR__ . '/' );
 
 $statement_test_hooks        = array();
+$statement_test_filters      = array();
 $statement_test_supports     = array();
 $statement_test_text_domains = array();
 $statement_test_styles       = array();
@@ -15,6 +16,11 @@ $statement_test_menus        = array();
 function add_action( string $hook, $callback ): void {
 	global $statement_test_hooks;
 	$statement_test_hooks[ $hook ][] = $callback;
+}
+
+function add_filter( string $hook, $callback, int $priority = 10, int $accepted_args = 1 ): void {
+	global $statement_test_filters;
+	$statement_test_filters[ $hook ][] = compact( 'callback', 'priority', 'accepted_args' );
 }
 
 function add_theme_support( string $feature, ...$arguments ): void {

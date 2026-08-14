@@ -143,9 +143,16 @@ test('Theme does not interpret release metadata or hide catalog results after th
 });
 
 test('M6 runtime remains server-rendered and inside catalog scope', () => {
-  const themeSource = walk(themeRoot)
-    .filter((path) => ['.php', '.css', '.js'].includes(extname(path).toLowerCase()))
-    .map((path) => readFileSync(path, 'utf8'))
+  const m6Files = [
+    'inc/catalog.php',
+    'taxonomy-statement_drop.php',
+    'template-parts/product/card.php',
+    'woocommerce/content-product.php',
+    'assets/css/product-card.css',
+    'assets/css/catalog.css',
+  ];
+  const themeSource = m6Files
+    .map((path) => readTheme(path))
     .join('\n');
   const visibility = readPlugin('src/Catalog/Visibility.php');
   const source = `${themeSource}\n${visibility}`;

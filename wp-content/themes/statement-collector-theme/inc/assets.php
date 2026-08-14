@@ -10,6 +10,7 @@ defined( 'ABSPATH' ) || exit;
 function enqueue_assets(): void {
 	$is_home    = function_exists( 'is_front_page' ) && is_front_page();
 	$is_catalog = is_statement_catalog();
+	$is_product = is_statement_product();
 
 	wp_enqueue_style(
 		'statement-collector-base',
@@ -62,6 +63,15 @@ function enqueue_assets(): void {
 			'statement-collector-catalog',
 			get_theme_file_uri( 'assets/css/catalog.css' ),
 			array( 'statement-collector-product-card' ),
+			STATEMENT_COLLECTOR_THEME_VERSION
+		);
+	}
+
+	if ( $is_product ) {
+		wp_enqueue_style(
+			'statement-collector-product',
+			get_theme_file_uri( 'assets/css/product.css' ),
+			array( 'statement-collector-base', 'statement-collector-layout' ),
 			STATEMENT_COLLECTOR_THEME_VERSION
 		);
 	}

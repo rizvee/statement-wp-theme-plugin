@@ -45,11 +45,13 @@ final class Statement_Public_Api_Test_Product {
 	private $id;
 	private $parent_id;
 	private $release_state;
+	private $edition_label;
 
-	public function __construct( int $id, string $release_state, int $parent_id = 0 ) {
+	public function __construct( int $id, string $release_state, int $parent_id = 0, string $edition_label = '' ) {
 		$this->id            = $id;
 		$this->release_state = $release_state;
 		$this->parent_id     = $parent_id;
+		$this->edition_label = $edition_label;
 	}
 
 	public function get_id(): int {
@@ -65,7 +67,11 @@ final class Statement_Public_Api_Test_Product {
 	}
 
 	public function get_meta( string $key, bool $single = true ): string {
-		return '_statement_release_state' === $key ? $this->release_state : '';
+		if ( '_statement_release_state' === $key ) {
+			return $this->release_state;
+		}
+
+		return '_statement_edition_label' === $key ? $this->edition_label : '';
 	}
 
 	public function update_meta_data( string $key, $value ): void {
@@ -103,7 +109,7 @@ foreach ( $states as $state => $expected ) {
 	statement_assert_same( $expected, PublicApi::is_publicly_live( $product ), "Unexpected public eligibility for {$state}." );
 }
 
-$live_parent                    = new Statement_Public_Api_Test_Product( 100, ReleaseState::LIVE );
+$live_parent                    = new Statement_Public_Api_Test_Product( 100, ReleaseState::LIVE, 0, ' <b>EDITION 001</b> ' );
 $private_parent                 = new Statement_Public_Api_Test_Product( 200, ReleaseState::PRIVATE_ACCESS );
 $statement_products[100]        = $live_parent;
 $statement_products[200]        = $private_parent;
@@ -114,6 +120,9 @@ $private_access_variation       = new Statement_Public_Api_Test_Product( 201, ''
 statement_assert_same( true, PublicApi::is_publicly_live( $live_variation ), 'Variation must inherit LIVE eligibility from its canonical parent.' );
 statement_assert_same( false, PublicApi::is_publicly_live( $private_access_variation ), 'Variation must inherit PRIVATE_ACCESS exclusion from its canonical parent.' );
 statement_assert_same( ReleaseState::LIVE, PublicApi::get_release_state( $live_variation ), 'Public API must expose the canonical parent release state.' );
+statement_assert_same( 'EDITION 001', PublicApi::get_edition_label( $live_parent ), 'Simple product edition label must be sanitized and returned.' );
+statement_assert_same( 'EDITION 001', PublicApi::get_edition_label( $live_variation ), 'Variation edition label must resolve through its canonical parent.' );
+statement_assert_same( '', PublicApi::get_edition_label( new Statement_Public_Api_Test_Product( 300, ReleaseState::LIVE ) ), 'Missing edition label must return an empty string.' );
 
 $drop = PublicApi::get_drop( $live_variation );
 statement_assert_same( 10, $drop->term_id ?? null, 'Variation Drop must resolve through its canonical parent.' );

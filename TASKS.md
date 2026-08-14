@@ -68,10 +68,19 @@ Status: complete (2026-08-14)
 
 ## M7 — Product Detail Page
 
+Status: complete (2026-08-14)
+
+- [x] Restrict ordinary direct product pages and crafted Add-to-Cart requests to canonical `LIVE` products.
+- [x] Add a focused native WooCommerce product composition for gallery, provenance, price, description, and purchase form.
+- [x] Preserve native simple/variable purchase mechanics without custom variation JavaScript or cart behavior.
+- [x] Add conditional responsive product CSS, lifecycle/privacy regression tests, and WooCommerce-absence coverage.
+
+## M8 — Cart + Bag Experience
+
 Status: next; not started
 
-- [ ] Build the approved product-detail presentation without starting cart or private-access behavior.
+- [ ] Build the approved cart and Bag experience without starting private-access or archive behavior.
 
 ## Later roadmap
 
-After M7, continue through separately approved cart, private-access, archive presentation, WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.
+After M8, continue through separately approved private-access, archive presentation, WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.

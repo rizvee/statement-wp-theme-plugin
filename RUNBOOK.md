@@ -31,12 +31,13 @@ node --test tests/m3-global-navigation.test.mjs
 node --test tests/m4-domain-model.test.mjs
 node --test tests/m5-homepage.test.mjs
 node --test tests/m6-catalog.test.mjs
+node --test tests/m7-product-detail.test.mjs
 node --check wp-content/themes/statement-collector-theme/assets/js/navigation.js
 ```
 
 Run each PHP fixture under `tests/php/` through the executable reported by `node scripts/lib/resolve-php.mjs`; the runtime linter intentionally covers installable theme/plugin PHP only.
 
-The theme intentionally overrides only `woocommerce/content-product.php` for the shared Statement product card. Its upstream annotation is WooCommerce template version `9.4.0`; review that override against the current upstream template whenever WooCommerce is upgraded. The Shop archive itself remains native WooCommerce, while `taxonomy-statement_drop.php` preserves native product-loop and pagination hooks without a parallel query.
+The theme intentionally overrides `woocommerce/content-product.php` for the shared Statement product card and `woocommerce/content-single-product.php` for the focused product composition. Their upstream annotations are WooCommerce template versions `9.4.0` and `3.6.0`; review both against current upstream templates whenever WooCommerce is upgraded. The Shop archive and outer single-product loader remain native WooCommerce, while `taxonomy-statement_drop.php` preserves native product-loop and pagination hooks without a parallel query.
 
 ## Packaging and release
 

@@ -24,6 +24,12 @@ The plugin must gracefully handle WooCommerce absence and must not depend on a s
 - WooCommerce remains responsible for native catalog query mechanics, loop cardinality, and pagination.
 - The theme owns catalog markup, shared product-card presentation, and contextual removal of generic result-count, ordering, and sidebar UI; it does not interpret release metadata.
 
+## Product boundary
+
+- Core owns direct product visibility and Add-to-Cart eligibility from canonical parent release state; normal public access is `LIVE` only and fails closed when unresolved.
+- WooCommerce remains responsible for native product gallery, pricing, simple/variable selection, and purchase-form mechanics.
+- The theme composes the product page from the core read-only API and native WooCommerce template functions. It does not interpret release metadata or implement custom variation/cart behavior.
+
 ## Extension boundaries
 
 - Use WordPress/WooCommerce public hooks and APIs; never edit core.

@@ -18,6 +18,8 @@ Canonical lifecycle: `UPCOMING` → `PRIVATE_ACCESS` → `LIVE` → `SOLD_OUT` �
 
 Normal public Homepage, Shop, and Drop storefront exposure is restricted to `LIVE`. Public Shop/Drop queries enforce this before results and pagination; missing state plus `UPCOMING`, `PRIVATE_ACCESS`, `SOLD_OUT`, and `ARCHIVED` are excluded. `PRIVATE_ACCESS` requires a future explicitly access-aware context.
 
+Ordinary public product pages and Add-to-Cart requests are also restricted to canonical `LIVE` state. Non-LIVE direct requests fail as uncached 404s and crafted purchase requests fail closed; future explicitly authorized private-access contexts may add a bounded exception without changing the default rule.
+
 ## Product and Drop integrity
 
 - Each Statement product belongs to one historical Drop; it may remain unassigned while in preparation, and the controlled product UI stores zero or one `statement_drop` term.
