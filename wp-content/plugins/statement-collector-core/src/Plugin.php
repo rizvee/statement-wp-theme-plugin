@@ -28,6 +28,9 @@ final class Plugin {
 	 */
 	public static function register_integrations(): void {
 		Drop\Taxonomy::boot();
+		Access\PrivateAccessGate::boot();
+		Access\UnsubscribeService::boot();
+		Access\CacheHardening::boot();
 
 		if ( ! class_exists( 'WooCommerce' ) ) {
 			return;
@@ -38,5 +41,11 @@ final class Plugin {
 		Release\Purchasability::boot();
 		Catalog\Visibility::boot();
 		Cart\Integrity::boot();
+		Access\OrderAudit::boot();
+		Access\EmailAccessGranted::boot();
+		Access\EmailAccessReminder::boot();
+		Access\ReminderService::boot();
+		Access\AdminUi::boot();
+		Access\RetentionService::boot();
 	}
 }

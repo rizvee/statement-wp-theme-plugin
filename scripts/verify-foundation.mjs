@@ -33,6 +33,7 @@ const requiredFiles = [
   'tests/m7-product-detail.test.mjs',
   'tests/m8-cart-bag.test.mjs',
   'tests/m9-checkout.test.mjs',
+  'tests/m10-private-access.test.mjs',
   'tests/php/m1-bootstrap-smoke.php',
   'tests/php/m4-release-state.php',
   'tests/php/m4-purchasability.php',
@@ -54,6 +55,11 @@ const requiredFiles = [
   'tests/php/m8-cart-absence.php',
   'tests/php/m9-checkout-lifecycle.php',
   'tests/php/m9-checkout-absence.php',
+  'tests/php/m10-persistence-secrets.php',
+  'tests/php/m10-grants-sessions-tokens.php',
+  'tests/php/m10-dropconfig-precheck.php',
+  'tests/php/m10-eligibility-gate.php',
+  '.ai/context/private-access-m10.md',
 ];
 
 const requiredDirectories = [
@@ -190,6 +196,27 @@ const approvedRuntimeFiles = [
   'wp-content/plugins/statement-collector-core/src/Product/Metadata.php',
   'wp-content/plugins/statement-collector-core/src/Release/ReleaseState.php',
   'wp-content/plugins/statement-collector-core/src/Release/Purchasability.php',
+  'wp-content/plugins/statement-collector-core/src/Access/Secrets.php',
+  'wp-content/plugins/statement-collector-core/src/Access/Crypto.php',
+  'wp-content/plugins/statement-collector-core/src/Access/Schema.php',
+  'wp-content/plugins/statement-collector-core/src/Access/GrantService.php',
+  'wp-content/plugins/statement-collector-core/src/Access/SessionService.php',
+  'wp-content/plugins/statement-collector-core/src/Access/TokenService.php',
+  'wp-content/plugins/statement-collector-core/src/Access/RateLimiter.php',
+  'wp-content/plugins/statement-collector-core/src/Access/ConsentService.php',
+  'wp-content/plugins/statement-collector-core/src/Access/DropConfig.php',
+  'wp-content/plugins/statement-collector-core/src/Access/Precheck.php',
+  'wp-content/plugins/statement-collector-core/src/Access/EligibilityService.php',
+  'wp-content/plugins/statement-collector-core/src/Access/MakeDropLive.php',
+  'wp-content/plugins/statement-collector-core/src/Access/PrivateAccessGate.php',
+  'wp-content/plugins/statement-collector-core/src/Access/OrderAudit.php',
+  'wp-content/plugins/statement-collector-core/src/Access/EmailAccessGranted.php',
+  'wp-content/plugins/statement-collector-core/src/Access/EmailAccessReminder.php',
+  'wp-content/plugins/statement-collector-core/src/Access/ReminderService.php',
+  'wp-content/plugins/statement-collector-core/src/Access/UnsubscribeService.php',
+  'wp-content/plugins/statement-collector-core/src/Access/AdminUi.php',
+  'wp-content/plugins/statement-collector-core/src/Access/RetentionService.php',
+  'wp-content/plugins/statement-collector-core/src/Access/CacheHardening.php',
 ];
 const runtimeFiles = runtimeRoots.flatMap((runtimeRoot) => walk(join(root, runtimeRoot)))
   .map((path) => relative(root, path).replaceAll('\\', '/'));

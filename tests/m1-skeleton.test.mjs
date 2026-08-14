@@ -26,7 +26,6 @@ const forbiddenRuntimeSignals = [
   /wp_schedule_(?:event|single_event)\s*\(/i,
   /as_schedule_(?:single|recurring)_action\s*\(/i,
   /woocommerce_(?:product_set_stock|reduce_order_stock|restore_order_stock)/i,
-  /private[_ -]?access/i,
   /magic[_ -]?link/i,
   /email[_ -]?reminder/i,
 ];

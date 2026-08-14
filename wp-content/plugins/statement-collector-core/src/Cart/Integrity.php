@@ -113,8 +113,16 @@ final class Integrity {
 	 */
 	public static function is_cart_product_eligible( $product ): bool {
 		$owner = Metadata::get_release_owner( $product );
+		if ( ! is_object( $owner ) ) {
+			return false;
+		}
 
-		return is_object( $owner ) && ReleaseState::LIVE === Metadata::get_release_state( $owner );
+		$state = Metadata::get_release_state( $owner );
+		if ( ReleaseState::LIVE === $state ) {
+			return true;
+		}
+
+		return \Statement\Collector\Core\Access\EligibilityService::is_commerce_eligible( $product );
 	}
 
 	/**

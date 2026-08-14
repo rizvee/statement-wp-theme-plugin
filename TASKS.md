@@ -95,7 +95,21 @@ Status: complete (2026-08-14)
 
 ## M10 — Private Access
 
-Status: next; not started
+Status: complete (2026-08-14)
+
+- [x] Add versioned schema migration manager with 5 operational tables.
+- [x] Add secret configuration and authenticated encryption with keyring versioning.
+- [x] Add HMAC email and IP rate-limit identity hashing.
+- [x] Add immutable grant expiry logic and 5-active session cap per grant.
+- [x] Add single-use access return and marketing unsubscribe tokens.
+- [x] Add rolling IP and email rate limiting thresholds.
+- [x] Add append-only marketing consent event tracking.
+- [x] Add centralized commerce eligibility service reused across product detail, add-to-bag, cart integrity, checkout, and order audit.
+- [x] Add POST/303 PRG private access gate with private cache control and noindex headers.
+- [x] Add Make Drop Live admin action with read-only preflight and atomic transition.
+- [x] Add WooCommerce Action Scheduler marketing reminders with Add-to-Bag auto-cancellation.
+- [x] Add WooCommerce admin grant management UI with masked email reporting and re-grant support.
+- [x] Add privacy data retention cleanup for expired tokens, rate limits, and inactive grants.
 
 ## Later roadmap
 

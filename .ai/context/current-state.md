@@ -37,8 +37,9 @@ Updated: 2026-08-14
 - M8 Cart Integrity is the final checkout lifecycle gate. WooCommerce invokes it through `woocommerce_check_cart_items`; stale non-`LIVE` lines, including variations resolved through their canonical parent, are removed with one blocking lifecycle-neutral error before native order creation may proceed.
 - Checkout coupon-entry presentation is omitted only on the normal cart-backed Checkout. The coupon engine, applied discounts, native login, express/pay hook compatibility, payment gateways, and shipping methods remain untouched.
 - Checkout styling excludes order-pay and order-received contexts. No custom checkout fields, shipping/payment integration, order creation, or first-party checkout JavaScript was added.
-- Theme and plugin versions remain `0.1.0`; internal milestones do not trigger package-version changes before an approved release task.
-- The next approved milestone is M10 — Private Access; it has not started.
+- M10 is complete: Private Access architecture is implemented and fully verified with 5 operational database tables, authenticated encryption with versioned keyring, identity HMAC hashing, 5-active session cap, single-use tokens, rolling rate limits, append-only consent tracking, centralized commerce eligibility service across M7/M8/M9, POST/303 PRG private access gate, Make Drop Live admin action, Action Scheduler marketing reminders with Add-to-Bag cancellation, WooCommerce admin grant UI with masked email reporting, privacy data retention cleanup, and strict private response cache/SEO hardening.
+- Internal milestones do not trigger package-version changes before an approved release task.
+- The next approved milestone is M11 — Archive & Terminal Presentation.
 
 ## Local environment
 

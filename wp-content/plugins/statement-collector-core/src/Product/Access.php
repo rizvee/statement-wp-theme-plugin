@@ -42,11 +42,16 @@ final class Access {
 			return true;
 		}
 
-		return ReleaseState::LIVE === Metadata::get_release_state( $release_owner );
+		$state = Metadata::get_release_state( $release_owner );
+		if ( ReleaseState::LIVE === $state ) {
+			return true;
+		}
+
+		return \Statement\Collector\Core\Access\EligibilityService::is_commerce_eligible( $product );
 	}
 
 	/**
-	 * Turn non-LIVE direct product requests into ordinary uncached 404 responses.
+	 * Turn non-eligible direct product requests into ordinary uncached 404 responses.
 	 */
 	public static function guard_direct_product(): void {
 		if ( self::is_non_public_request() || ! function_exists( 'is_singular' ) || ! is_singular( 'product' ) ) {
@@ -79,7 +84,7 @@ final class Access {
 	}
 
 	/**
-	 * Reject crafted Add-to-Cart requests for every state except LIVE.
+	 * Reject Add-to-Cart requests for items that are not commerce eligible.
 	 *
 	 * @param bool  $passed         Prior WooCommerce validation result.
 	 * @param int   $product_id     Parent or simple product ID.
@@ -108,7 +113,8 @@ final class Access {
 		$is_live       = is_object( $release_owner )
 			&& ReleaseState::LIVE === Metadata::get_release_state( $release_owner );
 
-		if ( $is_live ) {
+		if ( $is_live || \Statement\Collector\Core\Access\EligibilityService::is_commerce_eligible( $product ) ) {
+			do_action( 'statement_private_access_added_to_cart', $product );
 			return true;
 		}
 
