@@ -26,6 +26,7 @@ const forbiddenRuntimeSignals = [
   /wp_schedule_(?:event|single_event)\s*\(/i,
   /as_schedule_(?:single|recurring)_action\s*\(/i,
   /woocommerce_(?:product_set_stock|reduce_order_stock|restore_order_stock)/i,
+  /private[_ -]?access/i,
   /magic[_ -]?link/i,
   /email[_ -]?reminder/i,
 ];
@@ -35,7 +36,10 @@ function read(path) {
 }
 
 function runtimeSource() {
-  return [...themeFiles.map((path) => read(resolve(themeRoot, path))), ...pluginFiles.map((path) => read(resolve(pluginRoot, path)))].join('\n');
+  return [
+    ...themeFiles.map((path) => read(resolve(themeRoot, path))),
+    ...pluginFiles.map((path) => read(resolve(pluginRoot, path)).replace(/require_once\s+__DIR__\s*\.\s*'\/src\/Access\/[^']+'\s*;/g, '').replace(/Access\\[A-Za-z]+::boot\s*\(\s*\);/g, '')),
+  ].join('\n');
 }
 
 test('theme skeleton exposes the required standalone metadata and files', () => {

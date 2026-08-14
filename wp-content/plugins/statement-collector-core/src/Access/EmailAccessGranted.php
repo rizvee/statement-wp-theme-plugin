@@ -32,6 +32,21 @@ class EmailAccessGranted {
 		global $wpdb;
 		$now_ts = time();
 
+		if ( isset( $wpdb ) ) {
+			$grants_table = $wpdb->prefix . 'statement_access_grants';
+			$grant = $wpdb->get_row(
+				$wpdb->prepare( "SELECT access_email_sent_at FROM {$grants_table} WHERE id = %d", $grant_id ),
+				ARRAY_A
+			);
+			if ( is_array( $grant ) && ! empty( $grant['access_email_sent_at'] ) ) {
+				$last_sent_ts = strtotime( (string) $grant['access_email_sent_at'] . ' UTC' );
+				if ( ( $now_ts - $last_sent_ts ) < TokenService::RESEND_COOLDOWN_SECONDS ) {
+					// Cooldown active: DO NOT revoke existing token or issue new access email.
+					return false;
+				}
+			}
+		}
+
 		$config = DropConfig::get_config( $drop_id );
 		$exp_ts = min( $now_ts + TokenService::MAX_ACCESS_RETURN_LIFETIME, $config['closes_at_ts'] ?? ( $now_ts + TokenService::MAX_ACCESS_RETURN_LIFETIME ) );
 

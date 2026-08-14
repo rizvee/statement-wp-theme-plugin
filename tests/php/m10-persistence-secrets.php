@@ -87,6 +87,25 @@ $encrypted_unknown['key_version'] = 'v999';
 $decrypted_unknown = Crypto::decrypt_email( $encrypted_unknown );
 statement_assert_same( null, $decrypted_unknown, 'Decrypt email with unknown key version must return null.' );
 
+// Tamper tests
+$tampered_ct = $encrypted;
+$tampered_ct['ciphertext'] = base64_encode( 'tampered_data_string' );
+statement_assert_same( null, Crypto::decrypt_email( $tampered_ct ), 'Tampered ciphertext must fail authentication and return null.' );
+
+$tampered_nonce = $encrypted;
+$tampered_nonce['nonce'] = base64_encode( str_repeat( "\x00", 12 ) );
+statement_assert_same( null, Crypto::decrypt_email( $tampered_nonce ), 'Tampered nonce must fail authentication and return null.' );
+
+if ( isset( $encrypted['tag'] ) ) {
+	$tampered_tag = $encrypted;
+	$tampered_tag['tag'] = base64_encode( str_repeat( "\x00", 16 ) );
+	statement_assert_same( null, Crypto::decrypt_email( $tampered_tag ), 'Tampered tag must fail authentication and return null.' );
+}
+
+$unsupported_algo = $encrypted;
+$unsupported_algo['algo'] = 'unsupported_cipher_3000';
+statement_assert_same( null, Crypto::decrypt_email( $unsupported_algo ), 'Unsupported crypto backend must return null (fail closed).' );
+
 // 4. Database Schema Tables List
 $table_names = Schema::get_table_names( 'wp_' );
 statement_assert_same( 5, count( $table_names ), 'Schema must define 5 operational tables.' );

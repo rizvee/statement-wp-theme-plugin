@@ -17,6 +17,7 @@ final class ReminderService {
 		add_action( 'statement_schedule_private_access_reminder', array( self::class, 'schedule_reminder' ), 10, 4 );
 		add_action( self::ACTION_HOOK, array( self::class, 'handle_reminder_action' ) );
 		add_action( 'statement_private_access_added_to_cart', array( self::class, 'cancel_reminder_on_add_to_bag' ) );
+		add_action( 'woocommerce_checkout_order_processed', array( self::class, 'cancel_reminder_on_purchase' ), 10, 3 );
 	}
 
 	/**
@@ -185,5 +186,38 @@ final class ReminderService {
 				array( 'id' => $grant_id )
 			);
 		}
+	}
+
+	/**
+	 * Permanently cancels pending reminders when an order is created.
+	 */
+	public static function cancel_reminder_on_purchase( int $order_id, array $posted_data = array(), $order = null ): void {
+		global $wpdb;
+		if ( ! isset( $wpdb ) ) {
+			return;
+		}
+
+		$billing_email = '';
+		if ( $order && method_exists( $order, 'get_billing_email' ) ) {
+			$billing_email = (string) $order->get_billing_email();
+		} elseif ( isset( $posted_data['billing_email'] ) ) {
+			$billing_email = sanitize_email( wp_unslash( $posted_data['billing_email'] ) );
+		}
+
+		$email_hash = Crypto::hash_email( $billing_email );
+		if ( ! $email_hash ) {
+			return;
+		}
+
+		$now_str = date( 'Y-m-d H:i:s' );
+		$wpdb->query(
+			$wpdb->prepare(
+				"UPDATE {$wpdb->prefix}statement_access_grants
+				SET reminder_cancelled_at = %s, reminder_cancel_reason = 'purchased'
+				WHERE email_hash = %s AND reminder_scheduled_at IS NOT NULL AND reminder_sent_at IS NULL AND reminder_cancelled_at IS NULL",
+				$now_str,
+				$email_hash
+			)
+		);
 	}
 }

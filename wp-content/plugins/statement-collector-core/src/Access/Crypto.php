@@ -111,34 +111,19 @@ final class Crypto {
 				$tag
 			);
 
-			if ( false !== $ciphertext ) {
+			if ( false !== $ciphertext && '' !== $tag ) {
 				return array(
 					'ciphertext'  => base64_encode( $ciphertext ),
 					'algo'        => 'aes-256-gcm',
 					'key_version' => $key_version,
-					'nonce'       => base64_encode( $iv . $tag ),
+					'nonce'       => base64_encode( $iv ),
+					'tag'         => base64_encode( $tag ),
 				);
 			}
 		}
 
-		// Fallback authenticated stream cipher using hash_hmac (sha256 ctr + Encrypt-then-MAC)
-		$enc_key = hash_hmac( 'sha256', 'enc', $raw_key, true );
-		$mac_key = hash_hmac( 'sha256', 'mac', $raw_key, true );
-		$nonce = random_bytes( 16 );
-		$stream = '';
-		$len = strlen( $normalized );
-		for ( $i = 0; strlen( $stream ) < $len; $i++ ) {
-			$stream .= hash_hmac( 'sha256', $nonce . pack( 'N', $i ), $enc_key, true );
-		}
-		$ciphertext = $normalized ^ substr( $stream, 0, $len );
-		$tag = hash_hmac( 'sha256', $nonce . $ciphertext, $mac_key, true );
-
-		return array(
-			'ciphertext'  => base64_encode( $ciphertext ),
-			'algo'        => 'hmac-sha256-ctr',
-			'key_version' => $key_version,
-			'nonce'       => base64_encode( $nonce . $tag ),
-		);
+		// If neither standard AEAD backend is available, fail closed.
+		return null;
 	}
 
 	/**
@@ -175,6 +160,9 @@ final class Crypto {
 		$key = hash( 'sha256', $raw_key, true );
 
 		if ( 'xchacha20-poly1305' === $algo && function_exists( 'sodium_crypto_aead_xchacha20poly1305_ietf_decrypt' ) ) {
+			if ( strlen( $nonce_raw ) !== SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES ) {
+				return null;
+			}
 			$decrypted = @sodium_crypto_aead_xchacha20poly1305_ietf_decrypt(
 				$ciphertext,
 				'',
@@ -186,7 +174,11 @@ final class Crypto {
 
 		if ( 'aes-256-gcm' === $algo && function_exists( 'openssl_decrypt' ) ) {
 			$iv = substr( $nonce_raw, 0, 12 );
-			$tag = substr( $nonce_raw, 12 );
+			$tag = isset( $payload['tag'] ) ? base64_decode( (string) $payload['tag'], true ) : substr( $nonce_raw, 12 );
+			if ( false === $tag || '' === $tag ) {
+				return null;
+			}
+
 			$decrypted = @openssl_decrypt(
 				$ciphertext,
 				'aes-256-gcm',
@@ -196,25 +188,6 @@ final class Crypto {
 				$tag
 			);
 			return false !== $decrypted ? $decrypted : null;
-		}
-
-		if ( 'hmac-sha256-ctr' === $algo ) {
-			$nonce = substr( $nonce_raw, 0, 16 );
-			$tag = substr( $nonce_raw, 16 );
-			$enc_key = hash_hmac( 'sha256', 'enc', $raw_key, true );
-			$mac_key = hash_hmac( 'sha256', 'mac', $raw_key, true );
-
-			$calc_tag = hash_hmac( 'sha256', $nonce . $ciphertext, $mac_key, true );
-			if ( ! hash_equals( $calc_tag, $tag ) ) {
-				return null;
-			}
-
-			$stream = '';
-			$len = strlen( $ciphertext );
-			for ( $i = 0; strlen( $stream ) < $len; $i++ ) {
-				$stream .= hash_hmac( 'sha256', $nonce . pack( 'N', $i ), $enc_key, true );
-			}
-			return $ciphertext ^ substr( $stream, 0, $len );
 		}
 
 		return null;

@@ -20,6 +20,11 @@ final class Plugin {
 		}
 
 		self::$booted = true;
+
+		if ( defined( 'STATEMENT_COLLECTOR_CORE_FILE' ) ) {
+			register_activation_hook( STATEMENT_COLLECTOR_CORE_FILE, array( Access\Schema::class, 'install' ) );
+		}
+
 		add_action( 'plugins_loaded', array( self::class, 'register_integrations' ) );
 	}
 
@@ -27,6 +32,7 @@ final class Plugin {
 	 * Register domain integrations after WordPress plugins load.
 	 */
 	public static function register_integrations(): void {
+		Access\Schema::maybe_upgrade();
 		Drop\Taxonomy::boot();
 		Access\PrivateAccessGate::boot();
 		Access\UnsubscribeService::boot();

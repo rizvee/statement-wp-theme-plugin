@@ -163,4 +163,14 @@ final class Schema {
 
 		return true;
 	}
+
+	/**
+	 * Idempotently upgrades schema if current version option is lower than DB_VERSION.
+	 */
+	public static function maybe_upgrade(): void {
+		$installed = get_option( self::OPTION_KEY, '' );
+		if ( version_compare( (string) $installed, self::DB_VERSION, '<' ) ) {
+			self::install();
+		}
+	}
 }
