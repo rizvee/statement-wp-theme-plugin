@@ -32,12 +32,15 @@ node --test tests/m4-domain-model.test.mjs
 node --test tests/m5-homepage.test.mjs
 node --test tests/m6-catalog.test.mjs
 node --test tests/m7-product-detail.test.mjs
+node --test tests/m8-cart-bag.test.mjs
 node --check wp-content/themes/statement-collector-theme/assets/js/navigation.js
 ```
 
 Run each PHP fixture under `tests/php/` through the executable reported by `node scripts/lib/resolve-php.mjs`; the runtime linter intentionally covers installable theme/plugin PHP only.
 
-The theme intentionally overrides `woocommerce/content-product.php` for the shared Statement product card and `woocommerce/content-single-product.php` for the focused product composition. Their upstream annotations are WooCommerce template versions `9.4.0` and `3.6.0`; review both against current upstream templates whenever WooCommerce is upgraded. The Shop archive and outer single-product loader remain native WooCommerce, while `taxonomy-statement_drop.php` preserves native product-loop and pagination hooks without a parallel query.
+The theme intentionally overrides `woocommerce/content-product.php` for the shared Statement product card, `woocommerce/content-single-product.php` for the focused product composition, and `woocommerce/cart/cart.php` for the classic Cart presentation. Their upstream annotations are WooCommerce template versions `9.4.0`, `3.6.0`, and `11.0.0`; review all three against current upstream templates whenever WooCommerce is upgraded. The Shop archive, outer single-product loader, empty-cart template, cart totals, and checkout button remain native WooCommerce, while `taxonomy-statement_drop.php` preserves native product-loop and pagination hooks without a parallel query.
+
+Before deployment acceptance, verify that the live WordPress Cart page invokes the classic WooCommerce Cart flow required by `woocommerce/cart/cart.php`; do not replace a Cart Block or edit the live page automatically from this repository workflow.
 
 ## Packaging and release
 

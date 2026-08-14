@@ -30,6 +30,12 @@ The plugin must gracefully handle WooCommerce absence and must not depend on a s
 - WooCommerce remains responsible for native product gallery, pricing, simple/variable selection, and purchase-form mechanics.
 - The theme composes the product page from the core read-only API and native WooCommerce template functions. It does not interpret release metadata or implement custom variation/cart behavior.
 
+## Cart boundary
+
+- Core revalidates restored and current cart lines against canonical parent release state; only `LIVE` may remain in the normal public cart or proceed toward checkout.
+- WooCommerce owns cart sessions, quantities, removal URLs, totals, notices, and checkout routing.
+- The theme owns server-rendered Bag count presentation and the classic Cart template/CSS. It does not interpret lifecycle metadata, mutate stock, or add cart networking.
+
 ## Extension boundaries
 
 - Use WordPress/WooCommerce public hooks and APIs; never edit core.

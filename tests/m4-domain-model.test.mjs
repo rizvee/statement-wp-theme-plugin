@@ -125,10 +125,15 @@ test('theme remains presentation-only and free of M4 domain ownership', () => {
   assert.doesNotMatch(themeSource, /register_taxonomy|_statement_release_state|_statement_edition_label|woocommerce_is_purchasable|ReleaseState::/i);
 });
 
-test('M4 plugin runtime contains no later-milestone or forbidden production model', () => {
-  const source = walk(pluginRoot)
-    .filter((path) => extname(path).toLowerCase() === '.php')
-    .map((path) => readFileSync(path, 'utf8'))
+test('M4 domain runtime contains no later-milestone or forbidden production model', () => {
+  const source = [
+    'src/Drop/Taxonomy.php',
+    'src/Product/Admin.php',
+    'src/Product/Metadata.php',
+    'src/Release/Purchasability.php',
+    'src/Release/ReleaseState.php',
+  ]
+    .map((path) => read(path))
     .join('\n');
   const forbidden = [
     /register_rest_route|wp_ajax_|wp_schedule_|as_schedule_/i,

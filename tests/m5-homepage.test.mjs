@@ -165,6 +165,6 @@ test('M5 runtime remains absence-safe, privacy-safe, and inside homepage scope',
   assert.match(homePhp, /class_exists\(\s*['"]Statement\\Collector\\Core\\PublicApi['"]\s*\)/);
   assert.match(homePhp, /function_exists\(\s*['"]wc_get_products['"]\s*\)/);
   assert.doesNotMatch(themeSource, /PRIVATE_ACCESS|_statement_release_state|register_rest_route|wp_ajax_|Action Scheduler|magic[_ -]?link|access[_ -]?session/i);
-  assert.doesNotMatch(themeSource, /elementor|\bACF\b|carousel|slider|animation[_ -]?library|homepage[_ -]?(?:option|setting)|mini[-_ ]?cart|cart[_ -]?count|checkout/i);
+  assert.doesNotMatch(homeSource, /elementor|\bACF\b|carousel|slider|animation[_ -]?library|homepage[_ -]?(?:option|setting)|mini[-_ ]?cart|cart[_ -]?count|checkout/i);
   assert.doesNotMatch(homeSource, /template-(?:product|shop)|single-product|archive-product/i);
 });

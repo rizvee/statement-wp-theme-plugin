@@ -77,10 +77,19 @@ Status: complete (2026-08-14)
 
 ## M8 — Cart + Bag Experience
 
+Status: complete (2026-08-14)
+
+- [x] Keep the direct Bag link and add a safe server-rendered WooCommerce quantity count without fragments or a drawer.
+- [x] Revalidate restored and current cart lines against canonical `LIVE`, including variation parent ownership.
+- [x] Add the restrained classic WooCommerce Cart presentation while retaining native quantity, removal, totals, and checkout routing.
+- [x] Omit Cart coupon entry and cross-sell presentation without changing WooCommerce data or global settings.
+
+## M9 — Checkout
+
 Status: next; not started
 
-- [ ] Build the approved cart and Bag experience without starting private-access or archive behavior.
+- [ ] Build the approved Checkout presentation without starting private-access, archive, payment-gateway, or shipping integration work.
 
 ## Later roadmap
 
-After M8, continue through separately approved private-access, archive presentation, WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.
+After M9, continue through separately approved private-access, archive presentation, WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.

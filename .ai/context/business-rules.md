@@ -20,6 +20,8 @@ Normal public Homepage, Shop, and Drop storefront exposure is restricted to `LIV
 
 Ordinary public product pages and Add-to-Cart requests are also restricted to canonical `LIVE` state. Non-LIVE direct requests fail as uncached 404s and crafted purchase requests fail closed; future explicitly authorized private-access contexts may add a bounded exception without changing the default rule.
 
+A product must remain canonically `LIVE` to remain in the normal public cart and proceed toward checkout. Restored or current non-LIVE cart lines fail closed and are removed with lifecycle-neutral public messaging; variations inherit the parent product's canonical state.
+
 ## Product and Drop integrity
 
 - Each Statement product belongs to one historical Drop; it may remain unassigned while in preparation, and the controlled product UI stores zero or one `statement_drop` term.

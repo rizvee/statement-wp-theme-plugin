@@ -37,5 +37,6 @@ final class Plugin {
 		Product\Access::boot();
 		Release\Purchasability::boot();
 		Catalog\Visibility::boot();
+		Cart\Integrity::boot();
 	}
 }

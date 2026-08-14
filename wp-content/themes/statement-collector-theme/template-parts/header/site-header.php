@@ -39,7 +39,7 @@ $cart_url    = get_cart_url();
 				<a class="statement-header-action" href="<?php echo esc_url( $account_url ); ?>"><?php esc_html_e( 'Account', 'statement-collector-theme' ); ?></a>
 			<?php endif; ?>
 			<?php if ( null !== $cart_url ) : ?>
-				<a class="statement-header-action" href="<?php echo esc_url( $cart_url ); ?>"><?php esc_html_e( 'Bag', 'statement-collector-theme' ); ?></a>
+				<a class="statement-header-action" href="<?php echo esc_url( $cart_url ); ?>"><?php echo esc_html( get_bag_label() ); ?></a>
 			<?php endif; ?>
 		</div>
 	</div>
@@ -61,7 +61,7 @@ $cart_url    = get_cart_url();
 
 		<div class="statement-mobile-bag">
 			<?php if ( null !== $cart_url ) : ?>
-				<a class="statement-header-action" href="<?php echo esc_url( $cart_url ); ?>"><?php esc_html_e( 'Bag', 'statement-collector-theme' ); ?></a>
+				<a class="statement-header-action" href="<?php echo esc_url( $cart_url ); ?>"><?php echo esc_html( get_bag_label() ); ?></a>
 			<?php endif; ?>
 		</div>
 	</div>

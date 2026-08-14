@@ -11,6 +11,7 @@ function enqueue_assets(): void {
 	$is_home    = function_exists( 'is_front_page' ) && is_front_page();
 	$is_catalog = is_statement_catalog();
 	$is_product = is_statement_product();
+	$is_cart    = is_statement_cart();
 
 	wp_enqueue_style(
 		'statement-collector-base',
@@ -71,6 +72,15 @@ function enqueue_assets(): void {
 		wp_enqueue_style(
 			'statement-collector-product',
 			get_theme_file_uri( 'assets/css/product.css' ),
+			array( 'statement-collector-base', 'statement-collector-layout' ),
+			STATEMENT_COLLECTOR_THEME_VERSION
+		);
+	}
+
+	if ( $is_cart ) {
+		wp_enqueue_style(
+			'statement-collector-cart',
+			get_theme_file_uri( 'assets/css/cart.css' ),
 			array( 'statement-collector-base', 'statement-collector-layout' ),
 			STATEMENT_COLLECTOR_THEME_VERSION
 		);
