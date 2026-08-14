@@ -83,4 +83,68 @@ final class PublicApi {
 
 		return null;
 	}
+
+	/**
+	 * Whether the product is in terminal SOLD_OUT state.
+	 *
+	 * @param object $product WooCommerce product-like object.
+	 */
+	public static function is_sold_out( $product ): bool {
+		return ReleaseState::SOLD_OUT === self::get_release_state( $product );
+	}
+
+	/**
+	 * Whether the product is in terminal ARCHIVED state.
+	 *
+	 * @param object $product WooCommerce product-like object.
+	 */
+	public static function is_archived( $product ): bool {
+		return ReleaseState::ARCHIVED === self::get_release_state( $product );
+	}
+
+	/**
+	 * Retrieves products in ARCHIVED state for dedicated Archive presentation.
+	 *
+	 * @param int $limit Max items to return.
+	 * @return array WooCommerce product objects.
+	 */
+	public static function get_archive_products( int $limit = 12 ): array {
+		if ( ! function_exists( 'wc_get_products' ) ) {
+			return array();
+		}
+
+		return wc_get_products(
+			array(
+				'limit'      => $limit,
+				'status'     => 'publish',
+				'meta_query' => array(
+					array(
+						'key'     => Metadata::RELEASE_STATE_KEY,
+						'value'   => ReleaseState::ARCHIVED,
+						'compare' => '=',
+					),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Retrieves past Drop taxonomy terms.
+	 *
+	 * @return array
+	 */
+	public static function get_past_drops(): array {
+		if ( ! function_exists( 'get_terms' ) ) {
+			return array();
+		}
+
+		$terms = get_terms(
+			array(
+				'taxonomy'   => Taxonomy::KEY,
+				'hide_empty' => false,
+			)
+		);
+
+		return is_array( $terms ) ? $terms : array();
+	}
 }

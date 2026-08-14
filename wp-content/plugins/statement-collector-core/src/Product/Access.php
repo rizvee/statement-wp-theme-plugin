@@ -43,11 +43,15 @@ final class Access {
 		}
 
 		$state = Metadata::get_release_state( $release_owner );
-		if ( ReleaseState::LIVE === $state ) {
+		if ( in_array( $state, array( ReleaseState::LIVE, ReleaseState::SOLD_OUT, ReleaseState::ARCHIVED ), true ) ) {
 			return true;
 		}
 
-		return \Statement\Collector\Core\Access\EligibilityService::is_commerce_eligible( $product );
+		if ( ReleaseState::PRIVATE_ACCESS === $state ) {
+			return \Statement\Collector\Core\Access\EligibilityService::is_commerce_eligible( $product );
+		}
+
+		return false;
 	}
 
 	/**

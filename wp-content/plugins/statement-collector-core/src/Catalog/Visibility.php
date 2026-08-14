@@ -56,8 +56,8 @@ final class Visibility {
 
 		$meta_query[] = array(
 			'key'     => Metadata::RELEASE_STATE_KEY,
-			'value'   => ReleaseState::LIVE,
-			'compare' => '=',
+			'value'   => array( ReleaseState::LIVE, ReleaseState::SOLD_OUT ),
+			'compare' => 'IN',
 		);
 
 		$query->set( 'meta_query', $meta_query );
@@ -141,8 +141,8 @@ final class Visibility {
 
 		$meta_query[] = array(
 			'key'     => Metadata::RELEASE_STATE_KEY,
-			'value'   => ReleaseState::LIVE,
-			'compare' => '=',
+			'value'   => array( ReleaseState::LIVE, ReleaseState::SOLD_OUT ),
+			'compare' => 'IN',
 		);
 
 		$args['meta_query'] = $meta_query;
@@ -167,8 +167,8 @@ final class Visibility {
 
 		$meta_query[] = array(
 			'key'     => Metadata::RELEASE_STATE_KEY,
-			'value'   => ReleaseState::LIVE,
-			'compare' => '=',
+			'value'   => array( ReleaseState::LIVE, ReleaseState::SOLD_OUT ),
+			'compare' => 'IN',
 		);
 
 		$args['meta_query'] = $meta_query;

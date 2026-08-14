@@ -61,4 +61,15 @@ $price_html = $product->get_price_html();
 	<?php if ( is_string( $price_html ) && '' !== $price_html ) : ?>
 		<div class="statement-piece__price"><?php echo wp_kses_post( $price_html ); ?></div>
 	<?php endif; ?>
+
+	<?php
+	$state = class_exists( 'Statement\Collector\Core\PublicApi' )
+		? \Statement\Collector\Core\PublicApi::get_release_state( $product )
+		: 'LIVE';
+	if ( in_array( $state, array( 'SOLD_OUT', 'ARCHIVED' ), true ) ) :
+	?>
+		<p class="statement-piece__status">
+			<span class="statement-badge statement-badge--<?php echo esc_attr( strtolower( $state ) ); ?>"><?php echo esc_html( 'SOLD_OUT' === $state ? __( 'SOLD OUT', 'statement-collector-theme' ) : __( 'ARCHIVED', 'statement-collector-theme' ) ); ?></span>
+		</p>
+	<?php endif; ?>
 </article>

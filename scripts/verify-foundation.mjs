@@ -34,6 +34,7 @@ const requiredFiles = [
   'tests/m8-cart-bag.test.mjs',
   'tests/m9-checkout.test.mjs',
   'tests/m10-private-access.test.mjs',
+  'tests/m11-terminal-archive.test.mjs',
   'tests/php/m1-bootstrap-smoke.php',
   'tests/php/m4-release-state.php',
   'tests/php/m4-purchasability.php',
@@ -60,6 +61,7 @@ const requiredFiles = [
   'tests/php/m10-dropconfig-precheck.php',
   'tests/php/m10-eligibility-gate.php',
   'tests/php/m10-atomicity-api-protection.php',
+  'tests/php/m11-terminal-archive.php',
   '.ai/context/private-access-m10.md',
 ];
 
@@ -146,6 +148,7 @@ const approvedRuntimeFiles = [
   'wp-content/themes/statement-collector-theme/header.php',
   'wp-content/themes/statement-collector-theme/footer.php',
   'wp-content/themes/statement-collector-theme/front-page.php',
+  'wp-content/themes/statement-collector-theme/page-archive.php',
   'wp-content/themes/statement-collector-theme/theme.json',
   'wp-content/themes/statement-collector-theme/assets/css/base.css',
   'wp-content/themes/statement-collector-theme/assets/css/layout.css',
