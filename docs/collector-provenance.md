@@ -22,13 +22,17 @@ Captured write-once at order line item creation (`woocommerce_checkout_create_or
 - `_statement_edition_label_at_purchase`: Human-readable edition label at purchase time (e.g. `First Edition`)
 - `_statement_product_title_at_purchase`: Piece title at purchase time
 - `_statement_release_state_at_purchase`: Statement release state at purchase time (`LIVE`, `PRIVATE_ACCESS`, `SOLD_OUT`, `ARCHIVED`)
-- `_statement_purchased_at`: GMT timestamp (`Y-m-d H:i:s`)
+- `_statement_purchased_at`: Capture timestamp (`Y-m-d H:i:s`)
+
+### Timestamp Semantics
+
+`_statement_purchased_at` represents the exact timestamp at which the Statement purchase-provenance snapshot was captured during order creation. It is **NOT** proof of payment, commercial completion, or collector ownership. Even if an order later becomes `failed`, `cancelled`, or `refunded`, the capture timestamp remains as a historical record of order creation.
 
 ---
 
-## Historical Immutability & Idempotency
+## Historical Immutability & Snapshot Integrity
 
-1. **Write-Once**: Once `_statement_provenance_version` exists on a WooCommerce line item, `Statement\Collector\Core\Order\Provenance::capture_line_item_provenance` will not mutate or overwrite the snapshot.
+1. **Write-Once & Integrity**: Once `_statement_provenance_version` exists on a WooCommerce line item, `Statement\Collector\Core\Order\Provenance::capture_line_item_provenance` will not mutate or overwrite the snapshot. `Provenance::get_snapshot_status()` classifies snapshots as `complete`, `invalid`, or `missing`.
 2. **Product / Term Editing**: Subsequent edits to product titles, Drop names, edition labels, or release states in the WordPress admin do not rewrite historical order provenance.
 3. **Missing / Deleted Source**: If a product or Drop taxonomy term is later deleted, customer and admin order views render using the frozen snapshot without crashing.
 
@@ -41,16 +45,17 @@ Captured write-once at order line item creation (`woocommerce_checkout_create_or
 
 ---
 
-## Future Commercial Completion Helper
+## Future Commercial Completion Helper & Partial Refunds
 
 `Statement\Collector\Core\Order\Completion::is_commercially_completed( $order )`:
 - Returns `true` for `processing` and `completed` status.
 - Returns `false` for `pending`, `on-hold`, `failed`, `cancelled`, and `refunded` status.
+- **Boundary Notice**: Evaluates order-level status only. It does NOT establish legal ownership or per-item certificate eligibility. Partial line item refunds do not alter order-level status evaluation.
 
 ---
 
 ## Presentation & Security
 
-- **Admin Order View**: Read-only display rendered via `woocommerce_after_order_itemmeta`. Contains no input forms or edit buttons.
-- **Customer Order View**: Renders status-aware confirmation banners (`Order Confirmed / Your piece has been secured` for processing/completed) and frozen provenance details. Preserves native WooCommerce order key and session ownership security.
-- **Transactional Emails**: Enriches WooCommerce order emails with frozen provenance data. Operates independently of M10 marketing consent flags.
+- **Admin Order View**: Read-only display rendered via `woocommerce_after_order_itemmeta` with `Captured At:` timestamp label and invalid snapshot handling. Contains no input forms or edit buttons.
+- **Customer Order View**: Renders status-aware confirmation banners (`Order Confirmed / Your piece has been secured` for processing/completed, status-neutral for pending/on-hold/failed/cancelled/refunded) and frozen provenance details. Preserves native WooCommerce order key and session ownership security.
+- **Transactional Emails**: Enriches WooCommerce order emails with frozen provenance data. Operates independently of M10 marketing consent flags. Supports HTML and plain-text (zero HTML tags) rendering.

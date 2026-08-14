@@ -50,14 +50,23 @@ final class CustomerOrderView {
 			$title = __( 'Order Confirmed', 'statement-collector-core' );
 			$sub   = __( 'Your piece has been secured.', 'statement-collector-core' );
 		} elseif ( 'pending' === $status ) {
-			$title = __( 'Order Awaiting Payment', 'statement-collector-core' );
-			$sub   = __( 'Your order has been received and is awaiting payment confirmation.', 'statement-collector-core' );
+			$title = __( 'Order Received', 'statement-collector-core' );
+			$sub   = __( 'Your order has been received and is awaiting payment.', 'statement-collector-core' );
 		} elseif ( 'on-hold' === $status ) {
 			$title = __( 'Order Received', 'statement-collector-core' );
 			$sub   = __( 'Your order has been received and is currently on hold.', 'statement-collector-core' );
+		} elseif ( 'failed' === $status ) {
+			$title = __( 'Payment Not Completed', 'statement-collector-core' );
+			$sub   = __( 'Your payment attempt was not completed. Please review your order details.', 'statement-collector-core' );
+		} elseif ( 'cancelled' === $status ) {
+			$title = __( 'Order Cancelled', 'statement-collector-core' );
+			$sub   = __( 'This order has been cancelled.', 'statement-collector-core' );
+		} elseif ( 'refunded' === $status ) {
+			$title = __( 'Order Refunded', 'statement-collector-core' );
+			$sub   = __( 'This order has been refunded.', 'statement-collector-core' );
 		}
 
-		$shop_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : '';
+		$shop_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : ( function_exists( 'home_url' ) ? home_url( '/' ) : '/' );
 
 		?>
 		<div class="statement-thankyou-hero statement-stack" style="margin-bottom: 2rem; padding: 2rem 0; border-bottom: 1px solid var(--wp--preset--color--neutral-200, #e0e0e0);">
@@ -82,7 +91,7 @@ final class CustomerOrderView {
 	public static function render_item_provenance_customer( int $item_id, $item, $order ): void {
 		unset( $item_id, $order );
 
-		if ( ! Provenance::is_captured( $item ) ) {
+		if ( ! Provenance::is_valid( $item ) ) {
 			return;
 		}
 

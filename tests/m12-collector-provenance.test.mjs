@@ -5,7 +5,6 @@ import test from 'node:test';
 
 const root = resolve(import.meta.dirname, '..');
 const pluginRoot = resolve(root, 'wp-content', 'plugins', 'statement-collector-core');
-const themeRoot = resolve(root, 'wp-content', 'themes', 'statement-collector-theme');
 
 test('M12 focused Order domain files exist', () => {
   const files = [
@@ -29,6 +28,8 @@ test('Provenance captures immutable snapshot metadata during order line item cre
   assert.ok(provPhp.includes('_statement_drop_name_at_purchase'), 'Provenance.php must capture Drop name at purchase.');
   assert.ok(provPhp.includes('_statement_edition_label_at_purchase'), 'Provenance.php must capture edition label at purchase.');
   assert.ok(provPhp.includes('is_captured'), 'Provenance.php must enforce write-once idempotency check.');
+  assert.ok(provPhp.includes('get_snapshot_status'), 'Provenance.php must implement snapshot status validation.');
+  assert.ok(provPhp.includes('is_valid'), 'Provenance.php must implement completeness check.');
 });
 
 test('Completion helper evaluates order status deterministically without certificate generation', () => {
@@ -37,6 +38,27 @@ test('Completion helper evaluates order status deterministically without certifi
   assert.ok(compPhp.includes('processing'), 'Completion.php must consider processing completed.');
   assert.ok(compPhp.includes('completed'), 'Completion.php must consider completed completed.');
   assert.ok(!compPhp.includes('certificate'), 'Completion.php must not implement certificate generation.');
+});
+
+test('AdminOrderView labels capture timestamp and handles invalid snapshots safely', () => {
+  const adminPhp = readFileSync(resolve(pluginRoot, 'src', 'Order', 'AdminOrderView.php'), 'utf8');
+  assert.ok(adminPhp.includes('Captured At:'), 'AdminOrderView.php must label capture timestamp as Captured At.');
+  assert.ok(adminPhp.includes('Incomplete Snapshot'), 'AdminOrderView.php must handle incomplete snapshots safely.');
+});
+
+test('CustomerOrderView provides status-aware headers without false ownership claims', () => {
+  const custPhp = readFileSync(resolve(pluginRoot, 'src', 'Order', 'CustomerOrderView.php'), 'utf8');
+  assert.ok(custPhp.includes('Your piece has been secured.'), 'CustomerOrderView.php must state secured only for completed orders.');
+  assert.ok(custPhp.includes('Payment Not Completed'), 'CustomerOrderView.php must handle failed orders status-aware.');
+  assert.ok(custPhp.includes('Order Cancelled'), 'CustomerOrderView.php must handle cancelled orders status-aware.');
+  assert.ok(custPhp.includes('Order Refunded'), 'CustomerOrderView.php must handle refunded orders status-aware.');
+});
+
+test('EmailIntegration handles plain text and HTML branches safely', () => {
+  const emailPhp = readFileSync(resolve(pluginRoot, 'src', 'Order', 'EmailIntegration.php'), 'utf8');
+  assert.ok(emailPhp.includes('render_email_item_provenance'), 'EmailIntegration.php must define rendering callback.');
+  assert.ok(emailPhp.includes('if ( $plain )'), 'EmailIntegration.php must check plain text flag.');
+  assert.ok(emailPhp.includes('is_valid'), 'EmailIntegration.php must check snapshot validity.');
 });
 
 test('Coexistence with M10 Private Access audit metadata', () => {

@@ -5,7 +5,7 @@
 M12 implements **Order Item Purchase Provenance** ("What exact Statement release/product did this WooCommerce order item represent at purchase time?").
 
 M12 does **NOT** implement:
-- Certified collector ownership / authenticity certificates
+- Certified collector ownership / authenticity credentials
 - Serial numbers (e.g. `17/200` or `#17`)
 - Production totals / lifetime caps (e.g. `200 pieces`)
 - Ownership transfer registry / public collector profiles
@@ -24,11 +24,14 @@ Captured at WooCommerce order-line-item creation time (`woocommerce_checkout_cre
 | `_statement_edition_label_at_purchase` | Human-readable edition label at purchase time |
 | `_statement_product_title_at_purchase` | Piece title at purchase time |
 | `_statement_release_state_at_purchase` | Release state at purchase time (`LIVE`, `PRIVATE_ACCESS`, etc.) |
-| `_statement_purchased_at` | Purchase timestamp (`Y-m-d H:i:s`) |
+| `_statement_purchased_at` | Provenance capture timestamp (`Y-m-d H:i:s`) |
 
-## Immutability & Idempotency
+*Note: `_statement_purchased_at` is the capture timestamp during order creation and does NOT imply payment completion or ownership.*
+
+## Immutability & Snapshot Integrity
 
 - **Write-Once**: Provenance metadata is written once during line item creation. Subsequent order recalculations or product metadata changes do NOT overwrite captured provenance.
+- **Snapshot Validation**: `Provenance::get_snapshot_status()` classifies snapshots as `complete`, `invalid`, or `missing`. `Provenance::is_valid()` checks for completeness.
 - **Source Independence**: If the source product, variation, or Drop term is later edited or deleted, historical order details and emails render using the frozen snapshot data.
 
 ## Coexistence & Privacy

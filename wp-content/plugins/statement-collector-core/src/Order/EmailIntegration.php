@@ -36,7 +36,7 @@ final class EmailIntegration {
 	public static function render_email_item_provenance( int $item_id, $item, $order, bool $plain = false ): void {
 		unset( $item_id, $order );
 
-		if ( ! Provenance::is_captured( $item ) ) {
+		if ( ! Provenance::is_valid( $item ) ) {
 			return;
 		}
 

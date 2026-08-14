@@ -44,10 +44,19 @@ final class AdminOrderView {
 			return;
 		}
 
+		if ( Provenance::STATUS_INVALID === ( $provenance['status'] ?? '' ) ) {
+			?>
+			<div class="statement-provenance-admin-box statement-provenance-admin-box--invalid" style="margin-top: 8px; padding: 8px 12px; background: #fff5f5; border-left: 3px solid #dc3545; font-size: 12px; color: #721c24;">
+				<strong><?php esc_html_e( 'Statement Provenance:', 'statement-collector-core' ); ?></strong> <?php esc_html_e( 'Incomplete Snapshot', 'statement-collector-core' ); ?>
+			</div>
+			<?php
+			return;
+		}
+
 		?>
 		<div class="statement-provenance-admin-box" style="margin-top: 8px; padding: 8px 12px; background: #f8f9fa; border-left: 3px solid #111; font-size: 12px; color: #333;">
 			<strong style="display: block; margin-bottom: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 11px;"><?php esc_html_e( 'Statement Provenance', 'statement-collector-core' ); ?></strong>
-			<ul style="margin: 0; padding-0; list-style: none; line-height: 1.5;">
+			<ul style="margin: 0; padding: 0; list-style: none; line-height: 1.5;">
 				<?php if ( ! empty( $provenance['drop_name'] ) ) : ?>
 					<li><strong><?php esc_html_e( 'Drop:', 'statement-collector-core' ); ?></strong> <?php echo esc_html( $provenance['drop_name'] ); ?></li>
 				<?php endif; ?>
@@ -58,7 +67,7 @@ final class AdminOrderView {
 					<li><strong><?php esc_html_e( 'State at Purchase:', 'statement-collector-core' ); ?></strong> <?php echo esc_html( $provenance['release_state'] ); ?></li>
 				<?php endif; ?>
 				<?php if ( ! empty( $provenance['purchased_at'] ) ) : ?>
-					<li><strong><?php esc_html_e( 'Purchased At:', 'statement-collector-core' ); ?></strong> <?php echo esc_html( $provenance['purchased_at'] ); ?></li>
+					<li><strong><?php esc_html_e( 'Captured At:', 'statement-collector-core' ); ?></strong> <?php echo esc_html( $provenance['purchased_at'] ); ?></li>
 				<?php endif; ?>
 				<li><small style="color: #666;"><?php esc_html_e( 'Schema Version:', 'statement-collector-core' ); ?> <?php echo esc_html( (string) $provenance['version'] ); ?></small></li>
 			</ul>

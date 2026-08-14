@@ -8,6 +8,11 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Provides future-facing commercial completion evaluation for WooCommerce orders.
+ *
+ * NOTE: is_commercially_completed() checks whether an order has reached a commercially
+ * secured status (processing or completed). It does NOT imply legal ownership,
+ * authenticity credentials, transferable collector ownership, or eligibility.
+ * Partial order line refunds do not mutate order-level status evaluation.
  */
 final class Completion {
 	private const COMPLETED_STATUSES = array( 'processing', 'completed' );

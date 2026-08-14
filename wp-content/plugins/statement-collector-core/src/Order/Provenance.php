@@ -12,6 +12,10 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Handles immutable purchase provenance capture and read access for Statement order line items.
+ *
+ * NOTE: The timestamp key _statement_purchased_at represents the timestamp at which
+ * the Statement purchase-provenance snapshot was captured during order creation.
+ * It is NOT proof of payment, commercial completion, or collector ownership.
  */
 final class Provenance {
 	public const META_VERSION        = '_statement_provenance_version';
@@ -25,6 +29,10 @@ final class Provenance {
 	public const META_PURCHASED_AT   = '_statement_purchased_at';
 
 	public const SCHEMA_VERSION = 1;
+
+	public const STATUS_MISSING  = 'missing';
+	public const STATUS_COMPLETE = 'complete';
+	public const STATUS_INVALID  = 'invalid';
 
 	/** @var bool */
 	private static $booted = false;
@@ -42,7 +50,7 @@ final class Provenance {
 	}
 
 	/**
-	 * Checks whether provenance metadata has already been captured for an order item.
+	 * Checks whether provenance metadata exists on an order item (prevents re-capture).
 	 *
 	 * @param object $item WooCommerce order line item.
 	 */
@@ -53,7 +61,39 @@ final class Provenance {
 
 		$ver = $item->get_meta( self::META_VERSION, true );
 
-		return '' !== (string) $ver && (int) $ver > 0;
+		return '' !== (string) $ver;
+	}
+
+	/**
+	 * Evaluates snapshot integrity status: 'missing', 'complete', or 'invalid'.
+	 *
+	 * @param object $item WooCommerce order line item.
+	 */
+	public static function get_snapshot_status( $item ): string {
+		if ( ! self::is_captured( $item ) ) {
+			return self::STATUS_MISSING;
+		}
+
+		$version       = (int) $item->get_meta( self::META_VERSION, true );
+		$product_id    = (int) $item->get_meta( self::META_PRODUCT_ID, true );
+		$product_title = trim( (string) $item->get_meta( self::META_PRODUCT_TITLE, true ) );
+		$release_state = trim( (string) $item->get_meta( self::META_RELEASE_STATE, true ) );
+		$purchased_at  = trim( (string) $item->get_meta( self::META_PURCHASED_AT, true ) );
+
+		if ( 1 === $version && $product_id > 0 && '' !== $product_title && '' !== $release_state && '' !== $purchased_at ) {
+			return self::STATUS_COMPLETE;
+		}
+
+		return self::STATUS_INVALID;
+	}
+
+	/**
+	 * Checks whether a complete, valid provenance snapshot exists.
+	 *
+	 * @param object $item WooCommerce order line item.
+	 */
+	public static function is_valid( $item ): bool {
+		return self::STATUS_COMPLETE === self::get_snapshot_status( $item );
 	}
 
 	/**
@@ -127,11 +167,13 @@ final class Provenance {
 			return array();
 		}
 
-		if ( ! self::is_captured( $item ) ) {
+		$status = self::get_snapshot_status( $item );
+		if ( self::STATUS_MISSING === $status ) {
 			return array();
 		}
 
 		return array(
+			'status'        => $status,
 			'version'       => (int) $item->get_meta( self::META_VERSION, true ),
 			'product_id'    => (int) $item->get_meta( self::META_PRODUCT_ID, true ),
 			'variation_id'  => (int) $item->get_meta( self::META_VARIATION_ID, true ),
