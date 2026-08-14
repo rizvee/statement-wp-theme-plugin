@@ -17,9 +17,12 @@ Updated: 2026-08-14
 - Product metadata owns the canonical `UPCOMING`, `PRIVATE_ACCESS`, `LIVE`, `SOLD_OUT`, and `ARCHIVED` lifecycle plus an optional 80-character edition label.
 - Release-state saves are same/forward-only. `SOLD_OUT` and `ARCHIVED` override WooCommerce purchasability even when stock is positive; variation purchasability inherits the canonical parent Statement release state, and the implementation never mutates stock or duplicates state on variations.
 - Established Drop history is editable while `UPCOMING` and immutable through normal saves from `PRIVATE_ACCESS` onward; one first valid recovery assignment remains possible when a released product has no valid Drop.
-- No Drop storefront/archive UI, homepage, private-access enforcement, piece totals, scheduling, or M5 presentation exists.
+- M5 is complete: the editorial `front-page.php` uses the static page featured image for its hero, retains an intentional no-image surface, and exposes native page content as the optional editorial zone.
+- Statement Core now exposes a minimal read-only presentation API. Homepage Drop/product data is restricted to `LIVE`; `PRIVATE_ACCESS`, `UPCOMING`, `SOLD_OUT`, and `ARCHIVED` are excluded before rendering, including through canonical parent state for variations.
+- One deterministic active Drop comes from the first eligible product in a bounded 24-product WooCommerce query; selected homepage pieces are bounded to four products from that Drop.
+- The homepage adds no JavaScript, quick-add, cart interaction, fabricated catalog content, full Drop storefront, or archive product query. M6 has not started.
 - Theme and plugin versions remain `0.1.0`; internal milestones do not trigger package-version changes before an approved release task.
-- The next approved milestone is M5 — Homepage; it has not started.
+- The next approved milestone is M6 — Shop + Drop Storefront; it has not started.
 
 ## Local environment
 
@@ -28,7 +31,7 @@ Updated: 2026-08-14
 - `scripts/php-lint.mjs` resolves `PHP_BIN`, then project-local PHP on Windows, then PHP on `PATH`.
 - Unavailable: Composer, WP-CLI.
 - WordPress, WooCommerce, PHP runtime, and hosting integration versions could not be discovered from this empty local repository.
-- PHP syntax verification passes for all 19 first-party runtime PHP files.
+- PHP syntax verification passes for all 28 first-party runtime PHP files.
 - The narrow bootstrap smoke passes without WooCommerce present. Genuine WordPress/WooCommerce activation remains unverified because no local WordPress runtime exists.
 
 ## Deployment state
@@ -37,4 +40,4 @@ Per the project brief, `https://mystatement.store/` is the WordPress.com Atomic 
 
 ## Verification
 
-M1–M4 structural tests, release-domain, terminal and variable-product purchasability, historical Drop/admin integrity, WooCommerce-absence smoke, first-party PHP lint, and `node scripts/verify-foundation.mjs` pass with project-local PHP 8.3.33. Actual WordPress/WooCommerce product editing, taxonomy persistence, purchasability, and browser rendering remain unverified. See `.ai/checks/m0-foundation.md`.
+M1–M5 structural tests, release-domain, terminal and variable-product purchasability, historical Drop/admin integrity, public eligibility, homepage selection/privacy, dependency-absence smoke, first-party PHP lint, and `node scripts/verify-foundation.mjs` pass with project-local PHP 8.3.33. Actual WordPress/WooCommerce product editing, taxonomy persistence, catalog querying, purchasability, and browser rendering remain unverified. See `.ai/checks/m0-foundation.md`.

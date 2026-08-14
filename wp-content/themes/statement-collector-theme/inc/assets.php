@@ -36,6 +36,15 @@ function enqueue_assets(): void {
 		STATEMENT_COLLECTOR_THEME_VERSION
 	);
 
+	if ( function_exists( 'is_front_page' ) && is_front_page() ) {
+		wp_enqueue_style(
+			'statement-collector-home',
+			get_theme_file_uri( 'assets/css/home.css' ),
+			array( 'statement-collector-base', 'statement-collector-layout' ),
+			STATEMENT_COLLECTOR_THEME_VERSION
+		);
+	}
+
 	wp_enqueue_script(
 		'statement-collector-navigation',
 		get_theme_file_uri( 'assets/js/navigation.js' ),

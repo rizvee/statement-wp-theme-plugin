@@ -29,6 +29,7 @@ node --test tests/m1-skeleton.test.mjs
 node --test tests/m2-design-system.test.mjs
 node --test tests/m3-global-navigation.test.mjs
 node --test tests/m4-domain-model.test.mjs
+node --test tests/m5-homepage.test.mjs
 node --check wp-content/themes/statement-collector-theme/assets/js/navigation.js
 ```
 

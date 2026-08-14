@@ -50,10 +50,19 @@ Status: complete; integrity hardened (2026-08-14)
 
 ## M5 — Homepage
 
+Status: complete (2026-08-14)
+
+- [x] Add the bespoke editorial homepage with featured-image hero and native page-content zone.
+- [x] Add a minimal read-only core presentation API and restrict normal public exposure to `LIVE`.
+- [x] Select one deterministic LIVE Drop and up to four legitimate products through a bounded WooCommerce query.
+- [x] Add omittable empty states, conditional homepage CSS, privacy tests, and dependency-absence coverage.
+
+## M6 — Shop + Drop Storefront
+
 Status: next; not started
 
-- [ ] Build the first approved storefront homepage presentation on the verified domain foundation.
+- [ ] Build the approved Shop and Drop storefront presentation on the verified public release boundary.
 
 ## Later roadmap
 
-After M5, continue through separately approved storefront, private-access, archive presentation, WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.
+After M6, continue through separately approved product-detail, cart, private-access, archive presentation, WooCommerce integration, testing, packaging, staging verification, and launch milestones. Keep each milestone independently scoped and verified.
