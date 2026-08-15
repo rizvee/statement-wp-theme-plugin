@@ -40,7 +40,11 @@ final class MakeDropLive {
 		$other_products          = array();
 
 		foreach ( $product_ids as $pid ) {
-			$state = Metadata::get_release_state( (int) $pid );
+			$product = function_exists( 'wc_get_product' ) ? wc_get_product( (int) $pid ) : null;
+			if ( ! is_object( $product ) ) {
+				continue;
+			}
+			$state = Metadata::get_release_state( $product );
 			if ( ReleaseState::PRIVATE_ACCESS === $state ) {
 				$private_access_products[] = (int) $pid;
 			} elseif ( ReleaseState::UPCOMING === $state ) {
@@ -69,15 +73,16 @@ final class MakeDropLive {
 
 			$sessions_count = (int) $wpdb->get_var(
 				$wpdb->prepare(
-					"SELECT COUNT(*) FROM {$sessions_table} WHERE drop_term_id = %d AND revoked_at IS NULL AND expires_at > %s",
+					"SELECT COUNT(*) FROM {$sessions_table} WHERE drop_term_id = %d AND revoked_at IS NULL AND session_expires_at > %s",
 					$drop_term_id,
 					$now_str
 				)
 			);
 
+			$reminders_table = $wpdb->prefix . 'statement_access_reminders';
 			$pending_reminders_count = (int) $wpdb->get_var(
 				$wpdb->prepare(
-					"SELECT COUNT(*) FROM {$grants_table} WHERE drop_term_id = %d AND reminder_scheduled_at IS NOT NULL AND reminder_sent_at IS NULL AND reminder_cancelled_at IS NULL",
+					"SELECT COUNT(*) FROM {$reminders_table} WHERE drop_term_id = %d AND status = 'pending'",
 					$drop_term_id
 				)
 			);
@@ -95,17 +100,23 @@ final class MakeDropLive {
 	}
 
 	/**
-	 * Executes Make Drop Live operation.
+	 * Transitions all PRIVATE_ACCESS products in the drop to LIVE atomically.
 	 *
-	 * @return array{ok: bool, transitioned_count: int, message: string}
+	 * @param int $drop_term_id Drop term ID.
+	 * @param int $now_ts       Current timestamp.
+	 * @return array Result summary with status and counts.
 	 */
-	public static function execute( int $drop_term_id, int $now_ts ): array {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+	public static function execute_transition( int $drop_term_id, int $now_ts = 0 ): array {
+		if ( function_exists( 'current_user_can' ) && ! current_user_can( 'manage_woocommerce' ) ) {
 			return array(
 				'ok'                 => false,
 				'transitioned_count' => 0,
-				'message'            => 'Insufficient capability.',
+				'message'            => 'Insufficient capability: manage_woocommerce required.',
 			);
+		}
+
+		if ( $now_ts <= 0 ) {
+			$now_ts = time();
 		}
 
 		$summary = self::get_preflight_summary( $drop_term_id, $now_ts );
@@ -126,7 +137,7 @@ final class MakeDropLive {
 				if ( ! $product ) {
 					throw new \RuntimeException( "Product {$pid} could not be loaded." );
 				}
-				Metadata::update_release_state( $product, ReleaseState::LIVE );
+				Metadata::set_release_state( $product, ReleaseState::LIVE );
 				$saved = $product->save();
 				if ( false === $saved ) {
 					throw new \RuntimeException( "Product {$pid} save failed." );
@@ -136,7 +147,7 @@ final class MakeDropLive {
 		} catch ( \Throwable $e ) {
 			// Roll back any products transitioned before failure
 			foreach ( $transitioned_products as $p ) {
-				Metadata::update_release_state( $p, ReleaseState::PRIVATE_ACCESS );
+				Metadata::set_release_state( $p, ReleaseState::PRIVATE_ACCESS );
 				$p->save();
 			}
 

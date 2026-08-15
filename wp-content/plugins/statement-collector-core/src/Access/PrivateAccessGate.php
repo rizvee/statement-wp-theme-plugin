@@ -48,15 +48,9 @@ final class PrivateAccessGate {
 			)
 		);
 
-		$has_private_products = false;
-		foreach ( $drop_products as $pid ) {
-			if ( ReleaseState::PRIVATE_ACCESS === Metadata::get_release_state( (int) $pid ) ) {
-				$has_private_products = true;
-				break;
-			}
-		}
+		$private_products = self::resolve_private_products( $drop_products );
 
-		if ( ! $has_private_products ) {
+		if ( empty( $private_products ) ) {
 			// Normal public Drop archive handles non-private Drops
 			return;
 		}
@@ -68,7 +62,7 @@ final class PrivateAccessGate {
 		}
 
 		// Check visitor authorization
-		$is_authorized = EligibilityService::is_commerce_eligible( $drop_products[0] ?? 0, null, $now_ts );
+		$is_authorized = EligibilityService::is_commerce_eligible( $private_products[0], null, $now_ts );
 		if ( ! $is_authorized ) {
 			self::render_unauthorized_gate( $term );
 			exit;
@@ -76,6 +70,29 @@ final class PrivateAccessGate {
 
 		// Authorized visitor: apply private cache headers & let normal template load authorized products
 		self::set_private_cache_headers();
+	}
+
+	/**
+	 * Resolves valid WC_Product objects with PRIVATE_ACCESS state for a list of candidate product IDs.
+	 *
+	 * @param array $product_ids Candidate product IDs.
+	 * @return array Array of valid PRIVATE_ACCESS WC_Product objects.
+	 */
+	public static function resolve_private_products( array $product_ids ): array {
+		$private_products = array();
+
+		foreach ( $product_ids as $pid ) {
+			$product = function_exists( 'wc_get_product' ) ? wc_get_product( (int) $pid ) : null;
+			if ( ! is_object( $product ) ) {
+				continue;
+			}
+
+			if ( ReleaseState::PRIVATE_ACCESS === Metadata::get_release_state( $product ) ) {
+				$private_products[] = $product;
+			}
+		}
+
+		return $private_products;
 	}
 
 	/**

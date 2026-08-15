@@ -22,6 +22,7 @@ Updated: 2026-08-15
 - M13 Phase 5A complete: Atomic Storefront + Commerce + Lifecycle Runtime Matrix executed against active RC.2 and fixture dataset. All primary routes (Home, Shop, Drop, Variable PDP, Simple PDP, Terminal PDP, Cart, Checkout, My Account) verified HTTP 200 with zero PHP fatals or JS errors. Decoupling of WooCommerce stock quantity and Statement release state proven. Terminal transition to `ARCHIVED` verified forward-only. Initial publication of verified Git history pushed to `https://github.com/rizvee/statement-wp-theme-plugin.git`.
 - M13 Phase 5B1 complete: Private Access Atomic Runtime Harness + Secret Preparation completed. Local secret generator `scripts/generate-private-access-secrets.mjs` generates cryptographically strong `wp-config` definitions into ignored `.local-runtime/private-access-wp-config.php` without printing secret values to stdout. Fixture tool upgraded to `0.2.0` (`dist/statement-integration-fixtures-0.2.0.zip`) with **PRIVATE ACCESS RUNTIME PREFLIGHT**, crypto backend diagnostic, and M10 database schema table existence checks (`M13-DB-01`). Anonymous API privacy test harness `scripts/test-private-access-api.mjs` and test plan `docs/private-access-atomic-test-plan.md` created.
 - M13 Phase 5B2.1 complete: Private Fixture API Contract + Partial Recovery Hotfix completed. Added canonical `DropConfig::save_config()` writer API, `DropConfigAdmin` taxonomy UI screens, fixed `PrivateFixtureService` product object metadata handling, and added 4-state lifecycle model (`NOT_CREATED`, `PARTIAL`, `CREATED`, `RECOVERY_REQUIRED`) with idempotent adoption of existing test entities. Packaged Core `0.13.0-rc.4` and Fixtures `0.2.2`.
+- M13 Phase 5B2.2 complete: Private Access Gate Detection & Metadata Contract Sweep completed. Repaired `PrivateAccessGate` product resolution using `WC_Product` objects, evaluated against `EligibilityService::is_commerce_eligible( $private_products[0] )`. Audited and fixed `MakeDropLive.php`, `Precheck.php`, and `ReminderService.php` call sites. Verified `Product/Access.php` true 404 security boundaries. Added 14-assertion PHP contract test `tests/php/test-private-access-gate-contract.php`. Packaged Core `0.13.0-rc.5`.
 
 ## Local environment
 
@@ -32,8 +33,8 @@ Updated: 2026-08-15
 
 ## Deployment state
 
-`https://mystatement.store/` is hosted on WordPress.com Atomic. Core candidate `0.13.0-rc.4` and Fixture tool `0.2.2` packaged in `dist/` and ready for operator upload. Atomic currently runs Core `0.13.0-rc.3` + Fixtures `0.2.1` with Secret Vault initialized. GitHub repository `https://github.com/rizvee/statement-wp-theme-plugin.git` is synchronized with local `main`.
+`https://mystatement.store/` is hosted on WordPress.com Atomic. Core candidate `0.13.0-rc.5` packaged in `dist/` and ready for operator upload. Atomic currently runs Core `0.13.0-rc.4` + Fixtures `0.2.2` with Secret Vault initialized and private fixture `CREATED`. GitHub repository `https://github.com/rizvee/statement-wp-theme-plugin.git` is synchronized with local `main`.
 
 ## Verification
 
-M1–M13 Node structural tests (116 subtests), PHP lint (79 PHP files), `verify-foundation.mjs`, `verify-git-runtime-tracking.mjs`, DropConfig & Fixture Recovery behavior tests (19 assertions), fixture tool package verifier, and GitHub remote synchronization pass cleanly.
+M1–M13 Node structural tests (116 subtests), PHP lint (79 PHP files), `verify-foundation.mjs`, `verify-git-runtime-tracking.mjs`, PrivateAccessGate contract tests (14 assertions), DropConfig & Fixture Recovery behavior tests (19 assertions), fixture tool package verifier, and GitHub remote synchronization pass cleanly.

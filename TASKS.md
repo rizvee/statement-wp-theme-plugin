@@ -168,24 +168,35 @@ Status: Phase 1, Phase 2, Phase 3A, Phase 4A, Phase 5A, Phase 5B1, & Phase 5B2.1
   - Full test suite green (116 Node subtests, 79 PHP files linted).
   - Pushed commit `3138927` to GitHub `main`.
 
-### Phase 5B2.1 Runtime Status & Next Steps
+- [x] Phase 5B2.2: Private Access Gate Detection & Metadata Contract Sweep:
+  - Root cause confirmed: `PrivateAccessGate` passed integer product ID into object-based `Metadata::get_release_state()` API, which normalized state to `UPCOMING` and bypassed the gate.
+  - Core `Metadata` call-site contract sweep completed across all Core source files.
+  - Gate detection fixed: implemented `PrivateAccessGate::resolve_private_products( array $product_ids ): array` returning valid `WC_Product` objects, evaluated against `EligibilityService::is_commerce_eligible( $private_products[0] )`.
+  - Audited `Product/Access.php` (confirmed true 404, nocache hardening, no product data leakage for unauthorized requests).
+  - Fixed `MakeDropLive.php`, `Precheck.php`, and `ReminderService.php` product resolution and canonical `Metadata::set_release_state()` calls.
+  - Added dedicated 14-assertion PHP contract test (`tests/php/test-private-access-gate-contract.php`).
+  - Packaged `statement-collector-core-0.13.0-rc.5.zip` (SHA-256: `d6dfb666a0c7d6159ccf274e9624aae6ccf2053194a6f3356e5cdb9797074573`).
+  - Full test suite green (116 Node subtests, 79 PHP files linted, foundation & tracking verifiers pass).
 
-**STATUS**: COMPLETE / CODE FIX READY FOR ATOMIC RETEST
+### Phase 5B2.2 Runtime Status & Next Steps
+
+**STATUS**: CODE FIX COMPLETE / READY FOR ATOMIC RETEST
 
 **Atomic Current**:
-- Core `0.13.0-rc.3` currently deployed
-- Fixtures `0.2.1` currently deployed
-- Secret Vault initialized
-- Partial private fixture exists (Drop `test-private-drop-01` ID 1376, Product `TEST-PD01-PAJ` ID 213)
-- Awaiting Core `0.13.0-rc.4` + Fixtures `0.2.2` deployment and recovery retest
+- Core `0.13.0-rc.4` currently deployed
+- Fixture `0.2.2` deployed
+- Private fixture `CREATED`
+- Secret Vault `INITIALIZED`
+- Frontend private Drop currently falls through to normal Drop template until `rc.5` deployment
 
 **Next**:
-- Deploy Core `0.13.0-rc.4`
-- Deploy Fixtures `0.2.2`
-- Recover partial fixture on Atomic via "Adopt & Recover Private Access Test Fixture"
-- Verify `/drop/test-private-drop-01/` email gate
-- Continue M13 Phase 5B2 validation
+- Deploy Core `0.13.0-rc.5`
+- Verify vault remains initialized
+- Open private Drop (`/drop/test-private-drop-01/`)
+- Verify email gate renders (`PRIVATE ACCESS`, email input, `ENTER PRIVATE ACCESS`)
+- Verify unauthorized private PDP (`/product/test-private-access-jacket/`) is true 404
+- Resume Phase 5B2 runtime matrix
 
 ## Later roadmap
 
-Proceed to Phase 5B2 Private Access Atomic Runtime validation after operator completes manual upload of Core `0.13.0-rc.4` and Fixtures `0.2.2`.
+Proceed to Phase 5B2 Private Access Atomic Runtime validation after operator completes manual upload of Core `0.13.0-rc.5`.

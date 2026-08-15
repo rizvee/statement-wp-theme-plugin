@@ -130,7 +130,11 @@ final class ReminderService {
 
 		$has_private = false;
 		foreach ( $drop_products as $pid ) {
-			if ( ReleaseState::PRIVATE_ACCESS === Metadata::get_release_state( (int) $pid ) ) {
+			$product = function_exists( 'wc_get_product' ) ? wc_get_product( (int) $pid ) : null;
+			if ( ! is_object( $product ) ) {
+				continue;
+			}
+			if ( ReleaseState::PRIVATE_ACCESS === Metadata::get_release_state( $product ) ) {
 				$has_private = true;
 				break;
 			}

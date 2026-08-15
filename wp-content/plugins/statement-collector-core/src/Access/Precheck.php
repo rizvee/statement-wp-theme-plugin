@@ -76,7 +76,12 @@ final class Precheck {
 				continue;
 			}
 
-			$state = Metadata::get_release_state( (int) $other_id );
+			$other_prod = function_exists( 'wc_get_product' ) ? wc_get_product( (int) $other_id ) : null;
+			if ( ! is_object( $other_prod ) ) {
+				continue;
+			}
+
+			$state = Metadata::get_release_state( $other_prod );
 			if ( ReleaseState::LIVE === $state ) {
 				$errors[] = 'Forbidden state: Drop already contains LIVE products. A Drop cannot mix LIVE and PRIVATE_ACCESS products.';
 				break;
