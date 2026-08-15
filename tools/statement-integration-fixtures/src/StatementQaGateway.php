@@ -20,7 +20,7 @@ use WC_Payment_Gateway;
 class StatementQaGateway extends WC_Payment_Gateway {
 	public const GATEWAY_ID = 'statement_qa_gateway';
 	public const TARGET_SKU = 'TEST-PD01-PAJ';
-	public const VERSION    = '0.3.2';
+	public const VERSION    = '0.3.3';
 
 	public function __construct() {
 		$this->id                 = self::GATEWAY_ID;

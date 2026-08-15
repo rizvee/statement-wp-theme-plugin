@@ -6,8 +6,9 @@ import { packageTheme } from './package-theme.mjs';
 import { verifyPackage } from './verify-package.mjs';
 
 const root = resolve(import.meta.dirname, '..');
-const themeVersion = '0.13.0-rc.2';
+const themeVersion = '0.13.0-rc.3';
 const pluginVersion = '0.13.0-rc.9';
+
 
 export function packageAll(options = {}) {
   const silent = options.silent ?? false;

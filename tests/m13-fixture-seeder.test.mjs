@@ -24,12 +24,13 @@ test('Temporary Fixture Plugin files exist in tools/statement-integration-fixtur
   }
 });
 
-test('Fixture Plugin version is 0.2.2 and activation is strictly side-effect free with zero auto-seeding', () => {
+test('Fixture Plugin version is 0.3.3 and activation is strictly side-effect free with zero auto-seeding', () => {
   const mainPhp = readFileSync(resolve(pluginDir, 'statement-integration-fixtures.php'), 'utf8');
 
   assert.match(mainPhp, /Plugin Name:\s*Statement Integration Fixtures/);
-  assert.match(mainPhp, /Version:\s*0\.2\.2/);
-  assert.match(mainPhp, /STATEMENT_INTEGRATION_FIXTURES_VERSION['"]\s*,\s*['"]0\.2\.2['"]/);
+  assert.match(mainPhp, /Version:\s*0\.3\.3/);
+  assert.match(mainPhp, /STATEMENT_INTEGRATION_FIXTURES_VERSION['"]\s*,\s*['"]0\.3\.3['"]/);
+
 
   // Must not call FixtureService::create or seed automatically on activation or plugins_loaded
   assert.doesNotMatch(mainPhp, /FixtureService::create/i, 'Main plugin file must not auto-create fixtures on boot/activation');

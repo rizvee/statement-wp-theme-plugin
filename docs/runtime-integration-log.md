@@ -142,3 +142,28 @@
 - **Verification**:
   - 82 PHP files linted clean, 116 Node tests pass, `test-fixture-bootstrap.php` passes clean.
   - Package: `dist/statement-integration-fixtures-0.3.2.zip` (26,047 bytes, SHA-256: `cd4c806e686c8b19ac0ab6e48ed495d40e94b918ea091f1e10e2f39878d023ed`).
+
+### `M13-EVIDENCE-16`: Fixture 0.3.3 Expiry Normalization, Access Email Test, and Terminal Revalidation
+
+- **Expiry Root Cause Diagnosis in 0.3.2**:
+  - `DropConfig::save_config( $term_id, $config )` parses and validates `$config['closes_at']` (string or timestamp).
+  - In `0.3.2`, `run_expiry_test()` mutated only `$mutated_config_earlier['closes_at_ts']` and `closes_at_iso`, leaving the original `$mutated_config_earlier['closes_at']` unmutated.
+  - Consequently, `DropConfig::save_config()` read the unchanged `closes_at` string from the configuration array and re-persisted the baseline timestamp, causing effective expiry comparison to fail.
+- **Harness Upgrades in 0.3.3**:
+  - In `QaTestService::run_expiry_test()`: Mutated both `$mutated_config['closes_at']` (formatted as `gmdate('Y-m-d H:i:s', $ts)`) and `closes_at_ts`, ensuring deterministic persistence and reading from storage. Asserted dynamic shortening for earlier close and grant expiry invariance for later close.
+  - Added `QaTestService::run_access_email_test()`: Resolves active QA grant, temporarily enables `send_access_email = yes` in DropConfig, triggers canonical `EmailAccessGranted::trigger()` with decrypted test identity, asserts return token creation in `wp_statement_access_tokens`, and restores original DropConfig in `finally`.
+  - Added `QaTestService::run_terminal_lifecycle_test()`: Revalidates `TEST — Terminal Jacket` (`TEST-TJ01-ARC`), asserts unpurchasable in `SOLD_OUT`, transitions to `ARCHIVED` via canonical `Metadata::set_release_state()`, asserts unpurchasable in `ARCHIVED` regardless of inventory, asserts illegal reversal to `LIVE` is blocked, and leaves entity in `ARCHIVED`.
+  - Added UI triggers for `RUN ACCESS EMAIL TEST` and `REVALIDATE TERMINAL LIFECYCLE` to Section 3 of `AdminPage.php`.
+- **Verification**:
+  - Package: `dist/statement-integration-fixtures-0.3.3.zip` (27,311 bytes, SHA-256: `7d0d8dc20681ad31166835fcd414bc793fe4c185a64d7a0e618572741bf90bac`).
+  - PHP syntax, bootstrap unit tests (19 assertions), and QA contract tests (9 assertions) pass clean.
+
+### `M14-EVIDENCE-01`: Storefront Hardening & Theme 0.13.0-rc.3 Integration
+
+- **Private Access Gate Styling**: Added dedicated luxury editorial typography and responsive form styling to `assets/css/catalog.css` (`.statement-access-gate`), featuring `"Instrument Serif"` display headings, subtle luxury uppercase inputs, high-contrast ink-navy CTA buttons, and accessible focus states.
+- **Header & Navigation Hardening**: Verified keyboard accessibility, `aria-controls`, `aria-expanded` attributes, responsive mobile drawer toggle, and WooCommerce Bag counter integration.
+- **Theme Version Bump**: Promoted theme version from `0.13.0-rc.2` to `0.13.0-rc.3` in `style.css` and `functions.php`.
+- **Packaging & Verification**:
+  - Package: `dist/statement-collector-theme-0.13.0-rc.3.zip` (43,492 bytes, SHA-256: `2bf1d5e92c672c99b1b4c7f4a70eec1c58889dc7703cc78b645ded2553154a11`).
+  - All 47 packaged files (34 PHP files) verified clean.
+  - Dedicated M14 test suite `tests/m14-theme-hardening.test.mjs` passes 5/5 subtests.

@@ -10,11 +10,11 @@ import { verifyPackage } from '../scripts/verify-package.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 
-test('Theme packaging generates single-root ZIP artifact with matching 0.13.0-rc.2 version', () => {
-  const result = packageTheme('0.13.0-rc.2');
+test('Theme packaging generates single-root ZIP artifact with matching 0.13.0-rc.3 version', () => {
+  const result = packageTheme('0.13.0-rc.3');
   assert.ok(existsSync(result.path), 'Theme ZIP must exist in dist/');
   assert.equal(result.rootFolder, 'statement-collector-theme', 'Theme root folder must be statement-collector-theme');
-  assert.equal(result.version, '0.13.0-rc.2');
+  assert.equal(result.version, '0.13.0-rc.3');
   assert.ok(result.fileCount > 0, 'File count must be greater than 0');
   assert.ok(result.phpCount > 0, 'PHP file count must be greater than 0');
   assert.ok(result.sha256.length === 64, 'SHA-256 hash must be 64 hex characters');
@@ -31,14 +31,15 @@ test('Plugin packaging generates single-root ZIP artifact with matching 0.13.0-r
 });
 
 test('Package verification confirms headers, constants, exclusions, and PHP syntax', () => {
-  const themePath = resolve(root, 'dist', 'statement-collector-theme-0.13.0-rc.2.zip');
+  const themePath = resolve(root, 'dist', 'statement-collector-theme-0.13.0-rc.3.zip');
   const pluginPath = resolve(root, 'dist', 'statement-collector-core-0.13.0-rc.9.zip');
 
-  const themeVerify = verifyPackage(themePath, '0.13.0-rc.2');
+  const themeVerify = verifyPackage(themePath, '0.13.0-rc.3');
   assert.ok(themeVerify.ok, `Theme package verification must pass. Errors: ${themeVerify.errors?.join(', ')}`);
   assert.equal(themeVerify.rootFolder, 'statement-collector-theme');
-  assert.equal(themeVerify.headerVersion, '0.13.0-rc.2');
-  assert.equal(themeVerify.constantVersion, '0.13.0-rc.2');
+  assert.equal(themeVerify.headerVersion, '0.13.0-rc.3');
+  assert.equal(themeVerify.constantVersion, '0.13.0-rc.3');
+
 
   const pluginVerify = verifyPackage(pluginPath, '0.13.0-rc.9');
   assert.ok(pluginVerify.ok, `Plugin package verification must pass. Errors: ${pluginVerify.errors?.join(', ')}`);
@@ -91,8 +92,9 @@ test('Master packageAll script generates manifest with candidate_versions and de
 
   assert.equal(manifest.plugin.header_version, '0.13.0-rc.9', 'plugin header_version must be 0.13.0-rc.9');
   assert.equal(manifest.plugin.runtime_version, '0.13.0-rc.9', 'plugin runtime_version must be 0.13.0-rc.9');
-  assert.equal(manifest.theme.header_version, '0.13.0-rc.2', 'theme header_version must be 0.13.0-rc.2');
-  assert.equal(manifest.theme.runtime_version, '0.13.0-rc.2', 'theme runtime_version must be 0.13.0-rc.2');
+  assert.equal(manifest.theme.header_version, '0.13.0-rc.3', 'theme header_version must be 0.13.0-rc.3');
+  assert.equal(manifest.theme.runtime_version, '0.13.0-rc.3', 'theme runtime_version must be 0.13.0-rc.3');
+
   assert.equal(manifest.deployment_authorized, false, 'deployment_authorized must be false');
   assert.equal(manifest.environment, 'integration-candidate', 'environment must be integration-candidate');
   assert.equal(manifest.artifacts.length, 2, 'Manifest must describe 2 artifacts');

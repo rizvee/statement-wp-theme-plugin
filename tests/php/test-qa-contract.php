@@ -76,4 +76,10 @@ $raw_session = SessionService::generate_raw_token();
 $session_hash = SessionService::hash_token( $raw_session );
 qa_assert_same( 64, strlen( $session_hash ), 'Session hash must be 64-char sha256 hex string' );
 
+// 4. ReleaseState forward-only terminal transitions
+qa_assert_same( true, \Statement\Collector\Core\Release\ReleaseState::can_transition( 'SOLD_OUT', 'ARCHIVED' ), 'SOLD_OUT can transition forward to ARCHIVED' );
+qa_assert_same( false, \Statement\Collector\Core\Release\ReleaseState::can_transition( 'ARCHIVED', 'LIVE' ), 'ARCHIVED cannot transition backward to LIVE' );
+qa_assert_same( false, \Statement\Collector\Core\Release\ReleaseState::can_transition( 'SOLD_OUT', 'LIVE' ), 'SOLD_OUT cannot transition backward to LIVE' );
+qa_assert_same( false, \Statement\Collector\Core\Release\ReleaseState::can_transition( 'ARCHIVED', 'UPCOMING' ), 'ARCHIVED cannot transition backward to UPCOMING' );
+
 echo "QA Contract PHP Unit Tests PASS: {$qa_assertions} assertions verified clean.\n";

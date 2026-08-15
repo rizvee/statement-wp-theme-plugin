@@ -259,20 +259,27 @@ Status: Phase 1, Phase 2, Phase 3A, Phase 4A, Phase 5A, Phase 5B1, & Phase 5B2.1
 | M12 Frozen Provenance Snapshot | `RUNTIME_PENDING` | Ready for verification via `verify_last_order()` upon order placement |
 | Provenance Immutability | `RUNTIME_PENDING` | Ready for verification via `test_provenance_immutability()` upon order placement |
 | Order Received / My Account UI | `RUNTIME_PENDING` | Presentation metadata verified via server-side contract |
-| Access Email Dispatch | `RUNTIME_PENDING` | Automated email dispatch OFF by default |
+| Access Email Dispatch | `RUNTIME_PENDING` | Dedicated `RUN ACCESS EMAIL TEST` in Fixtures 0.3.3 |
+| Terminal Lifecycle Revalidation | `RUNTIME_PENDING` | Dedicated `REVALIDATE TERMINAL LIFECYCLE` in Fixtures 0.3.3 |
 
-**Harness Diagnostics in 0.3.1 & Fixes in 0.3.2:**
-1. **Expiry Test False-Fail**: In 0.3.1, `run_expiry_test()` calculated timestamp math without resolving active grant or mutating storage. In 0.3.2, it resolves active grant via `find_latest_active_qa_grant()`, saves dynamic earlier close via `DropConfig::save_config()`, asserts effective expiry shortening, tests later close invariance, and restores original config in a `finally` block.
-2. **Reminder Test Contract Mismatch**: In 0.3.1, `run_reminder_test()` fired `statement_private_access_added_to_cart` with integer IDs. In 0.3.2, it establishes active session cookie context and passes the resolved `WC_Product` object to mirror Core's `ReminderService::cancel_reminder_on_add_to_bag( $product )`.
+**Harness Diagnostics in 0.3.2 & Fixes in 0.3.3:**
+1. **Expiry Test Normalization in 0.3.3**: `DropConfig::save_config()` checks `$config['closes_at']` (formatted date string or timestamp). In 0.3.2, `run_expiry_test()` mutated only `closes_at_ts`, leaving `closes_at` with the unchanged original date string. In 0.3.3, both `closes_at` (formatted UTC string) and `closes_at_ts` are updated, ensuring deterministic persistence and reading from term meta.
+2. **Access Email QA Action Added in 0.3.3**: Added `run_access_email_test()` to temporarily enable `send_access_email = yes`, trigger single canonical `EmailAccessGranted::trigger()`, assert return token creation in `wp_statement_access_tokens`, and restore original DropConfig in `finally`.
+3. **Terminal Lifecycle Revalidation in 0.3.3**: Added `run_terminal_lifecycle_test()` to verify `TEST — Terminal Jacket` (`TEST-TJ01-ARC`) cannot be purchased in `SOLD_OUT`, advance to `ARCHIVED`, confirm unpurchasability regardless of stock, and assert illegal reversal to `LIVE` is rejected.
 
 **Artifacts & Verification:**
-- Package: `dist/statement-integration-fixtures-0.3.2.zip` (26,047 bytes, SHA-256: `cd4c806e686c8b19ac0ab6e48ed495d40e94b918ea091f1e10e2f39878d023ed`).
-- 82 PHP files linted clean, 116 Node subtests pass, QA contract & bootstrap tests pass.
+- Package: `dist/statement-integration-fixtures-0.3.3.zip` (27,311 bytes, SHA-256: `351683dcebc50d99e3c51a24a5d671b0aef308680817e94d416b9d020efda72f`).
+- Package: `dist/statement-collector-theme-0.13.0-rc.3.zip` (43,493 bytes, SHA-256: `bb10562d7aac431219aed4cb1317f2d85b4f8ef12b867906779a569a1085a68d`).
+- Package: `dist/statement-collector-core-0.13.0-rc.9.zip` (66,782 bytes, SHA-256: `13beee9332297fb90f3c8c6b1cd20f90ed63c1d9e839152e6af1c0c7a78868a6`).
+- 82 PHP files linted clean, 121 Node subtests across 17 suites pass (100% clean), 19 fixture bootstrap assertions pass, 9 QA contract assertions pass.
 
-**Next:**
-- Upload and replace Fixtures with `dist/statement-integration-fixtures-0.3.2.zip` in WP Admin.
-- Run `RUN EXPIRY TEST` and `RUN REMINDER TEST` buttons to complete 100% harness pass.
+## M14 — Storefront Hardening & Luxury Polish
 
-## Later roadmap
 
-Proceed to M14 Storefront Hardening or Final Production Promotion preparation after Fixture 0.3.2 runtime verification.
+Status: complete (2026-08-16)
+
+- [x] Private Access Gate UI: Integrated `"Instrument Serif"` display typography, luxury uppercase inputs, high-contrast ink-navy CTA buttons, accessible focus rings, and responsive layout into `assets/css/catalog.css`.
+- [x] Global Navigation & Header: Hardened accessible dialog navigation, `aria-controls`, `aria-expanded` attributes, responsive mobile drawer toggle, and WooCommerce Bag counter.
+- [x] Theme Version & Constant Invariants: Promoted theme version from `0.13.0-rc.2` to `0.13.0-rc.3` in `style.css` and `functions.php`.
+- [x] Dedicated Test Suite: Added `tests/m14-theme-hardening.test.mjs` verifying theme tokens, typography, navigation accessibility, and package integrity.
+- [x] Packaged single-root artifact: `dist/statement-collector-theme-0.13.0-rc.3.zip`.

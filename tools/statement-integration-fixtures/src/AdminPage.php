@@ -88,6 +88,12 @@ class AdminPage {
 				} elseif ( 'run_qa_test_immutability' === $action ) {
 					check_admin_referer( 'statement_fixtures_qa_action' );
 					$result_notice = QaTestService::test_provenance_immutability();
+				} elseif ( 'run_qa_access_email' === $action ) {
+					check_admin_referer( 'statement_fixtures_qa_action' );
+					$result_notice = QaTestService::run_access_email_test();
+				} elseif ( 'run_qa_terminal_lifecycle' === $action ) {
+					check_admin_referer( 'statement_fixtures_qa_action' );
+					$result_notice = QaTestService::run_terminal_lifecycle_test();
 				}
 			} catch ( \Throwable $e ) {
 				$result_notice = array(
@@ -108,7 +114,7 @@ class AdminPage {
 		$has_active_grants = PrivateFixtureService::has_active_grant_data();
 		?>
 		<div class="wrap">
-			<h1>Statement Integration Fixtures (v0.3.2)</h1>
+			<h1>Statement Integration Fixtures (v0.3.3)</h1>
 			<p>Temporary administrator-only runtime fixture tool for Statement Atomic integration testing.</p>
 
 
@@ -481,8 +487,21 @@ class AdminPage {
 						<input type="hidden" name="statement_fixtures_action" value="run_qa_test_immutability">
 						<?php submit_button( 'TEST PROVENANCE IMMUTABILITY', 'secondary', 'submit_qa_test_immutability', false ); ?>
 					</form>
+
+					<form method="post" action="">
+						<?php wp_nonce_field( 'statement_fixtures_qa_action' ); ?>
+						<input type="hidden" name="statement_fixtures_action" value="run_qa_access_email">
+						<?php submit_button( 'RUN ACCESS EMAIL TEST', 'secondary', 'submit_qa_access_email', false ); ?>
+					</form>
+
+					<form method="post" action="">
+						<?php wp_nonce_field( 'statement_fixtures_qa_action' ); ?>
+						<input type="hidden" name="statement_fixtures_action" value="run_qa_terminal_lifecycle">
+						<?php submit_button( 'REVALIDATE TERMINAL LIFECYCLE', 'secondary', 'submit_qa_terminal_lifecycle', false ); ?>
+					</form>
 				</div>
 			</div>
+
 
 			<?php if ( ! empty( $verification['seeded'] ) && ! empty( $verification['products'] ) ) : ?>
 				<div class="card" style="max-width: 900px; margin-top: 20px;">

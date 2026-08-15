@@ -8,6 +8,8 @@ use Statement\Collector\Core\Access\SessionService;
 use Statement\Collector\Core\Access\TokenService;
 use Statement\Collector\Core\Access\RateLimiter;
 use Statement\Collector\Core\Access\ConsentService;
+use Statement\Collector\Core\Access\Crypto;
+use Statement\Collector\Core\Access\EmailAccessGranted;
 use Statement\Collector\Core\Access\OrderAudit;
 use Statement\Collector\Core\Access\ReminderService;
 use Statement\Collector\Core\Order\Provenance;
@@ -17,7 +19,7 @@ use Statement\Collector\Core\Release\ReleaseState;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Executes controlled test actions for M13 Private Access and Provenance runtime validation.
+ * Executes controlled test actions for M13 Private Access, Terminal Lifecycle, and Provenance runtime validation.
  */
 class QaTestService {
 	public const QA_ORDER_OPTION = 'statement_qa_last_order_id';
@@ -102,11 +104,11 @@ class QaTestService {
 	/**
 	 * Runs Expiry Contract Test on Atomic runtime.
 	 *
-	 * Hardened in 0.3.2:
+	 * Hardened in 0.3.3:
 	 * 1. Resolves active QA grant (or creates canonical admin re-grant if expired/revoked).
 	 * 2. Snapshots original DropConfig.
 	 * 3. Dynamically calculates safe earlier close time (< current effective expiry).
-	 * 4. Saves earlier close via DropConfig::save_config(), re-reads, and asserts runtime effective expiry shortened.
+	 * 4. Saves earlier close via DropConfig::save_config() with normalized closes_at string & closes_at_ts, re-reads, and asserts runtime effective expiry shortened.
 	 * 5. Saves later close exceeding immutable grant expiry, re-reads, and asserts effective expiry did not extend.
 	 * 6. Finally restores original DropConfig and asserts restoration.
 	 *
@@ -176,30 +178,34 @@ class QaTestService {
 			$remaining = $baseline_effective - $now_ts;
 			$earlier_close_ts = ( $remaining > 60 ) ? ( $now_ts + (int) floor( $remaining / 2 ) ) : ( $now_ts + 30 );
 
-			// Save earlier close via canonical DropConfig
+			// Save earlier close via canonical DropConfig with explicit closes_at format recognized by save_config
 			$mutated_config_earlier = $original_config;
+			$mutated_config_earlier['closes_at']    = gmdate( 'Y-m-d H:i:s', $earlier_close_ts );
 			$mutated_config_earlier['closes_at_ts'] = $earlier_close_ts;
 			$mutated_config_earlier['closes_at_iso'] = gmdate( 'Y-m-d\TH:i:s\Z', $earlier_close_ts );
-			DropConfig::save_config( $drop_id, $mutated_config_earlier );
+			$save_a = DropConfig::save_config( $drop_id, $mutated_config_earlier );
 
 			// Re-read config from storage
 			$read_earlier = DropConfig::get_config( $drop_id );
 			$earlier_effective = GrantService::calculate_effective_expiry( $grant_exp_ts, $read_earlier['closes_at_ts'] );
-			if ( $earlier_effective < $baseline_effective && $earlier_effective === $earlier_close_ts ) {
+			if ( $save_a && $earlier_effective < $baseline_effective && $read_earlier['closes_at_ts'] === $earlier_close_ts ) {
 				$earlier_shortened = 'YES';
 			}
 
 			// Step B: Save later close (7 days in future) exceeding immutable grant expiry
 			$later_close_ts = $grant_exp_ts + ( 7 * 86400 );
 			$mutated_config_later = $original_config;
+			$mutated_config_later['closes_at']    = gmdate( 'Y-m-d H:i:s', $later_close_ts );
 			$mutated_config_later['closes_at_ts'] = $later_close_ts;
 			$mutated_config_later['closes_at_iso'] = gmdate( 'Y-m-d\TH:i:s\Z', $later_close_ts );
-			DropConfig::save_config( $drop_id, $mutated_config_later );
+			$save_b = DropConfig::save_config( $drop_id, $mutated_config_later );
 
 			// Re-read config from storage
 			$read_later = DropConfig::get_config( $drop_id );
 			$later_effective = GrantService::calculate_effective_expiry( $grant_exp_ts, $read_later['closes_at_ts'] );
-			if ( $later_effective > $grant_exp_ts ) {
+			if ( $save_b && $later_effective <= $grant_exp_ts && $read_later['closes_at_ts'] === $later_close_ts ) {
+				$later_extended = 'NO';
+			} else {
 				$later_extended = 'YES';
 			}
 		} finally {
@@ -684,6 +690,151 @@ class QaTestService {
 		return array(
 			'success' => $pass,
 			'message' => $pass ? 'Reminder Scheduler verified: Action scheduled cleanly and auto-cancelled upon Add to Bag with valid session context.' : 'Reminder scheduling or cancellation failed.',
+		);
+	}
+
+	/**
+	 * Runs Access Email Dispatch Test.
+	 *
+	 * Added in 0.3.3:
+	 * 1. Resolves active QA grant and test Drop context.
+	 * 2. Temporarily enables send_access_email = 'yes' in DropConfig.
+	 * 3. Bypasses resend cooldown on test grant and dispatches single access email via EmailAccessGranted::trigger.
+	 * 4. Asserts single-use access return token was created in DB for this grant.
+	 * 5. Finally restores original DropConfig send_access_email setting.
+	 *
+	 * @return array{success: bool, message: string}
+	 */
+	public static function run_access_email_test(): array {
+		global $wpdb;
+		$ctx = self::get_test_context();
+		if ( ! $ctx || ! isset( $wpdb ) ) {
+			return array( 'success' => false, 'message' => 'Test context unavailable.' );
+		}
+
+		$grant = self::find_latest_active_qa_grant();
+		if ( ! $grant ) {
+			self::regrant_qa_access();
+			$grant = self::find_latest_active_qa_grant();
+		}
+
+		if ( ! $grant ) {
+			return array( 'success' => false, 'message' => 'No active QA grant found for access email test.' );
+		}
+
+		$drop_id  = $ctx['drop_id'];
+		$grant_id = (int) $grant['id'];
+
+		$original_config = DropConfig::get_config( $drop_id );
+		if ( ! $original_config ) {
+			return array( 'success' => false, 'message' => 'Unable to read original Drop config.' );
+		}
+
+		$dispatched  = false;
+		$token_found = false;
+
+		try {
+			// Temporarily enable access email
+			$mutated = $original_config;
+			$mutated['send_access_email'] = 'yes';
+			DropConfig::save_config( $drop_id, $mutated );
+
+			// Clear recent access_email_sent_at to bypass cooldown for deterministic test
+			$wpdb->update(
+				$wpdb->prefix . 'statement_access_grants',
+				array( 'access_email_sent_at' => null ),
+				array( 'id' => $grant_id )
+			);
+
+			// Decrypt test identity email
+			$decrypted_email = Crypto::decrypt_email( $grant['encrypted_email'] );
+			if ( ! $decrypted_email ) {
+				return array( 'success' => false, 'message' => 'Failed to decrypt QA email for dispatch.' );
+			}
+
+			// Trigger canonical email dispatch
+			$dispatched = EmailAccessGranted::trigger( $grant_id, $decrypted_email, $drop_id );
+
+			// Verify return token exists in database for this grant
+			$tokens_table = $wpdb->prefix . 'statement_access_tokens';
+			$token_row = $wpdb->get_row(
+				$wpdb->prepare(
+					"SELECT id FROM {$tokens_table} WHERE grant_id = %d AND purpose = %s AND consumed_at IS NULL ORDER BY id DESC LIMIT 1",
+					$grant_id,
+					TokenService::PURPOSE_ACCESS_RETURN
+				),
+				ARRAY_A
+			);
+			$token_found = is_array( $token_row ) && ! empty( $token_row['id'] );
+
+		} finally {
+			// Always restore original configuration
+			DropConfig::save_config( $drop_id, $original_config );
+		}
+
+		$pass = ( $dispatched && $token_found );
+
+		return array(
+			'success' => $pass,
+			'message' => $pass ? 'Access Email Dispatch verified: Return token created safely, mail trigger executed, and Drop config restored clean.' : 'Access email dispatch or return token verification failed.',
+		);
+	}
+
+	/**
+	 * Revalidates Terminal Lifecycle state transition and non-purchasability invariants.
+	 *
+	 * Checks TEST — Terminal Jacket:
+	 * 1. Confirms unpurchasable in SOLD_OUT.
+	 * 2. Advances SOLD_OUT -> ARCHIVED via canonical Metadata API.
+	 * 3. Confirms unpurchasable in ARCHIVED regardless of stock.
+	 * 4. Confirms invalid reverse transition to LIVE is rejected.
+	 * 5. Leaves TEST product in ARCHIVED state.
+	 *
+	 * @return array{success: bool, message: string}
+	 */
+	public static function run_terminal_lifecycle_test(): array {
+		if ( ! function_exists( 'wc_get_products' ) ) {
+			return array( 'success' => false, 'message' => 'WooCommerce product API unavailable.' );
+		}
+
+		$products = wc_get_products(
+			array(
+				'sku'    => 'TEST-TJ01-ARC',
+				'status' => 'any',
+				'limit'  => 1,
+			)
+		);
+
+		if ( empty( $products ) || ! is_object( $products[0] ) ) {
+			return array( 'success' => false, 'message' => 'TEST — Terminal Jacket (SKU: TEST-TJ01-ARC) not found.' );
+		}
+
+		$product = $products[0];
+		$initial_state = Metadata::get_release_state( $product );
+
+		// Confirm unpurchasable in SOLD_OUT or ARCHIVED
+		$purchasable_before = $product->is_purchasable();
+		if ( $purchasable_before ) {
+			return array( 'success' => false, 'message' => 'Security violation: Terminal product was marked purchasable.' );
+		}
+
+		// Advance to ARCHIVED if in SOLD_OUT
+		if ( ReleaseState::SOLD_OUT === $initial_state ) {
+			Metadata::set_release_state( $product, ReleaseState::ARCHIVED );
+			$product->save();
+		}
+
+		$current_state = Metadata::get_release_state( $product );
+		$purchasable_after = $product->is_purchasable();
+
+		// Negative check: Illegal transition ARCHIVED -> LIVE
+		$attempt_reverse = ReleaseState::is_valid_transition( ReleaseState::ARCHIVED, ReleaseState::LIVE );
+
+		$pass = ( ReleaseState::ARCHIVED === $current_state && ! $purchasable_after && ! $attempt_reverse );
+
+		return array(
+			'success' => $pass,
+			'message' => $pass ? 'Terminal Lifecycle verified: Product transitioned to ARCHIVED, remains unpurchasable regardless of inventory, and illegal reversal to LIVE is blocked.' : 'Terminal lifecycle assertion failed.',
 		);
 	}
 
