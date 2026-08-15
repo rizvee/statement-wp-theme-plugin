@@ -19,6 +19,7 @@ const requiredAccessFiles = [
   'src/Access/RateLimiter.php',
   'src/Access/ConsentService.php',
   'src/Access/DropConfig.php',
+  'src/Access/DropConfigAdmin.php',
   'src/Access/Precheck.php',
   'src/Access/EligibilityService.php',
   'src/Access/MakeDropLive.php',
@@ -56,6 +57,7 @@ test('M10 Private Access plugin files exist and are bootstrapped', () => {
   assert.match(plugin, /Access\\AdminUi::boot\s*\(/);
   assert.match(plugin, /Access\\RetentionService::boot\s*\(/);
   assert.match(plugin, /Access\\CacheHardening::boot\s*\(/);
+  assert.match(plugin, /Access\\DropConfigAdmin::boot\s*\(/);
 });
 
 test('Database Schema defines 5 dedicated operational tables with WP prefix', () => {

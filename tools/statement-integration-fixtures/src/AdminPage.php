@@ -67,18 +67,18 @@ class AdminPage {
 			}
 		}
 
-		$env           = FixtureService::is_environment_ready();
-		$state         = FixtureService::get_seeding_state();
-		$collisions    = FixtureService::check_collisions();
-		$verification  = VerificationService::verify();
-		$crypto_diag   = PrivateFixtureService::get_crypto_diagnostics();
-		$secret_diag   = PrivateFixtureService::get_secret_diagnostics();
-		$db_diag       = PrivateFixtureService::get_db_diagnostics();
-		$private_state = PrivateFixtureService::get_private_fixture_state();
+		$env               = FixtureService::is_environment_ready();
+		$state             = FixtureService::get_seeding_state();
+		$collisions        = FixtureService::check_collisions();
+		$verification      = VerificationService::verify();
+		$crypto_diag       = PrivateFixtureService::get_crypto_diagnostics();
+		$secret_diag       = PrivateFixtureService::get_secret_diagnostics();
+		$db_diag           = PrivateFixtureService::get_db_diagnostics();
+		$private_state     = PrivateFixtureService::get_private_fixture_state();
 		$has_active_grants = PrivateFixtureService::has_active_grant_data();
 		?>
 		<div class="wrap">
-			<h1>Statement Integration Fixtures (v0.2.1)</h1>
+			<h1>Statement Integration Fixtures (v0.2.2)</h1>
 			<p>Temporary administrator-only runtime fixture tool for Statement Atomic integration testing.</p>
 
 			<?php if ( $result_notice ) : ?>
@@ -251,6 +251,10 @@ class AdminPage {
 							<td>
 								<?php if ( 'CREATED' === $private_state ) : ?>
 									<span style="color:blue;"><strong>CREATED</strong> (Manifest active)</span>
+								<?php elseif ( 'PARTIAL' === $private_state ) : ?>
+									<span style="color:orange;"><strong>PARTIAL</strong> (Test entities exist without active manifest)</span>
+								<?php elseif ( 'RECOVERY_REQUIRED' === $private_state ) : ?>
+									<span style="color:red;"><strong>RECOVERY REQUIRED</strong> (Collision or invalid lifecycle state detected)</span>
 								<?php else : ?>
 									<span style="color:gray;">NOT CREATED</span>
 								<?php endif; ?>
@@ -258,6 +262,18 @@ class AdminPage {
 						</tr>
 					</tbody>
 				</table>
+
+				<?php if ( 'PARTIAL' === $private_state ) : ?>
+					<div class="notice notice-warning inline" style="margin-bottom: 15px;">
+						<p><strong>Partial Private Fixture Detected:</strong> Existing TEST Drop term or Product was found on site without a complete active manifest. Click <strong>Adopt & Recover Private Access Test Fixture</strong> below to adopt the records, configure Drop settings, and complete the fixture manifest.</p>
+					</div>
+				<?php endif; ?>
+
+				<?php if ( 'RECOVERY_REQUIRED' === $private_state ) : ?>
+					<div class="notice notice-error inline" style="margin-bottom: 15px;">
+						<p><strong>Private Fixture Conflict Detected:</strong> Existing entities with matching SKU or slug have incompatible product types or terminal lifecycle states. Manual investigation is required.</p>
+					</div>
+				<?php endif; ?>
 
 				<div style="margin-top: 15px;">
 					<?php if ( 'unavailable' === $secret_diag['provider'] && ! $secret_diag['vault_initialized'] ) : ?>
@@ -276,14 +292,17 @@ class AdminPage {
 						</form>
 					<?php endif; ?>
 
-					<?php if ( 'NOT_CREATED' === $private_state ) : ?>
+					<?php if ( 'NOT_CREATED' === $private_state || 'PARTIAL' === $private_state ) : ?>
 						<form method="post" action="" style="display: inline-block;">
 							<?php wp_nonce_field( 'statement_fixtures_create_private' ); ?>
 							<input type="hidden" name="statement_fixtures_action" value="create_private_fixture">
 							<?php
 							$can_create_private = $secret_diag['all_configured'] && $crypto_diag['ready'];
+							$btn_label          = ( 'PARTIAL' === $private_state )
+								? 'Adopt & Recover Private Access Test Fixture'
+								: 'Create Private Access Test Fixture';
 							submit_button(
-								'Create Private Access Test Fixture',
+								$btn_label,
 								'primary',
 								'submit_create_private',
 								false,
@@ -291,7 +310,7 @@ class AdminPage {
 							);
 							?>
 						</form>
-					<?php else : ?>
+					<?php elseif ( 'CREATED' === $private_state ) : ?>
 						<form method="post" action="" style="display: inline-block;" onsubmit="return confirm('Clean up Private Access test fixture?');">
 							<?php wp_nonce_field( 'statement_fixtures_cleanup_private' ); ?>
 							<input type="hidden" name="statement_fixtures_action" value="cleanup_private_fixture">

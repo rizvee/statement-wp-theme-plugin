@@ -24,12 +24,12 @@ test('Temporary Fixture Plugin files exist in tools/statement-integration-fixtur
   }
 });
 
-test('Fixture Plugin version is 0.2.1 and activation is strictly side-effect free with zero auto-seeding', () => {
+test('Fixture Plugin version is 0.2.2 and activation is strictly side-effect free with zero auto-seeding', () => {
   const mainPhp = readFileSync(resolve(pluginDir, 'statement-integration-fixtures.php'), 'utf8');
 
   assert.match(mainPhp, /Plugin Name:\s*Statement Integration Fixtures/);
-  assert.match(mainPhp, /Version:\s*0\.2\.1/);
-  assert.match(mainPhp, /STATEMENT_INTEGRATION_FIXTURES_VERSION['"]\s*,\s*['"]0\.2\.1['"]/);
+  assert.match(mainPhp, /Version:\s*0\.2\.2/);
+  assert.match(mainPhp, /STATEMENT_INTEGRATION_FIXTURES_VERSION['"]\s*,\s*['"]0\.2\.2['"]/);
 
   // Must not call FixtureService::create or seed automatically on activation or plugins_loaded
   assert.doesNotMatch(mainPhp, /FixtureService::create/i, 'Main plugin file must not auto-create fixtures on boot/activation');
@@ -112,9 +112,21 @@ test('Contract-drift check: Fixture Tool references only real static methods and
   const coreReleaseStatePhp = readFileSync(resolve(coreDir, 'src', 'Release', 'ReleaseState.php'), 'utf8');
   const coreSecretsPhp = readFileSync(resolve(coreDir, 'src', 'Access', 'Secrets.php'), 'utf8');
   const coreVaultPhp = readFileSync(resolve(coreDir, 'src', 'Access', 'SecretVault.php'), 'utf8');
+  const coreDropConfigPhp = readFileSync(resolve(coreDir, 'src', 'Access', 'DropConfig.php'), 'utf8');
 
   for (const file of fixtureSourceFiles) {
     const content = readFileSync(file, 'utf8');
+
+    // Check DropConfig calls
+    if (content.includes('DropConfig::save_config')) {
+      assert.ok(coreDropConfigPhp.includes('function save_config'), 'Core DropConfig::save_config must exist');
+    }
+    if (content.includes('DropConfig::get_config')) {
+      assert.ok(coreDropConfigPhp.includes('function get_config'), 'Core DropConfig::get_config must exist');
+    }
+    if (content.includes('DropConfig::is_config_valid')) {
+      assert.ok(coreDropConfigPhp.includes('function is_config_valid'), 'Core DropConfig::is_config_valid must exist');
+    }
 
     // Check Metadata calls
     if (content.includes('Metadata::set_release_state')) {

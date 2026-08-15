@@ -32,6 +32,7 @@ final class Plugin {
 		Access\PrivateAccessGate::boot();
 		Access\UnsubscribeService::boot();
 		Access\CacheHardening::boot();
+		Access\DropConfigAdmin::boot();
 
 		if ( ! class_exists( 'WooCommerce' ) ) {
 			return;

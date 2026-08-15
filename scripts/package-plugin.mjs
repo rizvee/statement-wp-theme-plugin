@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.13.0-rc.3';
+const defaultVersion = '0.13.0-rc.4';
 
 export const approvedPluginFiles = [
   'statement-collector-core.php',
@@ -28,6 +28,7 @@ export const approvedPluginFiles = [
   'src/Access/RateLimiter.php',
   'src/Access/ConsentService.php',
   'src/Access/DropConfig.php',
+  'src/Access/DropConfigAdmin.php',
   'src/Access/Precheck.php',
   'src/Access/EligibilityService.php',
   'src/Access/MakeDropLive.php',

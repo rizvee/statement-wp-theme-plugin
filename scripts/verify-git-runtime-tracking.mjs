@@ -30,6 +30,7 @@ const CRITICAL_FILES = [
   'wp-content/plugins/statement-collector-core/src/Access/SecretVault.php',
   'wp-content/plugins/statement-collector-core/src/Access/Crypto.php',
   'wp-content/plugins/statement-collector-core/src/Access/EligibilityService.php',
+  'wp-content/plugins/statement-collector-core/src/Access/DropConfigAdmin.php',
   'wp-content/themes/statement-collector-theme/style.css',
   'wp-content/themes/statement-collector-theme/functions.php',
   'tools/statement-integration-fixtures/statement-integration-fixtures.php',

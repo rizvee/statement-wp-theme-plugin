@@ -5,7 +5,7 @@ import { dirname, join, resolve } from 'node:path';
 import { lintPhp } from './php-lint.mjs';
 
 const projectRoot = resolve(import.meta.dirname, '..');
-const targetVersion = process.argv[2] || '0.2.0';
+const targetVersion = process.argv[2] || '0.2.2';
 const zipPath = join(projectRoot, 'dist', `statement-integration-fixtures-${targetVersion}.zip`);
 
 if (!existsSync(zipPath)) {
