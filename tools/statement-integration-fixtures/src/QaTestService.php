@@ -9,6 +9,7 @@ use Statement\Collector\Core\Access\TokenService;
 use Statement\Collector\Core\Access\RateLimiter;
 use Statement\Collector\Core\Access\ConsentService;
 use Statement\Collector\Core\Access\OrderAudit;
+use Statement\Collector\Core\Access\ReminderService;
 use Statement\Collector\Core\Order\Provenance;
 use Statement\Collector\Core\Product\Metadata;
 use Statement\Collector\Core\Release\ReleaseState;
@@ -49,7 +50,7 @@ class QaTestService {
 	}
 
 	/**
-	 * Finds latest active QA grant for the test Drop.
+	 * Finds latest historical QA grant row (for re-grant lookup).
 	 *
 	 * @return array<string, mixed>|null
 	 */
@@ -73,14 +74,43 @@ class QaTestService {
 	}
 
 	/**
-	 * Runs Expiry Contract Test.
+	 * Finds latest ACTIVE (unrevoked, unexpired) QA grant row.
 	 *
-	 * Asserts:
-	 * 1. Effective expiry = min(immutable grant_expires_at, drop_close_at)
-	 * 2. Moving drop close earlier shortens effective expiry
-	 * 3. Moving drop close later does NOT extend immutable grant expiry
+	 * @return array<string, mixed>|null
+	 */
+	public static function find_latest_active_qa_grant(): ?array {
+		global $wpdb;
+		$ctx = self::get_test_context();
+		if ( ! $ctx || ! isset( $wpdb ) ) {
+			return null;
+		}
+
+		$now_str = date( 'Y-m-d H:i:s', time() );
+		$table   = $wpdb->prefix . 'statement_access_grants';
+		$row     = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM {$table} WHERE drop_term_id = %d AND revoked_at IS NULL AND grant_expires_at > %s ORDER BY id DESC LIMIT 1",
+				$ctx['drop_id'],
+				$now_str
+			),
+			ARRAY_A
+		);
+
+		return is_array( $row ) ? $row : null;
+	}
+
+	/**
+	 * Runs Expiry Contract Test on Atomic runtime.
 	 *
-	 * @return array{success: bool, message: string, earlier_shortened: string, later_extended: string}
+	 * Hardened in 0.3.2:
+	 * 1. Resolves active QA grant (or creates canonical admin re-grant if expired/revoked).
+	 * 2. Snapshots original DropConfig.
+	 * 3. Dynamically calculates safe earlier close time (< current effective expiry).
+	 * 4. Saves earlier close via DropConfig::save_config(), re-reads, and asserts runtime effective expiry shortened.
+	 * 5. Saves later close exceeding immutable grant expiry, re-reads, and asserts effective expiry did not extend.
+	 * 6. Finally restores original DropConfig and asserts restoration.
+	 *
+	 * @return array{success: bool, message: string, earlier_shortened: string, later_extended: string, original_restored: string}
 	 */
 	public static function run_expiry_test(): array {
 		$ctx = self::get_test_context();
@@ -90,16 +120,7 @@ class QaTestService {
 				'message'           => 'Test context missing: Private fixture not created.',
 				'earlier_shortened' => 'NO',
 				'later_extended'    => 'NO',
-			);
-		}
-
-		$grant = self::find_latest_qa_grant();
-		if ( ! $grant ) {
-			return array(
-				'success'           => false,
-				'message'           => 'No test grant found for expiry test.',
-				'earlier_shortened' => 'NO',
-				'later_extended'    => 'NO',
+				'original_restored' => 'NO',
 			);
 		}
 
@@ -111,33 +132,93 @@ class QaTestService {
 				'message'           => 'Unable to read original Drop config.',
 				'earlier_shortened' => 'NO',
 				'later_extended'    => 'NO',
+				'original_restored' => 'NO',
+			);
+		}
+
+		$grant = self::find_latest_active_qa_grant();
+		$now_ts = time();
+
+		// If no active grant exists or grant has < 120s remaining, restore/create fresh admin re-grant
+		if ( ! $grant || ( strtotime( (string) $grant['grant_expires_at'] . ' UTC' ) - $now_ts ) < 120 ) {
+			$regrant_res = self::regrant_qa_access();
+			if ( ! $regrant_res['success'] ) {
+				return array(
+					'success'           => false,
+					'message'           => 'Failed to establish active QA grant for expiry test: ' . $regrant_res['message'],
+					'earlier_shortened' => 'NO',
+					'later_extended'    => 'NO',
+					'original_restored' => 'YES',
+				);
+			}
+			$grant = self::find_latest_active_qa_grant();
+		}
+
+		if ( ! $grant ) {
+			return array(
+				'success'           => false,
+				'message'           => 'No active QA grant available for expiry test.',
+				'earlier_shortened' => 'NO',
+				'later_extended'    => 'NO',
+				'original_restored' => 'YES',
 			);
 		}
 
 		$grant_exp_ts = strtotime( (string) $grant['grant_expires_at'] . ' UTC' );
-		$now_ts       = time();
-
-		// Step A: Calculate baseline effective expiry
 		$baseline_effective = GrantService::calculate_effective_expiry( $grant_exp_ts, $original_config['closes_at_ts'] );
 
-		// Step B: Move Drop close earlier (1 hour from now)
-		$earlier_close_ts  = $now_ts + 3600;
-		$earlier_effective = GrantService::calculate_effective_expiry( $grant_exp_ts, $earlier_close_ts );
-		$earlier_shortened = $earlier_effective < $baseline_effective ? 'YES' : 'NO';
+		$earlier_shortened = 'NO';
+		$later_extended    = 'NO';
+		$original_restored = 'NO';
 
-		// Step C: Move Drop close later (7 days from now)
-		$later_close_ts  = $now_ts + ( 7 * 86400 );
-		$later_effective = GrantService::calculate_effective_expiry( $grant_exp_ts, $later_close_ts );
-		// The effective expiry MUST NOT exceed immutable grant expiry
-		$later_extended = $later_effective > $grant_exp_ts ? 'YES' : 'NO';
+		try {
+			// Step A: Calculate dynamic earlier close between now + 30s and baseline effective expiry
+			$remaining = $baseline_effective - $now_ts;
+			$earlier_close_ts = ( $remaining > 60 ) ? ( $now_ts + (int) floor( $remaining / 2 ) ) : ( $now_ts + 30 );
 
-		$pass = ( 'YES' === $earlier_shortened && 'NO' === $later_extended );
+			// Save earlier close via canonical DropConfig
+			$mutated_config_earlier = $original_config;
+			$mutated_config_earlier['closes_at_ts'] = $earlier_close_ts;
+			$mutated_config_earlier['closes_at_iso'] = gmdate( 'Y-m-d\TH:i:s\Z', $earlier_close_ts );
+			DropConfig::save_config( $drop_id, $mutated_config_earlier );
+
+			// Re-read config from storage
+			$read_earlier = DropConfig::get_config( $drop_id );
+			$earlier_effective = GrantService::calculate_effective_expiry( $grant_exp_ts, $read_earlier['closes_at_ts'] );
+			if ( $earlier_effective < $baseline_effective && $earlier_effective === $earlier_close_ts ) {
+				$earlier_shortened = 'YES';
+			}
+
+			// Step B: Save later close (7 days in future) exceeding immutable grant expiry
+			$later_close_ts = $grant_exp_ts + ( 7 * 86400 );
+			$mutated_config_later = $original_config;
+			$mutated_config_later['closes_at_ts'] = $later_close_ts;
+			$mutated_config_later['closes_at_iso'] = gmdate( 'Y-m-d\TH:i:s\Z', $later_close_ts );
+			DropConfig::save_config( $drop_id, $mutated_config_later );
+
+			// Re-read config from storage
+			$read_later = DropConfig::get_config( $drop_id );
+			$later_effective = GrantService::calculate_effective_expiry( $grant_exp_ts, $read_later['closes_at_ts'] );
+			if ( $later_effective > $grant_exp_ts ) {
+				$later_extended = 'YES';
+			}
+		} finally {
+			// Always restore original configuration
+			DropConfig::save_config( $drop_id, $original_config );
+			$restored = DropConfig::get_config( $drop_id );
+			if ( is_array( $restored ) && $restored['closes_at_ts'] === $original_config['closes_at_ts'] ) {
+				$original_restored = 'YES';
+			}
+		}
+
+		$pass = ( 'YES' === $earlier_shortened && 'NO' === $later_extended && 'YES' === $original_restored );
 
 		return array(
 			'success'           => $pass,
-			'message'           => $pass ? 'Expiry rules verified: Earlier close shortens authorization; later close does not extend immutable grant.' : 'Expiry contract assertion failed.',
+			'message'           => $pass ? 'Expiry rules verified: Earlier close dynamically shortened effective authorization; later close did not extend immutable grant; original Drop config restored clean.' : 'Expiry contract assertion failed.',
 			'earlier_shortened' => $earlier_shortened,
 			'later_extended'    => $later_extended,
+			'original_restored' => $original_restored,
 		);
 	}
 
@@ -155,8 +236,8 @@ class QaTestService {
 			return array( 'success' => false, 'message' => 'Test context unavailable.' );
 		}
 
-		$grant = self::find_latest_qa_grant();
-		if ( ! $grant || ! empty( $grant['revoked_at'] ) ) {
+		$grant = self::find_latest_active_qa_grant();
+		if ( ! $grant ) {
 			return array( 'success' => false, 'message' => 'No active QA grant found to revoke.' );
 		}
 
@@ -273,8 +354,14 @@ class QaTestService {
 			return array( 'success' => false, 'message' => 'Test context unavailable.' );
 		}
 
-		$grant = self::find_latest_qa_grant();
-		if ( ! $grant || ! empty( $grant['revoked_at'] ) ) {
+		$grant = self::find_latest_active_qa_grant();
+		if ( ! $grant ) {
+			// Auto-restore grant if needed
+			self::regrant_qa_access();
+			$grant = self::find_latest_active_qa_grant();
+		}
+
+		if ( ! $grant ) {
 			return array( 'success' => false, 'message' => 'No active QA grant found for session cap test.' );
 		}
 
@@ -455,9 +542,14 @@ class QaTestService {
 			return array( 'success' => false, 'message' => 'Test context unavailable.' );
 		}
 
-		$grant = self::find_latest_qa_grant();
+		$grant = self::find_latest_active_qa_grant();
 		if ( ! $grant ) {
-			return array( 'success' => false, 'message' => 'No QA grant found for unsubscribe test.' );
+			self::regrant_qa_access();
+			$grant = self::find_latest_active_qa_grant();
+		}
+
+		if ( ! $grant ) {
+			return array( 'success' => false, 'message' => 'No active QA grant found for unsubscribe test.' );
 		}
 
 		$email_hash = (string) $grant['email_hash'];
@@ -494,6 +586,15 @@ class QaTestService {
 	/**
 	 * Runs Reminder & Action Scheduler Test.
 	 *
+	 * Hardened in 0.3.2:
+	 * 1. Resolves exact private WC_Product object and active QA grant.
+	 * 2. Creates a valid active session and temporarily sets the drop access cookie for this request context.
+	 * 3. Schedules reminder via canonical statement_schedule_private_access_reminder hook.
+	 * 4. Asserts DB reminder_scheduled_at is populated.
+	 * 5. Fires statement_private_access_added_to_cart with the WC_Product object (matching Core ReminderService::cancel_reminder_on_add_to_bag).
+	 * 6. Asserts reminder_cancelled_at is populated and reminder_cancel_reason is 'add_to_cart'.
+	 * 7. Cancels any remaining Action Scheduler actions and cleans up temporary cookie.
+	 *
 	 * @return array{success: bool, message: string}
 	 */
 	public static function run_reminder_test(): array {
@@ -503,9 +604,19 @@ class QaTestService {
 			return array( 'success' => false, 'message' => 'Test context unavailable.' );
 		}
 
-		$grant = self::find_latest_qa_grant();
+		$product = PrivateFixtureService::find_existing_product();
+		if ( ! is_object( $product ) ) {
+			return array( 'success' => false, 'message' => 'Test private product not found.' );
+		}
+
+		$grant = self::find_latest_active_qa_grant();
 		if ( ! $grant ) {
-			return array( 'success' => false, 'message' => 'No QA grant found for reminder test.' );
+			self::regrant_qa_access();
+			$grant = self::find_latest_active_qa_grant();
+		}
+
+		if ( ! $grant ) {
+			return array( 'success' => false, 'message' => 'No active QA grant found for reminder test.' );
 		}
 
 		$grant_id   = (int) $grant['id'];
@@ -514,47 +625,65 @@ class QaTestService {
 		$now_ts     = time();
 		$sched_ts   = $now_ts + 300;
 
+		$cookie_name = SessionService::get_cookie_name( $drop_id );
+		$prev_cookie = $_COOKIE[ $cookie_name ] ?? null;
+
 		// Clean prior reminder record
 		$grants_table = $wpdb->prefix . 'statement_access_grants';
 		$wpdb->update(
 			$grants_table,
 			array(
-				'reminder_scheduled_at' => null,
-				'reminder_sent_at'      => null,
-				'reminder_cancelled_at' => null,
+				'reminder_scheduled_at'  => null,
+				'reminder_sent_at'       => null,
+				'reminder_cancelled_at'  => null,
+				'reminder_cancel_reason' => null,
 			),
 			array( 'id' => $grant_id )
 		);
 
-		// Schedule reminder via hook
-		do_action( 'statement_schedule_private_access_reminder', $grant_id, $email_hash, $drop_id, $sched_ts );
+		try {
+			// Establish active session token and set in request context
+			$session_token = SessionService::create_session( $wpdb, $grant_id, $drop_id, $now_ts + 7200, $now_ts );
+			$_COOKIE[ $cookie_name ] = $session_token;
 
-		// Check if scheduled in DB
-		$updated_grant = $wpdb->get_row(
-			$wpdb->prepare( "SELECT reminder_scheduled_at FROM {$grants_table} WHERE id = %d", $grant_id ),
-			ARRAY_A
-		);
-		$scheduled = is_array( $updated_grant ) && ! empty( $updated_grant['reminder_scheduled_at'] );
+			// 1. Schedule reminder via hook
+			do_action( 'statement_schedule_private_access_reminder', $grant_id, $email_hash, $drop_id, $sched_ts );
 
-		// Test cancellation on Add-to-Bag
-		do_action( 'statement_private_access_added_to_cart', $grant_id, $drop_id );
+			// Check DB
+			$scheduled_grant = $wpdb->get_row(
+				$wpdb->prepare( "SELECT reminder_scheduled_at FROM {$grants_table} WHERE id = %d", $grant_id ),
+				ARRAY_A
+			);
+			$scheduled = is_array( $scheduled_grant ) && ! empty( $scheduled_grant['reminder_scheduled_at'] );
 
-		$cancelled_grant = $wpdb->get_row(
-			$wpdb->prepare( "SELECT reminder_cancelled_at, reminder_cancel_reason FROM {$grants_table} WHERE id = %d", $grant_id ),
-			ARRAY_A
-		);
-		$cancelled = is_array( $cancelled_grant ) && ! empty( $cancelled_grant['reminder_cancelled_at'] ) && 'add_to_cart' === $cancelled_grant['reminder_cancel_reason'];
+			// 2. Fire Add-to-Bag cancellation hook with exact WC_Product object
+			do_action( 'statement_private_access_added_to_cart', $product );
 
-		// Cancel Action Scheduler job if present
-		if ( function_exists( 'as_unschedule_all_actions' ) ) {
-			as_unschedule_all_actions( 'statement_private_access_reminder_action', array( 'grant_id' => $grant_id ) );
+			$cancelled_grant = $wpdb->get_row(
+				$wpdb->prepare( "SELECT reminder_cancelled_at, reminder_cancel_reason FROM {$grants_table} WHERE id = %d", $grant_id ),
+				ARRAY_A
+			);
+			$cancelled = is_array( $cancelled_grant ) && ! empty( $cancelled_grant['reminder_cancelled_at'] ) && 'add_to_cart' === $cancelled_grant['reminder_cancel_reason'];
+
+		} finally {
+			// Restore cookie context
+			if ( null !== $prev_cookie ) {
+				$_COOKIE[ $cookie_name ] = $prev_cookie;
+			} else {
+				unset( $_COOKIE[ $cookie_name ] );
+			}
+
+			// Clean up Action Scheduler action if present
+			if ( function_exists( 'as_unschedule_all_actions' ) ) {
+				as_unschedule_all_actions( ReminderService::ACTION_HOOK, array( 'grant_id' => $grant_id ) );
+			}
 		}
 
 		$pass = ( $scheduled && $cancelled );
 
 		return array(
 			'success' => $pass,
-			'message' => $pass ? 'Reminder Scheduler verified: Action scheduled cleanly and auto-cancelled upon Add to Bag.' : 'Reminder scheduling or cancellation failed.',
+			'message' => $pass ? 'Reminder Scheduler verified: Action scheduled cleanly and auto-cancelled upon Add to Bag with valid session context.' : 'Reminder scheduling or cancellation failed.',
 		);
 	}
 
@@ -576,7 +705,7 @@ class QaTestService {
 		}
 
 		$order_id = (int) get_option( self::QA_ORDER_OPTION, 0 );
-		if ( $order_id <= 0 ) {
+		if ( $order_id <= 0 && function_exists( 'wc_get_orders' ) ) {
 			// Find most recent order with _statement_is_qa_order = 'yes'
 			$orders = wc_get_orders(
 				array(
@@ -596,7 +725,7 @@ class QaTestService {
 		if ( $order_id <= 0 ) {
 			return array(
 				'success'           => false,
-				'message'           => 'No controlled QA order found.',
+				'message'           => 'No controlled QA order found. Place a QA order first.',
 				'order_id'          => 0,
 				'audit_status'      => 'NONE',
 				'provenance_status' => 'NONE',

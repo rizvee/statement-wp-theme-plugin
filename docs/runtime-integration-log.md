@@ -28,7 +28,9 @@
 | `M13-ISSUE-06` | `M13-5B2-01` | Private Drop Config & Fixture Creation | Private Access fixture creates term config and transitions product state | Fatal `Call to undefined method DropConfig::save_config()` + `Metadata` ID argument mismatch | CODE / CONTRACT | HIGH | `3138927` | rc.4 / v0.2.2 | Retested on Atomic | RESOLVED (Core save_config API + DropConfigAdmin + Idempotent Entity Adoption) |
 | `M13-ISSUE-07` | `M13-5B2-02` | Private Access Gate Detection | `/drop/test-private-drop-01/` intercepted by PrivateAccessGate | Gate passed integer product ID to object-based `Metadata::get_release_state()`, normalized state to `UPCOMING`, and fell through to standard Drop template ("NO CURRENT RELEASE") | CORE / API CONTRACT | HIGH | `HEAD` | rc.5 | Pending Retest | RESOLVED (WC_Product Resolution Helper + Metadata Contract Sweep) |
 | `M13-ISSUE-08` | `M13-5B2-03` | Anonymous Private Product Boundary | Private PDP body and public Store API expose no PRIVATE_ACCESS product facts | Verified rc.8 removed product/Store API facts, but Jetpack stats serialized the private request slug in `arch_err` | CORE / PRIVACY | HIGH | `HEAD` | rc.9 | Pending Atomic Retest | FIXED LOCALLY IN RC.9 |
-| `M13-ISSUE-10` | `M13-FIX-02` | Fixture 0.3.0 Early Bootstrap | Fixtures 0.3.0 activates cleanly without fatal errors | `StatementQaGateway.php` required at top-level before `WC_Payment_Gateway` loaded; plugin auto-deactivated | FIXTURE / BOOTSTRAP | BLOCKER | `HEAD` | v0.3.1 | Pending Atomic Retest | FIXED LOCALLY IN V0.3.1 |
+| `M13-ISSUE-10` | `M13-FIX-02` | Fixture 0.3.0 Early Bootstrap | Fixtures 0.3.0 activates cleanly without fatal errors | `StatementQaGateway.php` required at top-level before `WC_Payment_Gateway` loaded; plugin auto-deactivated | FIXTURE / BOOTSTRAP | BLOCKER | `HEAD` | v0.3.1 | Retested on Atomic | RESOLVED (V0.3.1 Active) |
+| `M13-ISSUE-11` | `M13-FIX-03` | Fixture 0.3.1 QA Harness Expiry & Reminder Tests | Expiry and Reminder test buttons verify genuine runtime contracts | Expiry compared static math on historical grant; Reminder passed integer IDs vs WC_Product object and lacked session cookie | FIXTURE / QA HARNESS | MEDIUM | `HEAD` | v0.3.2 | Pending Atomic Retest | FIXED LOCALLY IN V0.3.2 |
+
 
 
 *Note: Classifications: CODE, CONFIGURATION, WORDPRESS CONFIG, PLATFORM, CONTENT, BUILD / REPOSITORY INTEGRITY, UNKNOWN. Severities: BLOCKER, HIGH, MEDIUM, LOW.*
@@ -127,3 +129,16 @@
 - **Verification**:
   - Added 19-assertion behavior test `tests/php/test-fixture-bootstrap.php` validating Woo-absent boot, lazy registration on `woocommerce_payment_gateways`, duplicate protection, scope enforcement, and single stock reduction.
   - Package: `dist/statement-integration-fixtures-0.3.1.zip` (24,979 bytes, SHA-256: `484244bc2ee698ad8425cbb95a0aca7e7b852ad2305a3a27439e2d676f45bea2`).
+
+### `M13-EVIDENCE-15`: Fixture 0.3.2 Expiry & Reminder QA Harness Hardening
+
+- **Observed Diagnostics in 0.3.1**:
+  - `RUN EXPIRY TEST` failed when older historical grants existed whose remaining duration did not match hardcoded 1-hour assumptions, and Drop configuration was not mutated/re-read from storage.
+  - `RUN REMINDER TEST` failed because the test fired `statement_private_access_added_to_cart` with integer IDs `($grant_id, $drop_id)` without a valid session cookie, whereas Core `ReminderService::cancel_reminder_on_add_to_bag( $product )` expects a `WC_Product` object and validates `$_COOKIE`.
+- **Harness Upgrades in 0.3.2**:
+  - Added `find_latest_active_qa_grant()` in `QaTestService.php` to strictly query unrevoked, unexpired grants (`revoked_at IS NULL AND grant_expires_at > NOW()`).
+  - Upgraded `run_expiry_test()` to dynamically compute a safe earlier close time, persist it via `DropConfig::save_config()`, assert effective expiry shortening, persist a later close exceeding grant expiry, assert grant expiry invariance, and restore original config in a `finally` block.
+  - Upgraded `run_reminder_test()` to establish a valid active session token in `$_COOKIE`, pass the resolved `WC_Product` object to `statement_private_access_added_to_cart`, assert `reminder_cancelled_at` with reason `add_to_cart`, and clean up test actions and cookies in a `finally` block.
+- **Verification**:
+  - 82 PHP files linted clean, 116 Node tests pass, `test-fixture-bootstrap.php` passes clean.
+  - Package: `dist/statement-integration-fixtures-0.3.2.zip` (26,047 bytes, SHA-256: `cd4c806e686c8b19ac0ab6e48ed495d40e94b918ea091f1e10e2f39878d023ed`).

@@ -37,8 +37,8 @@ Updated: 2026-08-15
 
 ## Deployment state
 
-`https://mystatement.store/` is hosted on WordPress.com Atomic. Core `0.13.0-rc.9` is verified active with Fixtures `0.3.0` (inactive on Atomic, ready to be replaced with `0.3.1`), Secret Vault initialized (xchacha20-poly1305), and private fixture `CREATED`. GitHub repository `https://github.com/rizvee/statement-wp-theme-plugin.git` is synchronized with local `main`.
+`https://mystatement.store/` is hosted on WordPress.com Atomic. Core `0.13.0-rc.9` is verified active with Fixtures `0.3.1` (active on Atomic, ready to be upgraded to `0.3.2`), Secret Vault initialized (xchacha20-poly1305), and private fixture `CREATED`. GitHub repository `https://github.com/rizvee/statement-wp-theme-plugin.git` is synchronized with local `main`.
 
 ## Verification
 
-M1–M13 Node structural tests (116 subtests), PHP lint (82 PHP files), `verify-foundation.mjs`, `verify-git-runtime-tracking.mjs`, QA Contract PHP tests (5 assertions), Fixture Bootstrap & QA Gateway Behavior PHP tests (19 assertions), PrivateAccessGate contract tests (14 assertions), DropConfig & Fixture Recovery behavior tests (19 assertions), fixture tool package verifier (`statement-integration-fixtures-0.3.1.zip`), and GitHub remote synchronization pass cleanly.
+M1–M13 Node structural tests (116 subtests), PHP lint (82 PHP files), `verify-foundation.mjs`, `verify-git-runtime-tracking.mjs`, QA Contract PHP tests (5 assertions), Fixture Bootstrap & QA Gateway Behavior PHP tests (19 assertions), PrivateAccessGate contract tests (14 assertions), DropConfig & Fixture Recovery behavior tests (19 assertions), fixture tool package verifier (`statement-integration-fixtures-0.3.2.zip`), and GitHub remote synchronization pass cleanly.

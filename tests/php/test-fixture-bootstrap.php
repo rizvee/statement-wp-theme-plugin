@@ -66,7 +66,7 @@ test_assert_same( false, class_exists( 'WC_Payment_Gateway' ), 'WC_Payment_Gatew
 require_once $root . '/tools/statement-integration-fixtures/statement-integration-fixtures.php';
 
 test_assert_same( true, defined( 'STATEMENT_INTEGRATION_FIXTURES_VERSION' ), 'Fixture version constant must be defined' );
-test_assert_same( '0.3.1', STATEMENT_INTEGRATION_FIXTURES_VERSION, 'Fixture version must be 0.3.1' );
+test_assert_same( '0.3.2', STATEMENT_INTEGRATION_FIXTURES_VERSION, 'Fixture version must be 0.3.2' );
 test_assert_same( false, class_exists( 'Statement\Integration\Fixtures\StatementQaGateway', false ), 'StatementQaGateway must NOT be loaded on plugin bootstrap without WooCommerce' );
 
 // Trigger filter when WooCommerce is absent -> returns unmodified list
@@ -123,7 +123,8 @@ use Statement\Integration\Fixtures\StatementQaGateway;
 $gw = new StatementQaGateway();
 test_assert_same( 'statement_qa_gateway', $gw->id, 'Gateway ID matches' );
 test_assert_same( 'TEST-PD01-PAJ', StatementQaGateway::TARGET_SKU, 'Target SKU is TEST-PD01-PAJ' );
-test_assert_same( '0.3.1', StatementQaGateway::VERSION, 'Gateway version is 0.3.1' );
+test_assert_same( '0.3.2', StatementQaGateway::VERSION, 'Gateway version is 0.3.2' );
+
 
 // Mock WooCommerce Order with stock tracking
 class MockOrderItem {
@@ -196,9 +197,9 @@ $res_pass = $gw->process_payment( 999 );
 test_assert_same( 'success', $res_pass['result'], 'process_payment succeeds for exact test SKU' );
 test_assert_same( 'processing', $statement_mock_order->status, 'Order status set to processing' );
 test_assert_same( 'yes', $statement_mock_order->meta['_statement_is_qa_order'], 'QA order metadata set' );
-test_assert_same( '0.3.1', $statement_mock_order->meta['_statement_qa_gateway_version'], 'QA gateway version metadata set' );
+test_assert_same( '0.3.2', $statement_mock_order->meta['_statement_qa_gateway_version'], 'QA gateway version metadata set' );
 
 // 3C: Single-Stock Reduction Check: Exactly 1 stock deduction occurred (no duplicate wc_reduce_stock_levels call)
 test_assert_same( 1, $statement_mock_order->stock_reduced_count, 'Order stock must be reduced exactly ONCE via payment_complete' );
 
-echo "Fixture 0.3.1 Bootstrap & QA Gateway Behavior Tests PASS: {$assertions} assertions verified clean.\n";
+echo "Fixture 0.3.2 Bootstrap & QA Gateway Behavior Tests PASS: {$assertions} assertions verified clean.\n";
