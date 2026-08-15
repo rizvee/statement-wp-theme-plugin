@@ -46,6 +46,12 @@ class AdminPage {
 				} elseif ( 'restore_currency' === $action ) {
 					check_admin_referer( 'statement_fixtures_restore_currency' );
 					$result_notice = CleanupService::restore_currency();
+				} elseif ( 'create_private_fixture' === $action ) {
+					check_admin_referer( 'statement_fixtures_create_private' );
+					$result_notice = PrivateFixtureService::create_private_fixture();
+				} elseif ( 'cleanup_private_fixture' === $action ) {
+					check_admin_referer( 'statement_fixtures_cleanup_private' );
+					$result_notice = PrivateFixtureService::cleanup_private_fixture();
 				}
 			} catch ( \Throwable $e ) {
 				$result_notice = array(
@@ -55,13 +61,17 @@ class AdminPage {
 			}
 		}
 
-		$env          = FixtureService::is_environment_ready();
-		$state        = FixtureService::get_seeding_state();
-		$collisions   = FixtureService::check_collisions();
-		$verification = VerificationService::verify();
+		$env           = FixtureService::is_environment_ready();
+		$state         = FixtureService::get_seeding_state();
+		$collisions    = FixtureService::check_collisions();
+		$verification  = VerificationService::verify();
+		$crypto_diag   = PrivateFixtureService::get_crypto_diagnostics();
+		$secret_diag   = PrivateFixtureService::get_secret_diagnostics();
+		$db_diag       = PrivateFixtureService::get_db_diagnostics();
+		$private_state = PrivateFixtureService::get_private_fixture_state();
 		?>
 		<div class="wrap">
-			<h1>Statement Integration Fixtures (v0.1.1)</h1>
+			<h1>Statement Integration Fixtures (v0.2.0)</h1>
 			<p>Temporary administrator-only runtime fixture tool for Statement Atomic integration testing.</p>
 
 			<?php if ( $result_notice ) : ?>
@@ -153,9 +163,98 @@ class AdminPage {
 				<?php endif; ?>
 			</div>
 
+			<div class="card" style="max-width: 900px; margin-top: 20px;">
+				<h2>2. PRIVATE ACCESS RUNTIME PREFLIGHT</h2>
+				<table class="widefat striped" style="margin-bottom: 15px;">
+					<tbody>
+						<tr>
+							<td><strong>Encryption Active Version:</strong></td>
+							<td>
+								<?php if ( '' !== $secret_diag['encryption_active_version'] ) : ?>
+									<span style="color:green;">CONFIGURED (<?php echo esc_html( $secret_diag['encryption_active_version'] ); ?>)</span>
+								<?php else : ?>
+									<span style="color:red;">MISSING</span>
+								<?php endif; ?>
+							</td>
+						</tr>
+						<tr>
+							<td><strong>Encryption Keyring:</strong></td>
+							<td>
+								<?php echo $secret_diag['encryption_config'] ? '<span style="color:green;">CONFIGURED</span>' : '<span style="color:red;">MISSING / INVALID</span>'; ?>
+							</td>
+						</tr>
+						<tr>
+							<td><strong>Identity Key:</strong></td>
+							<td>
+								<?php echo $secret_diag['identity_key'] ? '<span style="color:green;">CONFIGURED</span>' : '<span style="color:red;">MISSING</span>'; ?>
+							</td>
+						</tr>
+						<tr>
+							<td><strong>Rate-Limit Key:</strong></td>
+							<td>
+								<?php echo $secret_diag['rate_limit_key'] ? '<span style="color:green;">CONFIGURED</span>' : '<span style="color:red;">MISSING</span>'; ?>
+							</td>
+						</tr>
+						<tr>
+							<td><strong>Required Crypto Backend:</strong></td>
+							<td>
+								<?php if ( $crypto_diag['ready'] ) : ?>
+									<span style="color:green;">AVAILABLE (<?php echo esc_html( $crypto_diag['selected_backend'] ); ?>)</span>
+								<?php else : ?>
+									<span style="color:red;">UNAVAILABLE</span>
+								<?php endif; ?>
+							</td>
+						</tr>
+						<tr>
+							<td><strong>Database / Schema (M10):</strong></td>
+							<td>
+								<?php if ( $db_diag['all_tables_exist'] ) : ?>
+									<span style="color:green;">EXISTS (5 tables, db_version: <?php echo esc_html( $db_diag['db_version'] ); ?>)</span>
+								<?php else : ?>
+									<span style="color:red;">MISSING</span>
+								<?php endif; ?>
+							</td>
+						</tr>
+						<tr>
+							<td><strong>Private Fixture Status:</strong></td>
+							<td>
+								<?php if ( 'CREATED' === $private_state ) : ?>
+									<span style="color:blue;"><strong>CREATED</strong> (Manifest active)</span>
+								<?php else : ?>
+									<span style="color:gray;">NOT CREATED</span>
+								<?php endif; ?>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<?php if ( 'NOT_CREATED' === $private_state ) : ?>
+					<form method="post" action="" style="margin-top: 15px;">
+						<?php wp_nonce_field( 'statement_fixtures_create_private' ); ?>
+						<input type="hidden" name="statement_fixtures_action" value="create_private_fixture">
+						<?php
+						$can_create_private = $secret_diag['all_configured'] && $crypto_diag['ready'];
+						submit_button(
+							'Create Private Access Test Fixture',
+							'primary',
+							'submit_create_private',
+							true,
+							$can_create_private ? array() : array( 'disabled' => 'disabled' )
+						);
+						?>
+					</form>
+				<?php else : ?>
+					<form method="post" action="" style="margin-top: 15px;" onsubmit="return confirm('Clean up Private Access test fixture?');">
+						<?php wp_nonce_field( 'statement_fixtures_cleanup_private' ); ?>
+						<input type="hidden" name="statement_fixtures_action" value="cleanup_private_fixture">
+						<?php submit_button( 'Clean Up Private Access Test Fixture', 'delete', 'submit_cleanup_private', false ); ?>
+					</form>
+				<?php endif; ?>
+			</div>
+
 			<?php if ( ! empty( $verification['seeded'] ) && ! empty( $verification['products'] ) ) : ?>
 				<div class="card" style="max-width: 900px; margin-top: 20px;">
-					<h2>2. Verified Fixtures Summary</h2>
+					<h2>3. Verified Live Fixtures Summary</h2>
 					<p>Store Currency: <strong><?php echo esc_html( $verification['current_currency'] ); ?></strong> (Previous: <?php echo esc_html( $verification['previous_currency'] ); ?>)</p>
 					<p>Category: <strong><?php echo esc_html( $verification['category_name'] ); ?></strong> | Tag: <strong><?php echo esc_html( $verification['product_tag_name'] ); ?></strong> | Drop: <strong><?php echo esc_html( $verification['drop_name'] ); ?></strong></p>
 
@@ -205,11 +304,11 @@ class AdminPage {
 
 			<?php if ( 'SEEDED' === $state || 'RECOVERY_REQUIRED' === $state || ! empty( $verification['seeded'] ) ) : ?>
 				<div class="card" style="max-width: 900px; margin-top: 20px; border-left: 4px solid #dc3232;">
-					<h2>3. Cleanup & Recovery Actions</h2>
+					<h2>4. Cleanup & Recovery Actions</h2>
 					<form method="post" action="" style="display: inline-block; margin-right: 20px;" onsubmit="return confirm('Are you sure you want to delete all seeded test products, tags, categories, and drops recorded in the manifest?');">
 						<?php wp_nonce_field( 'statement_fixtures_cleanup' ); ?>
 						<input type="hidden" name="statement_fixtures_action" value="cleanup">
-						<?php submit_button( 'Clean Up Test Fixtures', 'delete', 'submit_cleanup', false ); ?>
+						<?php submit_button( 'Clean Up Live Test Fixtures', 'delete', 'submit_cleanup', false ); ?>
 					</form>
 
 					<form method="post" action="" style="display: inline-block;" onsubmit="return confirm('Restore WooCommerce store currency to USD?');">

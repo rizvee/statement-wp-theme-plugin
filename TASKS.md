@@ -141,7 +141,7 @@ Status: complete (2026-08-15)
 
 ## M13 — Runtime Integration Preparation & Verification
 
-Status: Phase 1, Phase 2, Phase 3A, & Phase 4A Local Readiness complete (2026-08-15)
+Status: Phase 1, Phase 2, Phase 3A, Phase 4A, Phase 5A, & Phase 5B1 complete (2026-08-15)
 
 - [x] Create deterministic packaging scripts (`package-theme.mjs`, `package-plugin.mjs`, `package-all.mjs`) generating single-root ZIP artifacts in `dist/`.
 - [x] Implement package content verification (`verify-package.mjs`) checking root directory, required runtime files, packaged PHP linting, and dev/secret exclusions.
@@ -155,9 +155,10 @@ Status: Phase 1, Phase 2, Phase 3A, & Phase 4A Local Readiness complete (2026-08
 - [x] Phase 2: Verify `statement-collector-core` candidate `0.13.0-rc.2` bootstrap on Atomic.
 - [x] Phase 3A: Build temporary integration fixture plugin `statement-integration-fixtures` (`0.1.1`) and seed/verify LIVE/SOLD_OUT dataset on Atomic.
 - [x] Phase 4A: Perform local theme runtime-readiness audit and contract verification (`docs/theme-atomic-runtime-readiness.md` and `tests/m13-theme-runtime-readiness.test.mjs`).
-- [x] Enforce STOP GATE boundary: THEME LOCAL READINESS COMPLETE / ATOMIC THEME ACTIVATION NOT STARTED.
+- [x] Phase 5A: Execute Atomic Storefront + Commerce + Lifecycle Runtime Matrix across all 9 primary routes. Decouple WooCommerce stock from Statement release state. Verify forward-only `ARCHIVED` lifecycle transition. Publish verified local Git repository history to GitHub remote `https://github.com/rizvee/statement-wp-theme-plugin.git`.
+- [x] Phase 5B1: Build Private Access Atomic Runtime Harness & Secret Preparation. Create local secret generator `scripts/generate-private-access-secrets.mjs` writing to ignored `.local-runtime/private-access-wp-config.php` without printing secret values. Upgrade fixture tool to `0.2.0` (`dist/statement-integration-fixtures-0.2.0.zip`) adding **PRIVATE ACCESS RUNTIME PREFLIGHT**, crypto backend diagnostic, and M10 database schema table existence checks (`M13-DB-01`). Build anonymous API test harness `scripts/test-private-access-api.mjs` and test plan `docs/private-access-atomic-test-plan.md`.
 
 ## Later roadmap
 
-After M13 Phase 4A local preparation is approved by the user, proceed to controlled Phase 4B theme upload and activation on WordPress.com Atomic environment (`mystatement.store`).
+Proceed to Phase 5B2 Private Access Atomic Runtime validation after user completes `wp-config.php` secret placement via SFTP and fixture tool 0.2.0 upgrade.
 

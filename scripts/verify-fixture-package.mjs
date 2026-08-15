@@ -5,7 +5,8 @@ import { dirname, join, resolve } from 'node:path';
 import { lintPhp } from './php-lint.mjs';
 
 const projectRoot = resolve(import.meta.dirname, '..');
-const zipPath = join(projectRoot, 'dist', 'statement-integration-fixtures-0.1.1.zip');
+const targetVersion = process.argv[2] || '0.2.0';
+const zipPath = join(projectRoot, 'dist', `statement-integration-fixtures-${targetVersion}.zip`);
 
 if (!existsSync(zipPath)) {
   console.error(`Missing fixture ZIP file: ${zipPath}`);
@@ -38,8 +39,8 @@ const mainContent = readFileSync(mainPhpPath, 'utf8');
 const headerMatch = mainContent.match(/^[ \t\/*#]*Version:\s*(.+)$/m);
 const headerVer = headerMatch ? headerMatch[1].trim() : 'NONE';
 
-if (headerVer !== '0.1.1') {
-  console.error(`Header version mismatch: expected 0.1.1, got ${headerVer}`);
+if (headerVer !== targetVersion) {
+  console.error(`Header version mismatch: expected ${targetVersion}, got ${headerVer}`);
   process.exit(1);
 }
 

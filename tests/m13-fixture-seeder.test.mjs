@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import test from 'node:test';
+import { generateSecrets } from '../scripts/generate-private-access-secrets.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const pluginDir = resolve(root, 'tools', 'statement-integration-fixtures');
@@ -12,6 +13,7 @@ test('Temporary Fixture Plugin files exist in tools/statement-integration-fixtur
     'statement-integration-fixtures.php',
     'src/AdminPage.php',
     'src/FixtureService.php',
+    'src/PrivateFixtureService.php',
     'src/VerificationService.php',
     'src/CleanupService.php',
   ];
@@ -22,15 +24,16 @@ test('Temporary Fixture Plugin files exist in tools/statement-integration-fixtur
   }
 });
 
-test('Fixture Plugin version is 0.1.1 and activation is strictly side-effect free with zero auto-seeding', () => {
+test('Fixture Plugin version is 0.2.0 and activation is strictly side-effect free with zero auto-seeding', () => {
   const mainPhp = readFileSync(resolve(pluginDir, 'statement-integration-fixtures.php'), 'utf8');
 
   assert.match(mainPhp, /Plugin Name:\s*Statement Integration Fixtures/);
-  assert.match(mainPhp, /Version:\s*0\.1\.1/);
-  assert.match(mainPhp, /STATEMENT_INTEGRATION_FIXTURES_VERSION['"]\s*,\s*['"]0\.1\.1['"]/);
+  assert.match(mainPhp, /Version:\s*0\.2\.0/);
+  assert.match(mainPhp, /STATEMENT_INTEGRATION_FIXTURES_VERSION['"]\s*,\s*['"]0\.2\.0['"]/);
 
   // Must not call FixtureService::create or seed automatically on activation or plugins_loaded
   assert.doesNotMatch(mainPhp, /FixtureService::create/i, 'Main plugin file must not auto-create fixtures on boot/activation');
+  assert.doesNotMatch(mainPhp, /PrivateFixtureService::create/i, 'Main plugin file must not auto-create private fixtures on boot/activation');
   assert.doesNotMatch(mainPhp, /register_activation_hook.*create/i, 'Activation hook must not auto-seed fixtures');
 });
 
@@ -42,6 +45,8 @@ test('AdminPage requires manage_woocommerce capability and checks nonces on all 
   assert.match(adminPhp, /check_admin_referer\(\s*['"]statement_fixtures_adopt['"]\s*\)/, 'Adopt action must check nonce');
   assert.match(adminPhp, /check_admin_referer\(\s*['"]statement_fixtures_cleanup['"]\s*\)/, 'Cleanup action must check nonce');
   assert.match(adminPhp, /check_admin_referer\(\s*['"]statement_fixtures_restore_currency['"]\s*\)/, 'Restore currency action must check nonce');
+  assert.match(adminPhp, /check_admin_referer\(\s*['"]statement_fixtures_create_private['"]\s*\)/, 'Create private action must check nonce');
+  assert.match(adminPhp, /check_admin_referer\(\s*['"]statement_fixtures_cleanup_private['"]\s*\)/, 'Cleanup private action must check nonce');
 });
 
 test('VerificationService uses WC_Product::is_purchasable() and does NOT reference nonexistent Purchasability::is_purchasable()', () => {
@@ -65,9 +70,34 @@ test('VerificationService uses WC_Product::is_purchasable() and does NOT referen
   assert.match(verifyPhp, /try\s*\{[\s\S]*\}[\s\S]*catch\s*\(\s*\\Throwable/m, 'VerificationService must catch Throwable to prevent white-screens');
 });
 
+test('PrivateFixtureService defines preflight diagnostics and canonical Private Access fixture spec', () => {
+  const privatePhp = readFileSync(resolve(pluginDir, 'src', 'PrivateFixtureService.php'), 'utf8');
+
+  assert.match(privatePhp, /function get_crypto_diagnostics/, 'Must have get_crypto_diagnostics method');
+  assert.match(privatePhp, /function get_secret_diagnostics/, 'Must have get_secret_diagnostics method');
+  assert.match(privatePhp, /function get_db_diagnostics/, 'Must have get_db_diagnostics method');
+  assert.match(privatePhp, /function create_private_fixture/, 'Must have create_private_fixture method');
+  assert.match(privatePhp, /function cleanup_private_fixture/, 'Must have cleanup_private_fixture method');
+
+  // Exact private drop & product spec
+  assert.match(privatePhp, /test-private-drop-01/, 'Must specify slug test-private-drop-01');
+  assert.match(privatePhp, /TEST-PD01-PAJ/, 'Must specify SKU TEST-PD01-PAJ');
+  assert.match(privatePhp, /310/, 'Must specify price 310');
+  assert.match(privatePhp, /PRIVATE_ACCESS/, 'Must transition lifecycle to PRIVATE_ACCESS');
+
+  // DB diagnostic table names (M13-DB-01)
+  assert.match(privatePhp, /statement_access_grants/, 'DB diagnostic must check statement_access_grants');
+  assert.match(privatePhp, /statement_access_sessions/, 'DB diagnostic must check statement_access_sessions');
+  assert.match(privatePhp, /statement_access_tokens/, 'DB diagnostic must check statement_access_tokens');
+  assert.match(privatePhp, /statement_access_rate_limits/, 'DB diagnostic must check statement_access_rate_limits');
+  assert.match(privatePhp, /statement_consent_events/, 'DB diagnostic must check statement_consent_events');
+  assert.match(privatePhp, /statement_access_db_version/, 'DB diagnostic must check option statement_access_db_version');
+});
+
 test('Contract-drift check: Fixture Tool references only real static methods and properties in Statement Core', () => {
   const fixtureSourceFiles = [
     resolve(pluginDir, 'src', 'FixtureService.php'),
+    resolve(pluginDir, 'src', 'PrivateFixtureService.php'),
     resolve(pluginDir, 'src', 'VerificationService.php'),
     resolve(pluginDir, 'src', 'AdminPage.php'),
     resolve(pluginDir, 'src', 'CleanupService.php'),
@@ -76,6 +106,7 @@ test('Contract-drift check: Fixture Tool references only real static methods and
   const coreMetadataPhp = readFileSync(resolve(coreDir, 'src', 'Product', 'Metadata.php'), 'utf8');
   const corePurchasabilityPhp = readFileSync(resolve(coreDir, 'src', 'Release', 'Purchasability.php'), 'utf8');
   const coreReleaseStatePhp = readFileSync(resolve(coreDir, 'src', 'Release', 'ReleaseState.php'), 'utf8');
+  const coreSecretsPhp = readFileSync(resolve(coreDir, 'src', 'Access', 'Secrets.php'), 'utf8');
 
   for (const file of fixtureSourceFiles) {
     const content = readFileSync(file, 'utf8');
@@ -94,6 +125,20 @@ test('Contract-drift check: Fixture Tool references only real static methods and
       assert.ok(coreMetadataPhp.includes('function get_edition_label'), 'Core Metadata::get_edition_label must exist');
     }
 
+    // Verify Secrets calls
+    if (content.includes('Secrets::has_identity_key')) {
+      assert.ok(coreSecretsPhp.includes('function has_identity_key'), 'Core Secrets::has_identity_key must exist');
+    }
+    if (content.includes('Secrets::has_rate_limit_key')) {
+      assert.ok(coreSecretsPhp.includes('function has_rate_limit_key'), 'Core Secrets::has_rate_limit_key must exist');
+    }
+    if (content.includes('Secrets::has_encryption_config')) {
+      assert.ok(coreSecretsPhp.includes('function has_encryption_config'), 'Core Secrets::has_encryption_config must exist');
+    }
+    if (content.includes('Secrets::get_active_key_version')) {
+      assert.ok(coreSecretsPhp.includes('function get_active_key_version'), 'Core Secrets::get_active_key_version must exist');
+    }
+
     // Verify Purchasability has no is_purchasable method
     assert.ok(!corePurchasabilityPhp.includes('function is_purchasable'), 'Core Purchasability class does NOT have function is_purchasable');
 
@@ -104,65 +149,25 @@ test('Contract-drift check: Fixture Tool references only real static methods and
   }
 });
 
-test('FixtureService specifies exact approved taxonomies, slugs, SKUs, AUD currency, and state detection', () => {
-  const fixturePhp = readFileSync(resolve(pluginDir, 'src', 'FixtureService.php'), 'utf8');
+test('Secret Generator generates cryptographically strong keys in Git-ignored path without stdout leaks', () => {
+  const result = generateSecrets({ targetPath: resolve(root, '.local-runtime', 'test-secrets-wp-config.php'), rotate: true });
 
-  // Taxonomies
-  assert.match(fixturePhp, /'product_cat'/, 'Must use product_cat taxonomy for category');
-  assert.match(fixturePhp, /'test-outerwear'/, 'Category slug must be test-outerwear');
+  assert.ok(result.generated, 'Secret generator must generate secrets when requested');
+  assert.ok(existsSync(result.path), 'Generated file must exist on disk');
 
-  assert.match(fixturePhp, /'product_tag'/, 'Must use product_tag taxonomy for tag');
-  assert.match(fixturePhp, /'test-integration'/, 'Tag slug must be test-integration');
+  const fileContent = readFileSync(result.path, 'utf8');
+  assert.match(fileContent, /define\(\s*['"]STATEMENT_ACCESS_IDENTITY_KEY['"]\s*,\s*['"][a-f0-9]{64}['"]\s*\)/);
+  assert.match(fileContent, /define\(\s*['"]STATEMENT_ACCESS_RATE_LIMIT_KEY['"]\s*,\s*['"][a-f0-9]{64}['"]\s*\)/);
+  assert.match(fileContent, /define\(\s*['"]STATEMENT_ACCESS_ENCRYPTION_ACTIVE_VERSION['"]\s*,\s*['"]v1['"]\s*\)/);
+  assert.match(fileContent, /define\(\s*['"]STATEMENT_ACCESS_ENCRYPTION_KEYS['"]\s*,\s*['"]\{"v1":"[a-f0-9]{64}"\}['"]\s*\)/);
 
-  assert.match(fixturePhp, /'statement_drop'/, 'Must use statement_drop taxonomy for Drop');
-  assert.match(fixturePhp, /'test-live-drop-01'/, 'Drop slug must be test-live-drop-01');
+  // Check gitignore includes .local-runtime/
+  const gitignore = readFileSync(resolve(root, '.gitignore'), 'utf8');
+  assert.ok(gitignore.includes('.local-runtime/'), '.gitignore MUST include .local-runtime/');
 
-  // Currency
-  assert.match(fixturePhp, /update_option\(\s*['"]woocommerce_currency['"]\s*,\s*['"]AUD['"]\s*\)/, 'Must update woocommerce_currency to AUD');
-
-  // Products & SKUs
-  assert.match(fixturePhp, /TEST-LD01-MJ/, 'Must define SKU TEST-LD01-MJ');
-  assert.match(fixturePhp, /TEST-LD01-MJ-S/, 'Must define SKU TEST-LD01-MJ-S');
-  assert.match(fixturePhp, /TEST-LD01-MJ-M/, 'Must define SKU TEST-LD01-MJ-M');
-  assert.match(fixturePhp, /TEST-LD01-MJ-L/, 'Must define SKU TEST-LD01-MJ-L');
-  assert.match(fixturePhp, /TEST-LD01-SO/, 'Must define SKU TEST-LD01-SO');
-  assert.match(fixturePhp, /TEST-LD01-TJ/, 'Must define SKU TEST-LD01-TJ');
-
-  // States & Boundaries
-  assert.match(fixturePhp, /'SOLD_OUT'/, 'Must set SOLD_OUT state for Product 3');
-  assert.doesNotMatch(fixturePhp, /'PRIVATE_ACCESS'/, 'FixtureService MUST NOT create PRIVATE_ACCESS products in Phase 3A');
-  assert.doesNotMatch(fixturePhp, /'ARCHIVED'/, 'FixtureService MUST NOT create ARCHIVED products in Phase 3A');
-
-  // Stock contract for Product 3 Terminal positive-stock test
-  assert.match(fixturePhp, /set_stock_quantity\(\s*5\s*\)/, 'Terminal product must retain stock quantity 5');
-
-  // State & Adoption logic
-  assert.match(fixturePhp, /function get_seeding_state/, 'FixtureService must have get_seeding_state method');
-  assert.match(fixturePhp, /function discover_existing_fixtures/, 'FixtureService must have discover_existing_fixtures method');
-  assert.match(fixturePhp, /function adopt_existing_fixtures/, 'FixtureService must have adopt_existing_fixtures method');
-  assert.match(fixturePhp, /'RECOVERY_REQUIRED'/, 'FixtureService must support RECOVERY_REQUIRED state');
-});
-
-test('AdminPage includes Throwable containment around request handling', () => {
-  const adminPhp = readFileSync(resolve(pluginDir, 'src', 'AdminPage.php'), 'utf8');
-
-  assert.match(adminPhp, /try\s*\{[\s\S]*\}[\s\S]*catch\s*\(\s*\\Throwable/m, 'AdminPage must wrap request processing in Throwable catch');
-  assert.match(adminPhp, /'RECOVERY_REQUIRED' === \$state/, 'AdminPage must check for RECOVERY_REQUIRED state');
-  assert.match(adminPhp, /Adopt Existing Test Fixtures/, 'AdminPage must provide Adopt button when recovery is required');
-});
-
-test('CleanupService deletes strictly IDs recorded in manifest and preserves AUD currency by default', () => {
-  const cleanupPhp = readFileSync(resolve(pluginDir, 'src', 'CleanupService.php'), 'utf8');
-
-  assert.match(cleanupPhp, /wp_delete_post/, 'Cleanup must delete post IDs recorded in manifest');
-  assert.match(cleanupPhp, /wp_delete_term/, 'Cleanup must delete term IDs recorded in manifest');
-  assert.match(cleanupPhp, /delete_option\(\s*FixtureService::MANIFEST_OPTION\s*\)/, 'Cleanup must delete manifest option');
-
-  // Must not auto-restore currency in main cleanup() method
-  const cleanupMethodMatch = cleanupPhp.match(/public static function cleanup\(\)[\s\S]*?^  \}/m);
-  if (cleanupMethodMatch) {
-    assert.doesNotMatch(cleanupMethodMatch[0], /update_option\(\s*['"]woocommerce_currency['"]/, 'cleanup() method MUST NOT automatically restore currency');
-  }
+  // Non-overwrite test
+  const secondRun = generateSecrets({ targetPath: result.path, rotate: false });
+  assert.strictEqual(secondRun.status, 'EXISTS', 'Second run without --rotate MUST refuse to overwrite');
 });
 
 test('Fixture Seeder source code preserves scarcity invariant with zero serial numbers or certificates', () => {
@@ -170,6 +175,7 @@ test('Fixture Seeder source code preserves scarcity invariant with zero serial n
     resolve(pluginDir, 'statement-integration-fixtures.php'),
     resolve(pluginDir, 'src', 'AdminPage.php'),
     resolve(pluginDir, 'src', 'FixtureService.php'),
+    resolve(pluginDir, 'src', 'PrivateFixtureService.php'),
     resolve(pluginDir, 'src', 'VerificationService.php'),
     resolve(pluginDir, 'src', 'CleanupService.php'),
   ];

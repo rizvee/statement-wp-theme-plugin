@@ -33,6 +33,7 @@ coverage/
 .phpunit.cache/
 .phpunit.result.cache
 .local-tools/
+.local-runtime/
 
 # WordPress local/runtime data
 wp-config.php
