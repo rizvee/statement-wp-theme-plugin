@@ -64,5 +64,5 @@ The source code main file headers and runtime constants are the single source of
 1. `docs/atomic-integration-preflight.md`: Operator preflight checklist for Atomic environment state & auto-activation notice.
 2. `docs/atomic-rollback-runbook.md`: Emergency rollback procedures for theme/plugin/checkout/cache issues.
 3. `docs/runtime-integration-checklist.md`: Structured test cases (`M13-PA-01` through `M13-RS-01`).
-4. `docs/runtime-integration-log.md`: Integration defect tracking log (`M13-ISSUE-01`, `M13-ISSUE-02`, `M13-CONFIG-01`, `M13-SAFETY-01`).
-5. `docs/runtime-release-candidate.md`: Release candidate record tracking candidates `0.13.0-rc.1` (historical) and `0.13.0-rc.2` (current candidate).
+4. `docs/runtime-integration-log.md`: Integration defect tracking log (`M13-ISSUE-01` through `M13-ISSUE-10`).
+5. `docs/runtime-release-candidate.md`: Release candidate record tracking Core `0.13.0-rc.9`, Theme `0.13.0-rc.2`, and Fixtures `0.3.1`.

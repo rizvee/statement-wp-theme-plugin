@@ -230,50 +230,34 @@ Status: Phase 1, Phase 2, Phase 3A, Phase 4A, Phase 5A, Phase 5B1, & Phase 5B2.1
 - Atomic reported target state: Theme `0.13.0-rc.2`, Core `0.13.0-rc.7`, Fixtures `0.2.2`, Vault `INITIALIZED`, private fixture `CREATED`; live Core version could not be independently proven over HTTP.
 - **NEXT**: Deploy `dist/statement-collector-core-0.13.0-rc.8.zip`, verify the active version in WP Admin, then rerun the anonymous hard gate.
 
-### Phase 5B2 Final QA Harness & Order Runtime Preparation
+### Phase 5B2 Fixture 0.3.0 Bootstrap Defect & 0.3.1 Hotfix
 
-**STATUS**: FIXTURE 0.3.0 READY FOR DEPLOYMENT (2026-08-16)
+**STATUS**: FIXTURE 0.3.1 READY FOR ATOMIC DEPLOYMENT (2026-08-16)
 
-**Runtime Verified on Atomic (RC.9):**
-- Anonymous Privacy: PASS (Drop gate HTTP 200 without product facts, PDP true 404 without data or request leaks, Store API clean, WP REST clean, Search clean, Jetpack scrubbed).
-- Gate POST & PRG: PASS (Form POST processed, rate limit checked, consent recorded, valid grant & session created, PRG HTTP 303 executed).
-- Cookie Flags: PASS (`statement_drop_access_<id>` cookie issued with HttpOnly=YES, Secure=YES, SameSite=Lax, Path=/).
-- Authorized Drop & PDP: PASS (Authorized session views Drop piece, AUD 310, edition label, single PDP HTTP 200, Add to Bag UI available, zero public stock scarcity copy).
-- Cache & Edge Isolation: PASS (Authorized responses set `Cache-Control: private, no-store, no-cache, max-age=0, must-revalidate`; anonymous profile never receives cached authorized content).
-- Grant Reuse Path: PASS (Re-submitting authorized identity reuses existing grant on frontend).
-- Authorized Cart Integrity: PASS (Private product added to Bag, quantity 1, price AUD 310, survives Cart Integrity reconciliation).
-- Anonymous Cart Bypass: REJECTED (Direct unauthenticated Add-to-Cart attempt for private product blocked by Core integrity layer).
-- Checkout Page Render: PASS (Checkout renders billing/payment fields without errors).
-- Existing Fixture Regression: PASS (Monogram Jacket LIVE, Studio Overshirt LIVE, Terminal Jacket SOLD_OUT intact).
+**Observed Incident on Atomic:**
+- When uploading Fixtures `0.3.0` to replace `0.2.2`, WordPress.com error protection caught `Uncaught Error: Class "WC_Payment_Gateway" not found` in `StatementQaGateway.php:18` during early plugin bootstrap.
+- The plugin was safely auto-deactivated by WordPress. Core `0.13.0-rc.9`, Theme `0.13.0-rc.2`, WooCommerce `11.0.1`, and Secret Vault remained completely healthy and unaffected. Production impact: NONE.
 
-**Structural Only / Runtime Pending Fixture 0.3.0 Deployment:**
-- Grant Immutable-Expiry Comparison: STRUCTURAL_ONLY / RUNTIME_PENDING
-- Checkout Billing-Email Mismatch: STRUCTURAL_ONLY / RUNTIME_PENDING
-- Expiry Shortening / Non-Extension: STRUCTURAL_ONLY / RUNTIME_PENDING
-- Revocation & Self-Regrant Barrier: STRUCTURAL_ONLY / RUNTIME_PENDING
-- Session Cap (5 Max): STRUCTURAL_ONLY / RUNTIME_PENDING
-- Runtime Rate-Limit Thresholds: STRUCTURAL_ONLY / RUNTIME_PENDING
-- Access Email Dispatch: STRUCTURAL_ONLY / RUNTIME_PENDING
-- Return Token Single-Use Self-Test: STRUCTURAL_ONLY / RUNTIME_PENDING
-- Marketing Unsubscribe Separation: STRUCTURAL_ONLY / RUNTIME_PENDING
-- Reminder Action Scheduler Hook & Auto-Cancellation: STRUCTURAL_ONLY / RUNTIME_PENDING
-- Controlled QA Order: PENDING SAFE QA PAYMENT PATH
-- M10 Order Audit Metadata: STRUCTURAL PASS / RUNTIME PENDING
-- M12 Provenance Frozen Snapshot: STRUCTURAL PASS / RUNTIME PENDING
-- Provenance Immutability Across Edits: STRUCTURAL PASS / RUNTIME PENDING
-- Thank You / My Account / Admin Order Display: STRUCTURAL PASS / RUNTIME PENDING
+**Root Cause:**
+- `statement-integration-fixtures.php` unconditionally required `src/StatementQaGateway.php` during initial file loading before WooCommerce had initialized `WC_Payment_Gateway`.
 
-**Fixture Tool Upgrade:**
-- Upgraded `statement-integration-fixtures` to `0.3.0` (`dist/statement-integration-fixtures-0.3.0.zip`, SHA-256: `e12521bf5e25a785aefb414be256becc2277d41589d4956f2c0e067a29d866ef`).
-- Added `StatementQaGateway`: Zero-cost, credential-free test payment gateway restricted exclusively to `TEST-PD01-PAJ`.
-- Added `QaTestService`: Deterministic test actions for expiry rules, revocation/re-grant, session cap FIFO, rate limiter thresholds, return token replay rejection, unsubscribe boundary, reminder scheduling/cancellation, controlled order audit & provenance verification, and provenance immutability testing.
-- Added Section 3 "FINAL M13 PRIVATE ACCESS QA" to WordPress Admin fixture screen.
-- Added automated controlled order harness `scripts/test-private-access-order.mjs` and PHP contract unit tests `tests/php/test-qa-contract.php`.
+**Fixture 0.3.1 Fixes & Hardening:**
+- **Lazy Gateway Loading**: Removed top-level `require_once` for `StatementQaGateway.php`. The gateway file is now loaded exclusively inside the `woocommerce_payment_gateways` filter hook after validating `class_exists( 'WC_Payment_Gateway' )`.
+- **Duplicate Registration Protection**: Added duplicate check (`! in_array( $gateway_class, $gateways, true )`) to prevent multiple registrations on repeated filter triggers.
+- **Side-Effect Free Boot**: Fixture plugin boots safely whether WooCommerce is active, uninitialized, or absent.
+- **Hardened Availability Gate**: `is_available()` validates not only SKU `TEST-PD01-PAJ` but also matches the exact active test product ID resolved from `PrivateFixtureService`, and confirms cart contains zero non-target products.
+- **Order Scope Revalidation**: `process_payment()` re-evaluates all order line items to guarantee the order contains exclusively the test fixture product before proceeding.
+- **Stock Reduction Safety**: Removed redundant `wc_reduce_stock_levels()` call in `process_payment()`; stock reduction is managed solely and deterministically once by WooCommerce core `payment_complete()` lifecycle.
+- **Behavioral Regressions**: Added 19-assertion PHP test (`tests/php/test-fixture-bootstrap.php`) testing Woo-absent boot, lazy registration on `woocommerce_payment_gateways`, duplicate prevention, scope rejection, and exactly-once stock reduction.
+
+**Artifacts & Verification:**
+- Package: `dist/statement-integration-fixtures-0.3.1.zip` (24,979 bytes, SHA-256: `484244bc2ee698ad8425cbb95a0aca7e7b852ad2305a3a27439e2d676f45bea2`).
+- 82 PHP files linted clean (PHP 8.3.33), 116 Node subtests pass, 24 PHP contract & behavior assertions pass.
 
 **Next:**
-- Upload `dist/statement-integration-fixtures-0.3.0.zip` in WordPress Admin.
-- Run FINAL QA actions from Admin panel / order harness to complete remaining M13 runtime proof.
+- Replace inactive `0.3.0` with `dist/statement-integration-fixtures-0.3.1.zip` in WordPress Admin.
+- Activate Fixtures `0.3.1`, verify Admin UI health, and execute FINAL M13 Private Access QA suite.
 
 ## Later roadmap
 
-Proceed to M14 Storefront Hardening or Final Production Promotion preparation after Fixture 0.3.0 runtime verification.
+Proceed to M14 Storefront Hardening or Final Production Promotion preparation after Fixture 0.3.1 runtime verification.

@@ -28,6 +28,8 @@
 | `M13-ISSUE-06` | `M13-5B2-01` | Private Drop Config & Fixture Creation | Private Access fixture creates term config and transitions product state | Fatal `Call to undefined method DropConfig::save_config()` + `Metadata` ID argument mismatch | CODE / CONTRACT | HIGH | `3138927` | rc.4 / v0.2.2 | Retested on Atomic | RESOLVED (Core save_config API + DropConfigAdmin + Idempotent Entity Adoption) |
 | `M13-ISSUE-07` | `M13-5B2-02` | Private Access Gate Detection | `/drop/test-private-drop-01/` intercepted by PrivateAccessGate | Gate passed integer product ID to object-based `Metadata::get_release_state()`, normalized state to `UPCOMING`, and fell through to standard Drop template ("NO CURRENT RELEASE") | CORE / API CONTRACT | HIGH | `HEAD` | rc.5 | Pending Retest | RESOLVED (WC_Product Resolution Helper + Metadata Contract Sweep) |
 | `M13-ISSUE-08` | `M13-5B2-03` | Anonymous Private Product Boundary | Private PDP body and public Store API expose no PRIVATE_ACCESS product facts | Verified rc.8 removed product/Store API facts, but Jetpack stats serialized the private request slug in `arch_err` | CORE / PRIVACY | HIGH | `HEAD` | rc.9 | Pending Atomic Retest | FIXED LOCALLY IN RC.9 |
+| `M13-ISSUE-10` | `M13-FIX-02` | Fixture 0.3.0 Early Bootstrap | Fixtures 0.3.0 activates cleanly without fatal errors | `StatementQaGateway.php` required at top-level before `WC_Payment_Gateway` loaded; plugin auto-deactivated | FIXTURE / BOOTSTRAP | BLOCKER | `HEAD` | v0.3.1 | Pending Atomic Retest | FIXED LOCALLY IN V0.3.1 |
+
 
 *Note: Classifications: CODE, CONFIGURATION, WORDPRESS CONFIG, PLATFORM, CONTENT, BUILD / REPOSITORY INTEGRITY, UNKNOWN. Severities: BLOCKER, HIGH, MEDIUM, LOW.*
 
@@ -110,11 +112,18 @@
 - Checkout Page Render: Checkout renders billing and payment fields without errors.
 - Unexercised Matrix Classification: Expiry shortening/non-extension, admin revocation, session cap FIFO, rate-limit thresholds, single-use return tokens, unsubscribe separation, reminder scheduling/cancellation, and controlled order placement are classified as `STRUCTURAL_ONLY / RUNTIME_PENDING` pending fixture tool upgrade.
 
-### `M13-EVIDENCE-13`: Fixture 0.3.0 QA Harness & Order Runtime Preparation
+### `M13-EVIDENCE-14`: Fixture 0.3.1 Bootstrap Hotfix & Order Safety Hardening
 
-- Upgraded `statement-integration-fixtures` to `0.3.0` (`dist/statement-integration-fixtures-0.3.0.zip`, SHA-256: `e12521bf5e25a785aefb414be256becc2277d41589d4956f2c0e067a29d866ef`).
-- Implemented `StatementQaGateway`: offline, zero-charge test payment gateway enabled strictly when cart contains only `TEST-PD01-PAJ`.
-- Implemented `QaTestService`: deterministic test actions covering expiry contract, grant revocation / self-regrant barrier, session cap FIFO, rate limiter threshold enforcement, single-use return token lifecycle, marketing unsubscribe boundary, reminder scheduling & Add-to-Bag auto-cancellation, controlled QA order audit / provenance inspection, and provenance immutability testing across reversible product edits.
-- Added Section 3 "FINAL M13 PRIVATE ACCESS QA" in WordPress Admin fixture interface.
-- Added automated controlled order harness `scripts/test-private-access-order.mjs` and PHP contract unit test suite `tests/php/test-qa-contract.php`.
-- Local verification: 82 PHP files linted clean, 116 Node subtests pass, repository tracking verifier passes, and fixture package verifier passes clean.
+- **Observed Incident**: WordPress.com automatic recovery caught `Uncaught Error: Class "WC_Payment_Gateway" not found` in `StatementQaGateway.php:18` during early plugin bootstrap when uploading Fixtures `0.3.0`.
+- **Impact**: WordPress safely deactivated Fixtures `0.3.0`. Core `0.13.0-rc.9`, Theme `0.13.0-rc.2`, WooCommerce `11.0.1`, and Secret Vault remained completely healthy. Production impact: NONE.
+- **Root Cause**: `statement-integration-fixtures.php` required `src/StatementQaGateway.php` unconditionally at top-level during early plugin initialization before WooCommerce had registered `WC_Payment_Gateway`.
+- **Hotfix in Fixtures 0.3.1**:
+  - Removed eager `require_once` of `StatementQaGateway.php` from plugin bootstrap.
+  - Implemented lazy loading inside the `woocommerce_payment_gateways` filter hook, checking `class_exists( 'WC_Payment_Gateway' )` and ensuring idempotent registration without duplicates.
+  - Fixture plugin boots cleanly and side-effect free even when WooCommerce is uninitialized or absent.
+  - Hardened `StatementQaGateway::is_available()` to validate exact test SKU (`TEST-PD01-PAJ`) and match against the active test product ID resolved via `PrivateFixtureService`, rejecting any cart with non-target items.
+  - Hardened `StatementQaGateway::process_payment()` to re-verify order line items before marking payment complete.
+  - Removed redundant `wc_reduce_stock_levels()` call in `process_payment()`; inventory reduction is managed deterministically once by WooCommerce core `payment_complete()`.
+- **Verification**:
+  - Added 19-assertion behavior test `tests/php/test-fixture-bootstrap.php` validating Woo-absent boot, lazy registration on `woocommerce_payment_gateways`, duplicate protection, scope enforcement, and single stock reduction.
+  - Package: `dist/statement-integration-fixtures-0.3.1.zip` (24,979 bytes, SHA-256: `484244bc2ee698ad8425cbb95a0aca7e7b852ad2305a3a27439e2d676f45bea2`).
