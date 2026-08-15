@@ -77,7 +77,7 @@ final class Access {
 			return;
 		}
 
-		global $wp_query, $wp_the_query;
+		global $wp_query, $wp_the_query, $wp;
 		if ( is_object( $wp_query ) && method_exists( $wp_query, 'set_404' ) ) {
 			$wp_query->set_404();
 			$wp_query->post           = null;
@@ -97,6 +97,12 @@ final class Access {
 
 		global $post;
 		$post = null;
+		if ( is_object( $wp ) && isset( $wp->request ) ) {
+			$wp->request = '';
+		}
+		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
+			$_SERVER['REQUEST_URI'] = '/404/';
+		}
 		self::$force_private_404 = true;
 
 		if ( function_exists( 'status_header' ) ) {

@@ -17,6 +17,7 @@ $statement_can_edit      = false;
 $statement_queried_id    = 0;
 $statement_status_header = null;
 $statement_nocache_calls = 0;
+$_SERVER['REQUEST_URI']   = '/product/private-product/';
 
 function add_action( string $hook, $callback, int $priority = 10, int $accepted_args = 1 ): void {
 	global $statement_actions;
@@ -138,6 +139,10 @@ final class Statement_M7_Query {
 	}
 }
 
+final class Statement_M7_Wp {
+	public $request = 'product/private-product';
+}
+
 $root = dirname( __DIR__, 2 );
 
 eval( 'namespace Statement\\Collector\\Core\\Access; final class EligibilityService { public static function is_commerce_eligible( $product ): bool { return false; } }' );
@@ -172,6 +177,7 @@ statement_assert_same( true, Access::is_publicly_viewable( $statement_products[2
 $statement_products[2] = new Statement_M7_Access_Product( 2, ReleaseState::PRIVATE_ACCESS );
 $statement_queried_id  = 2;
 $wp_query              = new Statement_M7_Query();
+$wp                    = new Statement_M7_Wp();
 $post                  = 'private-post';
 Access::guard_direct_product();
 statement_assert_same( true, $wp_query->is_404, 'Public PRIVATE_ACCESS request must become a real 404 query.' );
@@ -186,6 +192,8 @@ statement_assert_same( 0, $wp_query->post_count, 'Public hidden product response
 statement_assert_same( array( 'p' => 0, 'name' => '', 'product' => '' ), $wp_query->vars, 'Public hidden product response must scrub product query variables.' );
 $private_404_template = Access::filter_private_404_template( 'theme-index.php' );
 statement_assert_same( true, str_ends_with( str_replace( '\\', '/', $private_404_template ), '/views/private-404.php' ), 'Unauthorized private PDP must use the non-looping Core 404 template.' );
+statement_assert_same( '', $wp->request, 'Unauthorized private PDP must scrub the WordPress request slug before footer integrations run.' );
+statement_assert_same( '/404/', $_SERVER['REQUEST_URI'], 'Unauthorized private PDP must scrub the request URI before footer integrations run.' );
 
 $statement_products[3] = new Statement_M7_Access_Product( 3, ReleaseState::LIVE );
 $statement_queried_id  = 3;

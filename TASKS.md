@@ -213,7 +213,7 @@ Status: Phase 1, Phase 2, Phase 3A, Phase 4A, Phase 5A, Phase 5B1, & Phase 5B2.1
 
 **STATUS**: CODE FIX REQUIRED / GRANT TESTING STOPPED (2026-08-15)
 
-- Atomic Core `0.13.0-rc.6` retest: private Drop gate passed at HTTP 200 with no protected product facts; private PDP remained a true HTTP 404 but still rendered the private title/slug; Store API still returned the private slug/SKU. WP product REST and public search passed.
+- **UNVERIFIED VERSION ATTRIBUTION**: this raw observation was originally labeled an rc.6 retest, but Atomic was later confirmed to still be serving rc.5. The observed private PDP title/slug and Store API exposure are retained without attributing them to rc.6.
 - Root runtime behavior showed the 404 falling through to the theme index loop with the private post still present, while WooCommerce 11 bypassed the query-only Store API constraint.
 - Core `0.13.0-rc.7` strengthens 404 query/loop scrubbing and adds a fail-closed Store API response boundary, with focused regressions.
 - Grant/session, cookie flags, authorized access, cache isolation, grant reuse, cart, and checkout were not run after the anonymous failure. QA identity was not read. Email/reminder remained OFF.
@@ -224,12 +224,23 @@ Status: Phase 1, Phase 2, Phase 3A, Phase 4A, Phase 5A, Phase 5B1, & Phase 5B2.1
 
 **STATUS**: CODE FIX REQUIRED / GRANT TESTING STOPPED (2026-08-15)
 
-- Live Core version was not externally observable (`VERSION_OBSERVABILITY_UNKNOWN`). Cookie-free behavior remained unchanged: Drop gate passed; private PDP true 404 still rendered title/slug; Store API collection and slug query still exposed private slug/SKU; WP REST/search passed.
+- **UNVERIFIED VERSION ATTRIBUTION**: the live Core version was not observable and Atomic was later shown to be on rc.5. The raw Drop/PDP/Store API observations are retained but are not confirmed rc.7 behavior.
 - Core `0.13.0-rc.8` adds a dedicated non-looping generic 404 template and final Store API serialization filtering, retaining the earlier query and response boundaries.
 - Grant/session, cookie, authorized access, cache isolation, reuse, cart, and checkout were not run. QA identity was not read. Email/reminder remained OFF.
 - Atomic reported target state: Theme `0.13.0-rc.2`, Core `0.13.0-rc.7`, Fixtures `0.2.2`, Vault `INITIALIZED`, private fixture `CREATED`; live Core version could not be independently proven over HTTP.
 - **NEXT**: Deploy `dist/statement-collector-core-0.13.0-rc.8.zip`, verify the active version in WP Admin, then rerun the anonymous hard gate.
 
+### Phase 5B2 Verified rc.8 Runtime
+
+**STATUS**: CODE FIX REQUIRED / GRANT TESTING STOPPED (2026-08-15)
+
+- Operator verified Atomic Core `0.13.0-rc.8` active before this run.
+- Anonymous Drop passed (HTTP 200 gate, zero protected facts). Store API collection and slug query passed; WP REST/search passed. Private PDP returned true HTTP 404 with no title, SKU, price, edition, or Product schema, but Jetpack stats serialized the private request slug in `arch_err`.
+- Core `0.13.0-rc.9` scrubs WordPress request state and `REQUEST_URI` before footer integrations render, with regression coverage.
+- QA identity was not read; grant/session, cookie, cache, reuse, cart, and checkout were not run. Email/reminder remained OFF.
+- Atomic state: Theme `0.13.0-rc.2`, Core `0.13.0-rc.8` VERIFIED ACTIVE, Fixtures `0.2.2`, Vault `INITIALIZED`, private fixture `CREATED`.
+- **NEXT**: Deploy `dist/statement-collector-core-0.13.0-rc.9.zip`, verify active, and rerun the anonymous hard gate before any grant/session flow.
+
 ## Later roadmap
 
-Proceed to Phase 5B2 Private Access Atomic Runtime validation after operator completes manual upload of Core `0.13.0-rc.8` and the anonymous boundary retest passes.
+Proceed to Phase 5B2 Private Access Atomic Runtime validation after operator completes manual upload of Core `0.13.0-rc.9` and the anonymous boundary retest passes.
