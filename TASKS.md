@@ -197,6 +197,18 @@ Status: Phase 1, Phase 2, Phase 3A, Phase 4A, Phase 5A, Phase 5B1, & Phase 5B2.1
 - Verify unauthorized private PDP (`/product/test-private-access-jacket/`) is true 404
 - Resume Phase 5B2 runtime matrix
 
+### Phase 5B2.3 Anonymous Boundary Runtime Result
+
+**STATUS**: CODE FIX REQUIRED / GRANT TESTING STOPPED (2026-08-15)
+
+- Cookie-free Atomic checks: private Drop gate passed (HTTP 200, no protected product facts); private PDP returned true HTTP 404 but leaked its title/slug into the 404 body; WooCommerce Store API returned the PRIVATE_ACCESS product. WP product REST and public search did not expose it.
+- Added regressions for WooCommerce 11 Store API query enforcement and unauthorized PDP query-context scrubbing.
+- Core `0.13.0-rc.6` fixes both proven anonymous leaks; Theme remains `0.13.0-rc.2`; Fixtures remain `0.2.2`.
+- Gate post, cookie, authorized content, cache/session isolation, grant reuse, cart, and checkout were not run after the failed anonymous boundary. No email, order, payment, expiry, revocation, reminder, rate-limit exhaustion, vault reset, or fixture mutation occurred.
+- Atomic state remains Core `0.13.0-rc.5` ACTIVE, Fixtures `0.2.2` ACTIVE, Vault `INITIALIZED`, private fixture `CREATED`.
+- Remaining blockers: operator deployment of Core `0.13.0-rc.6`; ignored `.local-runtime/qa-email.txt` is absent and is required only after the anonymous retest passes.
+- **NEXT**: Deploy `dist/statement-collector-core-0.13.0-rc.6.zip`, rerun the anonymous matrix, then create `.local-runtime/qa-email.txt` before the legitimate grant/session flow.
+
 ## Later roadmap
 
-Proceed to Phase 5B2 Private Access Atomic Runtime validation after operator completes manual upload of Core `0.13.0-rc.5`.
+Proceed to Phase 5B2 Private Access Atomic Runtime validation after operator completes manual upload of Core `0.13.0-rc.6` and the anonymous boundary retest passes.

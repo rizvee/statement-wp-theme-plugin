@@ -76,7 +76,13 @@ final class Access {
 		global $wp_query;
 		if ( is_object( $wp_query ) && method_exists( $wp_query, 'set_404' ) ) {
 			$wp_query->set_404();
+			$wp_query->post           = null;
+			$wp_query->posts          = array();
+			$wp_query->queried_object = null;
 		}
+
+		global $post;
+		$post = null;
 
 		if ( function_exists( 'status_header' ) ) {
 			status_header( 404 );

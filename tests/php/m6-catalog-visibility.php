@@ -5,6 +5,7 @@ declare(strict_types=1);
 define( 'ABSPATH', __DIR__ . '/' );
 
 $statement_actions    = array();
+$statement_filters    = array();
 $statement_assertions = 0;
 $statement_is_admin   = false;
 $statement_is_cron    = false;
@@ -13,6 +14,11 @@ $statement_is_ajax    = false;
 function add_action( string $hook, $callback, int $priority = 10, int $accepted_args = 1 ): void {
 	global $statement_actions;
 	$statement_actions[ $hook ][] = compact( 'callback', 'priority', 'accepted_args' );
+}
+
+function add_filter( string $hook, $callback, int $priority = 10, int $accepted_args = 1 ): void {
+	global $statement_filters;
+	$statement_filters[ $hook ][] = compact( 'callback', 'priority', 'accepted_args' );
 }
 
 function is_admin(): bool {
@@ -76,6 +82,18 @@ final class Statement_Catalog_Query_Test_Double {
 	}
 }
 
+final class Statement_Store_Api_Request_Double {
+	private $route;
+
+	public function __construct( string $route ) {
+		$this->route = $route;
+	}
+
+	public function get_route(): string {
+		return $this->route;
+	}
+}
+
 function statement_live_clauses( Statement_Catalog_Query_Test_Double $query ): array {
 	$meta_query = $query->get( 'meta_query' );
 	if ( ! is_array( $meta_query ) ) {
@@ -106,6 +124,18 @@ use Statement\Collector\Core\Catalog\Visibility;
 Visibility::boot();
 statement_assert_same( 1, count( $statement_actions['woocommerce_product_query'] ?? array() ), 'Visibility must register one WooCommerce product-query callback.' );
 statement_assert_same( 2, $statement_actions['woocommerce_product_query'][0]['accepted_args'] ?? null, 'Visibility callback must accept the Woo query context.' );
+statement_assert_same( 1, count( $statement_filters['rest_pre_dispatch'] ?? array() ), 'Visibility must register the WooCommerce 11 Store API dispatch boundary.' );
+
+Visibility::prepare_store_api_boundary( null, null, new Statement_Store_Api_Request_Double( '/wc/store/v1/products' ) );
+statement_assert_same( 1, count( $statement_actions['pre_get_posts'] ?? array() ), 'Store API product route must install one request-scoped query boundary.' );
+$store_query = new Statement_Catalog_Query_Test_Double( false, false, false, array( 'post_type' => 'product' ) );
+Visibility::apply_store_api_release_constraint( $store_query );
+$store_meta = $store_query->get( 'meta_query' );
+statement_assert_same( array( 'LIVE', 'SOLD_OUT' ), $store_meta[0]['value'] ?? null, 'Store API query must exclude PRIVATE_ACCESS and UPCOMING products.' );
+
+$unrelated_store_query = new Statement_Catalog_Query_Test_Double( false, false, false, array( 'post_type' => 'post' ) );
+Visibility::apply_store_api_release_constraint( $unrelated_store_query );
+statement_assert_same( null, $unrelated_store_query->get( 'meta_query' ), 'Store API boundary must not alter non-product queries.' );
 
 $shop_existing = array(
 	array(
@@ -119,8 +149,8 @@ Visibility::apply_live_constraint( $shop );
 $shop_meta = $shop->get( 'meta_query' );
 statement_assert_same( $shop_existing[0], $shop_meta[0] ?? null, 'Public Shop must preserve existing WooCommerce meta constraints.' );
 statement_assert_same( '_statement_release_state', $shop_meta[1]['key'] ?? null, 'Public Shop must append the canonical release-state key.' );
-statement_assert_same( 'LIVE', $shop_meta[1]['value'] ?? null, 'Public Shop must require LIVE.' );
-statement_assert_same( '=', $shop_meta[1]['compare'] ?? null, 'Public Shop must use an exact release-state comparison.' );
+statement_assert_same( array( 'LIVE', 'SOLD_OUT' ), $shop_meta[1]['value'] ?? null, 'Public Shop must include active LIVE and SOLD_OUT presentation states.' );
+statement_assert_same( 'IN', $shop_meta[1]['compare'] ?? null, 'Public Shop must use the bounded active-state set.' );
 
 $drop_existing = array(
 	'relation'     => 'AND',
@@ -135,7 +165,7 @@ Visibility::apply_live_constraint( $drop );
 $drop_meta = $drop->get( 'meta_query' );
 statement_assert_same( 'AND', $drop_meta['relation'] ?? null, 'Drop query must preserve an existing relation.' );
 statement_assert_same( $drop_existing['price_clause'], $drop_meta['price_clause'] ?? null, 'Drop query must preserve named WooCommerce clauses.' );
-statement_assert_same( 'LIVE', $drop_meta[0]['value'] ?? null, 'Drop query must append LIVE without rebuilding its taxonomy query.' );
+statement_assert_same( array( 'LIVE', 'SOLD_OUT' ), $drop_meta[0]['value'] ?? null, 'Drop query must append active presentation states without rebuilding its taxonomy query.' );
 
 $empty = new Statement_Catalog_Query_Test_Double( true, true, false );
 Visibility::apply_live_constraint( $empty );

@@ -120,6 +120,9 @@ final class Statement_M7_Access_Product {
 
 final class Statement_M7_Query {
 	public $is_404 = false;
+	public $post = 'private-post';
+	public $posts = array( 'private-post' );
+	public $queried_object = 'private-product';
 
 	public function set_404(): void {
 		$this->is_404 = true;
@@ -127,6 +130,8 @@ final class Statement_M7_Query {
 }
 
 $root = dirname( __DIR__, 2 );
+
+eval( 'namespace Statement\\Collector\\Core\\Access; final class EligibilityService { public static function is_commerce_eligible( $product ): bool { return false; } }' );
 
 require $root . '/wp-content/plugins/statement-collector-core/src/Release/ReleaseState.php';
 require $root . '/wp-content/plugins/statement-collector-core/src/Product/Metadata.php';
@@ -139,8 +144,8 @@ $states = array(
 	ReleaseState::LIVE           => true,
 	ReleaseState::UPCOMING       => false,
 	ReleaseState::PRIVATE_ACCESS => false,
-	ReleaseState::SOLD_OUT       => false,
-	ReleaseState::ARCHIVED       => false,
+	ReleaseState::SOLD_OUT       => true,
+	ReleaseState::ARCHIVED       => true,
 );
 
 $id = 1;
@@ -158,10 +163,15 @@ statement_assert_same( true, Access::is_publicly_viewable( $statement_products[2
 $statement_products[2] = new Statement_M7_Access_Product( 2, ReleaseState::PRIVATE_ACCESS );
 $statement_queried_id  = 2;
 $wp_query              = new Statement_M7_Query();
+$post                  = 'private-post';
 Access::guard_direct_product();
 statement_assert_same( true, $wp_query->is_404, 'Public PRIVATE_ACCESS request must become a real 404 query.' );
 statement_assert_same( 404, $statement_status_header, 'Public PRIVATE_ACCESS request must send a 404 status.' );
 statement_assert_same( 1, $statement_nocache_calls, 'Public hidden product response must send no-cache headers.' );
+statement_assert_same( null, $wp_query->post, 'Public hidden product response must scrub the private queried post.' );
+statement_assert_same( array(), $wp_query->posts, 'Public hidden product response must scrub private query results.' );
+statement_assert_same( null, $wp_query->queried_object, 'Public hidden product response must scrub the private queried object.' );
+statement_assert_same( null, $post, 'Public hidden product response must scrub the global private post.' );
 
 $statement_products[3] = new Statement_M7_Access_Product( 3, ReleaseState::LIVE );
 $statement_queried_id  = 3;

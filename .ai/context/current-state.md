@@ -23,6 +23,7 @@ Updated: 2026-08-15
 - M13 Phase 5B1 complete: Private Access Atomic Runtime Harness + Secret Preparation completed. Local secret generator `scripts/generate-private-access-secrets.mjs` generates cryptographically strong `wp-config` definitions into ignored `.local-runtime/private-access-wp-config.php` without printing secret values to stdout. Fixture tool upgraded to `0.2.0` (`dist/statement-integration-fixtures-0.2.0.zip`) with **PRIVATE ACCESS RUNTIME PREFLIGHT**, crypto backend diagnostic, and M10 database schema table existence checks (`M13-DB-01`). Anonymous API privacy test harness `scripts/test-private-access-api.mjs` and test plan `docs/private-access-atomic-test-plan.md` created.
 - M13 Phase 5B2.1 complete: Private Fixture API Contract + Partial Recovery Hotfix completed. Added canonical `DropConfig::save_config()` writer API, `DropConfigAdmin` taxonomy UI screens, fixed `PrivateFixtureService` product object metadata handling, and added 4-state lifecycle model (`NOT_CREATED`, `PARTIAL`, `CREATED`, `RECOVERY_REQUIRED`) with idempotent adoption of existing test entities. Packaged Core `0.13.0-rc.4` and Fixtures `0.2.2`.
 - M13 Phase 5B2.2 complete: Private Access Gate Detection & Metadata Contract Sweep completed. Repaired `PrivateAccessGate` product resolution using `WC_Product` objects, evaluated against `EligibilityService::is_commerce_eligible( $private_products[0] )`. Audited and fixed `MakeDropLive.php`, `Precheck.php`, and `ReminderService.php` call sites. Verified `Product/Access.php` true 404 security boundaries. Added 14-assertion PHP contract test `tests/php/test-private-access-gate-contract.php`. Packaged Core `0.13.0-rc.5`.
+- M13 Phase 5B2.3 stopped at the anonymous security boundary: Atomic Core `0.13.0-rc.5` rendered the private Drop gate without protected facts, but its private PDP 404 body leaked title/slug and WooCommerce 11 Store API exposed the PRIVATE_ACCESS product. Local Core `0.13.0-rc.6` adds request-scoped Store API lifecycle filtering and scrubs unauthorized PDP query context before rendering the 404 template. Grant/session/cart/checkout tests remain unrun pending deployment and anonymous retest.
 
 ## Local environment
 
@@ -33,7 +34,7 @@ Updated: 2026-08-15
 
 ## Deployment state
 
-`https://mystatement.store/` is hosted on WordPress.com Atomic. Core candidate `0.13.0-rc.5` packaged in `dist/` and ready for operator upload. Atomic currently runs Core `0.13.0-rc.4` + Fixtures `0.2.2` with Secret Vault initialized and private fixture `CREATED`. GitHub repository `https://github.com/rizvee/statement-wp-theme-plugin.git` is synchronized with local `main`.
+`https://mystatement.store/` is hosted on WordPress.com Atomic. Atomic currently runs Core `0.13.0-rc.5` + Fixtures `0.2.2` with Secret Vault initialized and private fixture `CREATED`. Core `0.13.0-rc.6` is the replacement candidate pending operator upload and anonymous retest. GitHub repository `https://github.com/rizvee/statement-wp-theme-plugin.git` is synchronized with local `main`.
 
 ## Verification
 

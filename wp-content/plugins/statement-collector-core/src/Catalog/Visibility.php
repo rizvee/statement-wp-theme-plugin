@@ -29,6 +29,7 @@ final class Visibility {
 		add_filter( 'rest_product_query', array( self::class, 'filter_public_rest_query' ), 10, 2 );
 		add_filter( 'woocommerce_rest_product_object_query', array( self::class, 'filter_public_rest_query' ), 10, 2 );
 		add_filter( 'woocommerce_store_api_product_query_args', array( self::class, 'filter_public_store_api_query' ), 10, 2 );
+		add_filter( 'rest_pre_dispatch', array( self::class, 'prepare_store_api_boundary' ), 9, 3 );
 	}
 
 	/**
@@ -150,8 +151,11 @@ final class Visibility {
 
 			if (
 				Metadata::RELEASE_STATE_KEY === ( $clause['key'] ?? null )
-				&& ReleaseState::LIVE === ( $clause['value'] ?? null )
-				&& in_array( strtoupper( (string) ( $clause['compare'] ?? '=' ) ), array( '=', '==' ), true )
+				&& (
+					ReleaseState::LIVE === ( $clause['value'] ?? null )
+					|| array( ReleaseState::LIVE, ReleaseState::SOLD_OUT ) === ( $clause['value'] ?? null )
+				)
+				&& in_array( strtoupper( (string) ( $clause['compare'] ?? '=' ) ), array( '=', '==', 'IN' ), true )
 			) {
 				return true;
 			}
@@ -214,5 +218,63 @@ final class Visibility {
 
 		$args['meta_query'] = $meta_query;
 		return $args;
+	}
+
+	/**
+	 * Install the Store API query boundary before WooCommerce dispatches product routes.
+	 *
+	 * WooCommerce 11's Store API builds a WP_Query directly and does not apply the
+	 * legacy product-query-args filter above. The request-scoped pre_get_posts hook
+	 * therefore enforces the same release-state boundary on current Store API routes.
+	 *
+	 * @param mixed  $result  Pre-dispatch result.
+	 * @param object $server  REST server.
+	 * @param object $request REST request.
+	 * @return mixed
+	 */
+	public static function prepare_store_api_boundary( $result, $server, $request ) {
+		unset( $server );
+
+		if ( function_exists( 'current_user_can' ) && current_user_can( 'edit_products' ) ) {
+			return $result;
+		}
+
+		$route = is_object( $request ) && method_exists( $request, 'get_route' )
+			? (string) $request->get_route()
+			: '';
+		if ( ! preg_match( '#^/wc/store/v1/products(?:/|$)#', $route ) ) {
+			return $result;
+		}
+
+		if ( function_exists( 'add_action' ) ) {
+			add_action( 'pre_get_posts', array( self::class, 'apply_store_api_release_constraint' ), 0 );
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Restrict Store API product queries to publicly presentable lifecycle states.
+	 *
+	 * @param object $query WP_Query-like object.
+	 */
+	public static function apply_store_api_release_constraint( $query ): void {
+		if ( ! is_object( $query ) || ! method_exists( $query, 'get' ) || ! method_exists( $query, 'set' ) ) {
+			return;
+		}
+
+		$post_types = (array) $query->get( 'post_type' );
+		if ( ! array_intersect( array( 'product', 'product_variation' ), $post_types ) ) {
+			return;
+		}
+
+		$meta_query = $query->get( 'meta_query' );
+		$meta_query = is_array( $meta_query ) ? $meta_query : array();
+		$meta_query[] = array(
+			'key'     => Metadata::RELEASE_STATE_KEY,
+			'value'   => array( ReleaseState::LIVE, ReleaseState::SOLD_OUT ),
+			'compare' => 'IN',
+		);
+		$query->set( 'meta_query', $meta_query );
 	}
 }
