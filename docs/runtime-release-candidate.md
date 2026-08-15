@@ -4,7 +4,7 @@
 
 | Attribute | Value |
 | --- | --- |
-| Candidate Version | `Core 0.13.0-rc.9 / Theme 0.13.0-rc.2 / Fixture 0.2.2` |
+| Candidate Version | `Core 0.13.0-rc.9 / Theme 0.13.0-rc.2 / Fixture 0.3.0` |
 | Historical Candidate Version | `0.13.0-rc.8`, `0.13.0-rc.7`, `0.13.0-rc.6`, `0.13.0-rc.5`, `0.13.0-rc.4`, `0.13.0-rc.3`, `0.13.0-rc.2`, `0.13.0-rc.1` |
 | Git Commit | `HEAD` |
 | Git Branch | `main` |
@@ -12,12 +12,13 @@
 | Plugin Version | `0.13.0-rc.9` (Active on Atomic, Packaged in `dist/`) |
 | Plugin Header Version | `0.13.0-rc.9` (Verified matching) |
 | Plugin Constant Version | `0.13.0-rc.9` (Verified matching) |
-| Fixture Plugin Version | `0.2.2` (Active on Atomic, Packaged in `dist/`) |
+| Fixture Plugin Version | `0.3.0` (Ready for manual upload, Packaged in `dist/`) |
 | Theme ZIP Checksum (SHA-256) | `ad12e8c699aa8657e929779813dad38e2113d95c6018da2a565481b209ec0054` |
-| Plugin ZIP Checksum (SHA-256) | `ae3da91c6c871c402c8b2f69f404ebf6ce77f058db035bf749dc97f2219176c5` (VERIFIED MATCH) |
-| Fixture ZIP Checksum (SHA-256) | `37fae7b165b509ef54fb30c11ec18991a0ec947df34a7813a3036bcfa3dcf8c8` (VERIFIED MATCH) |
-| Package Verification Status | PASS (40 files in Core; 7 files in Fixture) |
-| Local Test Suite Status | PASS (116 Node subtests, 80 PHP files linted, foundation & tracking verifiers clean) |
+| Plugin ZIP Checksum (SHA-256) | `ae3da91c6c871c402c8b2f69f404ebf6ce77f058db035bf749dc97f2219176c5` |
+| Fixture ZIP Checksum (SHA-256) | `e12521bf5e25a785aefb414be256becc2277d41589d4956f2c0e067a29d866ef` |
+| Package Verification Status | PASS (40 files in Core; 8 files in Fixture) |
+| Local Test Suite Status | PASS (116 Node subtests, 82 PHP files linted, QA contract tests, foundation & tracking verifiers clean) |
+
 
 
 ---

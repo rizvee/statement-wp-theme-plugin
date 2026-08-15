@@ -58,6 +58,36 @@ class AdminPage {
 				} elseif ( 'cleanup_private_fixture' === $action ) {
 					check_admin_referer( 'statement_fixtures_cleanup_private' );
 					$result_notice = PrivateFixtureService::cleanup_private_fixture();
+				} elseif ( 'run_qa_expiry' === $action ) {
+					check_admin_referer( 'statement_fixtures_qa_action' );
+					$result_notice = QaTestService::run_expiry_test();
+				} elseif ( 'run_qa_revocation' === $action ) {
+					check_admin_referer( 'statement_fixtures_qa_action' );
+					$result_notice = QaTestService::run_revocation_test();
+				} elseif ( 'run_qa_regrant' === $action ) {
+					check_admin_referer( 'statement_fixtures_qa_action' );
+					$result_notice = QaTestService::regrant_qa_access();
+				} elseif ( 'run_qa_session_cap' === $action ) {
+					check_admin_referer( 'statement_fixtures_qa_action' );
+					$result_notice = QaTestService::run_session_cap_test();
+				} elseif ( 'run_qa_rate_limit' === $action ) {
+					check_admin_referer( 'statement_fixtures_qa_action' );
+					$result_notice = QaTestService::run_rate_limit_test();
+				} elseif ( 'run_qa_return_token' === $action ) {
+					check_admin_referer( 'statement_fixtures_qa_action' );
+					$result_notice = QaTestService::run_return_token_test();
+				} elseif ( 'run_qa_unsubscribe' === $action ) {
+					check_admin_referer( 'statement_fixtures_qa_action' );
+					$result_notice = QaTestService::run_unsubscribe_test();
+				} elseif ( 'run_qa_reminder' === $action ) {
+					check_admin_referer( 'statement_fixtures_qa_action' );
+					$result_notice = QaTestService::run_reminder_test();
+				} elseif ( 'run_qa_verify_order' === $action ) {
+					check_admin_referer( 'statement_fixtures_qa_action' );
+					$result_notice = QaTestService::verify_last_order();
+				} elseif ( 'run_qa_test_immutability' === $action ) {
+					check_admin_referer( 'statement_fixtures_qa_action' );
+					$result_notice = QaTestService::test_provenance_immutability();
 				}
 			} catch ( \Throwable $e ) {
 				$result_notice = array(
@@ -78,8 +108,9 @@ class AdminPage {
 		$has_active_grants = PrivateFixtureService::has_active_grant_data();
 		?>
 		<div class="wrap">
-			<h1>Statement Integration Fixtures (v0.2.2)</h1>
+			<h1>Statement Integration Fixtures (v0.3.0)</h1>
 			<p>Temporary administrator-only runtime fixture tool for Statement Atomic integration testing.</p>
+
 
 			<?php if ( $result_notice ) : ?>
 				<div class="notice notice-<?php echo ! empty( $result_notice['success'] ) ? 'success' : 'error'; ?> is-dismissible">
@@ -320,9 +351,143 @@ class AdminPage {
 				</div>
 			</div>
 
+			<?php
+			global $wpdb;
+			$qa_ctx = QaTestService::get_test_context();
+			$qa_drop_id = $qa_ctx['drop_id'] ?? 0;
+			$qa_grants_count = 0;
+			$qa_sessions_count = 0;
+			$qa_consent_status = 'ABSENT';
+			$qa_config = $qa_drop_id > 0 ? \Statement\Collector\Core\Access\DropConfig::get_config( $qa_drop_id ) : null;
+			$qa_send_email = $qa_config['send_access_email'] ?? 'no';
+			$qa_reminder_enabled = $qa_config['reminder_enabled'] ?? 'no';
+			$last_qa_order = QaTestService::verify_last_order();
+
+			if ( $qa_drop_id > 0 && isset( $wpdb ) ) {
+				$g_table = $wpdb->prefix . 'statement_access_grants';
+				$s_table = $wpdb->prefix . 'statement_access_sessions';
+				$qa_grants_count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$g_table} WHERE drop_term_id = %d AND revoked_at IS NULL", $qa_drop_id ) );
+				$qa_sessions_count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$s_table} WHERE drop_term_id = %d AND revoked_at IS NULL", $qa_drop_id ) );
+				$latest_g = QaTestService::find_latest_qa_grant();
+				if ( $latest_g && ! empty( $latest_g['email_hash'] ) ) {
+					$has_c = \Statement\Collector\Core\Access\ConsentService::has_active_consent( $wpdb, (string) $latest_g['email_hash'] );
+					$qa_consent_status = $has_c ? 'PRESENT' : 'ABSENT';
+				}
+			}
+			?>
+			<div class="card" style="max-width: 900px; margin-top: 20px;">
+				<h2>3. FINAL M13 PRIVATE ACCESS QA</h2>
+				<table class="widefat striped" style="margin-bottom: 15px;">
+					<tbody>
+						<tr>
+							<td><strong>Private Fixture:</strong></td>
+							<td><strong><?php echo esc_html( $private_state ); ?></strong></td>
+						</tr>
+						<tr>
+							<td><strong>Active QA Grants:</strong></td>
+							<td><?php echo (int) $qa_grants_count; ?></td>
+						</tr>
+						<tr>
+							<td><strong>Active QA Sessions:</strong></td>
+							<td><?php echo (int) $qa_sessions_count; ?></td>
+						</tr>
+						<tr>
+							<td><strong>Consent Record:</strong></td>
+							<td><?php echo 'PRESENT' === $qa_consent_status ? '<span style="color:green;">PRESENT</span>' : '<span style="color:gray;">ABSENT</span>'; ?></td>
+						</tr>
+						<tr>
+							<td><strong>Send Access Email:</strong></td>
+							<td><?php echo 'yes' === $qa_send_email ? '<span style="color:green;">ON</span>' : '<span style="color:gray;">OFF</span>'; ?></td>
+						</tr>
+						<tr>
+							<td><strong>Reminder Email:</strong></td>
+							<td><?php echo 'yes' === $qa_reminder_enabled ? '<span style="color:green;">ON</span>' : '<span style="color:gray;">OFF</span>'; ?></td>
+						</tr>
+						<tr>
+							<td><strong>Statement QA Test Gateway:</strong></td>
+							<td><span style="color:green;">ENABLED (TEST-PD01-PAJ ONLY)</span></td>
+						</tr>
+						<tr>
+							<td><strong>Controlled QA Order:</strong></td>
+							<td>
+								<?php if ( ! empty( $last_qa_order['order_id'] ) ) : ?>
+									<strong>Order #<?php echo (int) $last_qa_order['order_id']; ?></strong> (Audit: <?php echo esc_html( $last_qa_order['audit_status'] ); ?>, Provenance: <?php echo esc_html( $last_qa_order['provenance_status'] ); ?>, State: <?php echo esc_html( $last_qa_order['release_state'] ); ?>)
+								<?php else : ?>
+									<span style="color:gray;">NONE</span>
+								<?php endif; ?>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h3>Deterministic QA Contract Actions</h3>
+				<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+					<form method="post" action="">
+						<?php wp_nonce_field( 'statement_fixtures_qa_action' ); ?>
+						<input type="hidden" name="statement_fixtures_action" value="run_qa_expiry">
+						<?php submit_button( 'RUN EXPIRY TEST', 'secondary', 'submit_qa_expiry', false ); ?>
+					</form>
+
+					<form method="post" action="">
+						<?php wp_nonce_field( 'statement_fixtures_qa_action' ); ?>
+						<input type="hidden" name="statement_fixtures_action" value="run_qa_revocation">
+						<?php submit_button( 'RUN REVOCATION TEST', 'secondary', 'submit_qa_revocation', false ); ?>
+					</form>
+
+					<form method="post" action="">
+						<?php wp_nonce_field( 'statement_fixtures_qa_action' ); ?>
+						<input type="hidden" name="statement_fixtures_action" value="run_qa_regrant">
+						<?php submit_button( 'RESTORE QA GRANT', 'secondary', 'submit_qa_regrant', false ); ?>
+					</form>
+
+					<form method="post" action="">
+						<?php wp_nonce_field( 'statement_fixtures_qa_action' ); ?>
+						<input type="hidden" name="statement_fixtures_action" value="run_qa_session_cap">
+						<?php submit_button( 'RUN SESSION CAP TEST', 'secondary', 'submit_qa_session_cap', false ); ?>
+					</form>
+
+					<form method="post" action="">
+						<?php wp_nonce_field( 'statement_fixtures_qa_action' ); ?>
+						<input type="hidden" name="statement_fixtures_action" value="run_qa_rate_limit">
+						<?php submit_button( 'RUN RATE LIMIT TEST', 'secondary', 'submit_qa_rate_limit', false ); ?>
+					</form>
+
+					<form method="post" action="">
+						<?php wp_nonce_field( 'statement_fixtures_qa_action' ); ?>
+						<input type="hidden" name="statement_fixtures_action" value="run_qa_return_token">
+						<?php submit_button( 'RUN RETURN TOKEN TEST', 'secondary', 'submit_qa_return_token', false ); ?>
+					</form>
+
+					<form method="post" action="">
+						<?php wp_nonce_field( 'statement_fixtures_qa_action' ); ?>
+						<input type="hidden" name="statement_fixtures_action" value="run_qa_unsubscribe">
+						<?php submit_button( 'RUN UNSUBSCRIBE TEST', 'secondary', 'submit_qa_unsubscribe', false ); ?>
+					</form>
+
+					<form method="post" action="">
+						<?php wp_nonce_field( 'statement_fixtures_qa_action' ); ?>
+						<input type="hidden" name="statement_fixtures_action" value="run_qa_reminder">
+						<?php submit_button( 'RUN REMINDER TEST', 'secondary', 'submit_qa_reminder', false ); ?>
+					</form>
+
+					<form method="post" action="">
+						<?php wp_nonce_field( 'statement_fixtures_qa_action' ); ?>
+						<input type="hidden" name="statement_fixtures_action" value="run_qa_verify_order">
+						<?php submit_button( 'VERIFY QA ORDER', 'secondary', 'submit_qa_verify_order', false ); ?>
+					</form>
+
+					<form method="post" action="">
+						<?php wp_nonce_field( 'statement_fixtures_qa_action' ); ?>
+						<input type="hidden" name="statement_fixtures_action" value="run_qa_test_immutability">
+						<?php submit_button( 'TEST PROVENANCE IMMUTABILITY', 'secondary', 'submit_qa_test_immutability', false ); ?>
+					</form>
+				</div>
+			</div>
+
 			<?php if ( ! empty( $verification['seeded'] ) && ! empty( $verification['products'] ) ) : ?>
 				<div class="card" style="max-width: 900px; margin-top: 20px;">
-					<h2>3. Verified Live Fixtures Summary</h2>
+					<h2>4. Verified Live Fixtures Summary</h2>
+
 					<p>Store Currency: <strong><?php echo esc_html( $verification['current_currency'] ); ?></strong> (Previous: <?php echo esc_html( $verification['previous_currency'] ); ?>)</p>
 					<p>Category: <strong><?php echo esc_html( $verification['category_name'] ); ?></strong> | Tag: <strong><?php echo esc_html( $verification['product_tag_name'] ); ?></strong> | Drop: <strong><?php echo esc_html( $verification['drop_name'] ); ?></strong></p>
 
@@ -372,7 +537,8 @@ class AdminPage {
 
 			<?php if ( 'SEEDED' === $state || 'RECOVERY_REQUIRED' === $state || ! empty( $verification['seeded'] ) ) : ?>
 				<div class="card" style="max-width: 900px; margin-top: 20px; border-left: 4px solid #dc3232;">
-					<h2>4. Cleanup & Recovery Actions</h2>
+					<h2>5. Cleanup & Recovery Actions</h2>
+
 					<form method="post" action="" style="display: inline-block; margin-right: 20px;" onsubmit="return confirm('Are you sure you want to delete all seeded test products, tags, categories, and drops recorded in the manifest?');">
 						<?php wp_nonce_field( 'statement_fixtures_cleanup' ); ?>
 						<input type="hidden" name="statement_fixtures_action" value="cleanup">

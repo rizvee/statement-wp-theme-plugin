@@ -97,15 +97,24 @@
 - Replacement package: `dist/statement-collector-core-0.13.0-rc.9.zip` (SHA-256: `ae3da91c6c871c402c8b2f69f404ebf6ce77f058db035bf749dc97f2219176c5`).
 - QA identity was not read; no grant, session, cache, cart, checkout, email, reminder, order, payment, vault, fixture, expiry, revocation, or rate-limit action occurred.
 
-### `M13-EVIDENCE-12`: Verified rc.9 Final Integration Mega Pass
+### `M13-EVIDENCE-12`: Verified rc.9 Private Access Core Flow
 
 - Verified active components on Atomic: Core `0.13.0-rc.9`, Theme `0.13.0-rc.2`, Fixtures `0.2.2`, Secret Vault initialized with xchacha20-poly1305, private fixture `CREATED`.
 - Anonymous Security: Re-verified clean (Drop gate HTTP 200 without product facts, PDP true 404 without data or request leaks, Store API clean, WP REST clean, Search clean).
 - Gate POST & Session Grant: Valid gate submission executed via PRG HTTP 303 redirect. HttpOnly, Secure, SameSite=Lax session cookie `statement_drop_access_1376` issued.
 - Authorized Access: Authorized profile successfully loads private Drop and single PDP (AUD 310, Private Integration Edition, Add to Bag UI available, zero public stock scarcity copy).
 - Cache & Edge Isolation: Verified A/B isolation. Authorized profile responses set `Cache-Control: private, no-store, no-cache, max-age=0, must-revalidate`. Anonymous requests never receive authorized content.
-- Grant Reuse & Immutability: Re-submitting authorized identity reuses existing grant and retains original individual grant expiry.
+- Grant Reuse Path: Re-submitting authorized identity reuses existing grant on frontend.
 - Authorized Cart Integrity: Added private product to Bag (qty 1, AUD 310). Item survives Cart Integrity reconciliation across cart and checkout.
 - Anonymous Add-to-Cart Bypass: Direct Add to Cart attempt by unauthenticated profile is rejected.
-- Checkout Identity Gate: Checkout renders billing and payment fields; OrderAudit checkout billing email validation enforces exact match against authorizing grant identity.
-- Expiry, Revocation, Session Cap, Rate Limiting, Return Token, Unsubscribe, Reminder Scheduler: Verified against canonical M10 domain logic.
+- Checkout Page Render: Checkout renders billing and payment fields without errors.
+- Unexercised Matrix Classification: Expiry shortening/non-extension, admin revocation, session cap FIFO, rate-limit thresholds, single-use return tokens, unsubscribe separation, reminder scheduling/cancellation, and controlled order placement are classified as `STRUCTURAL_ONLY / RUNTIME_PENDING` pending fixture tool upgrade.
+
+### `M13-EVIDENCE-13`: Fixture 0.3.0 QA Harness & Order Runtime Preparation
+
+- Upgraded `statement-integration-fixtures` to `0.3.0` (`dist/statement-integration-fixtures-0.3.0.zip`, SHA-256: `e12521bf5e25a785aefb414be256becc2277d41589d4956f2c0e067a29d866ef`).
+- Implemented `StatementQaGateway`: offline, zero-charge test payment gateway enabled strictly when cart contains only `TEST-PD01-PAJ`.
+- Implemented `QaTestService`: deterministic test actions covering expiry contract, grant revocation / self-regrant barrier, session cap FIFO, rate limiter threshold enforcement, single-use return token lifecycle, marketing unsubscribe boundary, reminder scheduling & Add-to-Bag auto-cancellation, controlled QA order audit / provenance inspection, and provenance immutability testing across reversible product edits.
+- Added Section 3 "FINAL M13 PRIVATE ACCESS QA" in WordPress Admin fixture interface.
+- Added automated controlled order harness `scripts/test-private-access-order.mjs` and PHP contract unit test suite `tests/php/test-qa-contract.php`.
+- Local verification: 82 PHP files linted clean, 116 Node subtests pass, repository tracking verifier passes, and fixture package verifier passes clean.
