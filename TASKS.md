@@ -220,6 +220,16 @@ Status: Phase 1, Phase 2, Phase 3A, Phase 4A, Phase 5A, Phase 5B1, & Phase 5B2.1
 - Atomic state: Theme `0.13.0-rc.2`, Core `0.13.0-rc.6` ACTIVE, Fixtures `0.2.2` ACTIVE, private fixture `CREATED`, Vault `INITIALIZED`.
 - **NEXT**: Deploy `dist/statement-collector-core-0.13.0-rc.7.zip` and rerun the anonymous hard gate before any grant/session flow.
 
+### Phase 5B2 rc.7 Atomic Retest
+
+**STATUS**: CODE FIX REQUIRED / GRANT TESTING STOPPED (2026-08-15)
+
+- Live Core version was not externally observable (`VERSION_OBSERVABILITY_UNKNOWN`). Cookie-free behavior remained unchanged: Drop gate passed; private PDP true 404 still rendered title/slug; Store API collection and slug query still exposed private slug/SKU; WP REST/search passed.
+- Core `0.13.0-rc.8` adds a dedicated non-looping generic 404 template and final Store API serialization filtering, retaining the earlier query and response boundaries.
+- Grant/session, cookie, authorized access, cache isolation, reuse, cart, and checkout were not run. QA identity was not read. Email/reminder remained OFF.
+- Atomic reported target state: Theme `0.13.0-rc.2`, Core `0.13.0-rc.7`, Fixtures `0.2.2`, Vault `INITIALIZED`, private fixture `CREATED`; live Core version could not be independently proven over HTTP.
+- **NEXT**: Deploy `dist/statement-collector-core-0.13.0-rc.8.zip`, verify the active version in WP Admin, then rerun the anonymous hard gate.
+
 ## Later roadmap
 
-Proceed to Phase 5B2 Private Access Atomic Runtime validation after operator completes manual upload of Core `0.13.0-rc.7` and the anonymous boundary retest passes.
+Proceed to Phase 5B2 Private Access Atomic Runtime validation after operator completes manual upload of Core `0.13.0-rc.8` and the anonymous boundary retest passes.

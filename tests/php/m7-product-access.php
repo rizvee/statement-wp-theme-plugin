@@ -184,6 +184,8 @@ statement_assert_same( null, $post, 'Public hidden product response must scrub t
 statement_assert_same( 0, $wp_query->queried_object_id, 'Public hidden product response must scrub the queried object ID.' );
 statement_assert_same( 0, $wp_query->post_count, 'Public hidden product response must expose zero loop posts.' );
 statement_assert_same( array( 'p' => 0, 'name' => '', 'product' => '' ), $wp_query->vars, 'Public hidden product response must scrub product query variables.' );
+$private_404_template = Access::filter_private_404_template( 'theme-index.php' );
+statement_assert_same( true, str_ends_with( str_replace( '\\', '/', $private_404_template ), '/views/private-404.php' ), 'Unauthorized private PDP must use the non-looping Core 404 template.' );
 
 $statement_products[3] = new Statement_M7_Access_Product( 3, ReleaseState::LIVE );
 $statement_queried_id  = 3;
@@ -236,6 +238,7 @@ Access::boot();
 statement_assert_same( 1, count( $statement_actions['template_redirect'] ?? array() ), 'Access must register one direct-product gate.' );
 statement_assert_same( 0, $statement_actions['template_redirect'][0]['priority'] ?? null, 'Product privacy gate must run before normal redirect handling.' );
 statement_assert_same( 1, count( $statement_filters['woocommerce_add_to_cart_validation'] ?? array() ), 'Access must register one Add-to-Cart guard.' );
+statement_assert_same( 1, count( $statement_filters['template_include'] ?? array() ), 'Access must register one private 404 template boundary.' );
 statement_assert_same( 6, $statement_filters['woocommerce_add_to_cart_validation'][0]['accepted_args'] ?? null, 'Add-to-Cart guard must accept variation context.' );
 
 fwrite( STDOUT, "PASS: M7 product access passed ({$statement_assertions} assertions).\n" );

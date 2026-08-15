@@ -64,7 +64,8 @@ test('Core applies canonical LIVE visibility at the WooCommerce main-query bound
   assert.match(visibility, /is_tax\s*\(\s*Taxonomy::KEY/);
   assert.match(visibility, /get\s*\(\s*['"]meta_query['"]\s*\)/);
   assert.match(visibility, /set\s*\(\s*['"]meta_query['"]/);
-  assert.doesNotMatch(visibility, /the_posts|array_filter\s*\(|get_posts\s*\(|wc_get_products\s*\(|set_stock|update_meta|wp_set_object_terms/i);
+  assert.doesNotMatch(visibility, /the_posts|get_posts\s*\(|wc_get_products\s*\(|set_stock|update_meta|wp_set_object_terms/i);
+  assert.match(visibility, /rest_pre_echo_response/, 'Store API serialization must retain a fail-closed privacy boundary.');
 });
 
 test('Shop remains on the native WooCommerce archive with restrained loop UI', () => {

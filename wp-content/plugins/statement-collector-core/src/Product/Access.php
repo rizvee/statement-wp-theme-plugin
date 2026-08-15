@@ -13,6 +13,9 @@ final class Access {
 	/** @var bool */
 	private static $booted = false;
 
+	/** @var bool */
+	private static $force_private_404 = false;
+
 	/**
 	 * Register public product access boundaries once.
 	 */
@@ -23,6 +26,7 @@ final class Access {
 
 		self::$booted = true;
 		add_action( 'template_redirect', array( self::class, 'guard_direct_product' ), 0 );
+		add_filter( 'template_include', array( self::class, 'filter_private_404_template' ), 999 );
 		add_filter( 'woocommerce_add_to_cart_validation', array( self::class, 'validate_add_to_cart' ), 10, 6 );
 	}
 
@@ -93,6 +97,7 @@ final class Access {
 
 		global $post;
 		$post = null;
+		self::$force_private_404 = true;
 
 		if ( function_exists( 'status_header' ) ) {
 			status_header( 404 );
@@ -101,6 +106,19 @@ final class Access {
 		if ( function_exists( 'nocache_headers' ) ) {
 			nocache_headers();
 		}
+	}
+
+	/**
+	 * Use a non-looping generic template so third-party index fallbacks cannot
+	 * rediscover and render the protected product post.
+	 */
+	public static function filter_private_404_template( string $template ): string {
+		if ( ! self::$force_private_404 ) {
+			return $template;
+		}
+
+		$private_template = dirname( __DIR__, 2 ) . '/views/private-404.php';
+		return is_file( $private_template ) ? $private_template : $template;
 	}
 
 	/**

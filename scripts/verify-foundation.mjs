@@ -236,6 +236,7 @@ const approvedRuntimeFiles = [
   'wp-content/plugins/statement-collector-core/src/Order/AdminOrderView.php',
   'wp-content/plugins/statement-collector-core/src/Order/CustomerOrderView.php',
   'wp-content/plugins/statement-collector-core/src/Order/EmailIntegration.php',
+  'wp-content/plugins/statement-collector-core/views/private-404.php',
 ];
 const runtimeFiles = runtimeRoots.flatMap((runtimeRoot) => walk(join(root, runtimeRoot)))
   .map((path) => relative(root, path).replaceAll('\\', '/'));

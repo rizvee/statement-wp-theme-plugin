@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.13.0-rc.7';
+const defaultVersion = '0.13.0-rc.8';
 
 export const approvedPluginFiles = [
   'statement-collector-core.php',
@@ -46,6 +46,7 @@ export const approvedPluginFiles = [
   'src/Order/AdminOrderView.php',
   'src/Order/CustomerOrderView.php',
   'src/Order/EmailIntegration.php',
+  'views/private-404.php',
 ];
 
 export function packagePlugin(version = defaultVersion) {

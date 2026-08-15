@@ -25,6 +25,7 @@ Updated: 2026-08-15
 - M13 Phase 5B2.2 complete: Private Access Gate Detection & Metadata Contract Sweep completed. Repaired `PrivateAccessGate` product resolution using `WC_Product` objects, evaluated against `EligibilityService::is_commerce_eligible( $private_products[0] )`. Audited and fixed `MakeDropLive.php`, `Precheck.php`, and `ReminderService.php` call sites. Verified `Product/Access.php` true 404 security boundaries. Added 14-assertion PHP contract test `tests/php/test-private-access-gate-contract.php`. Packaged Core `0.13.0-rc.5`.
 - M13 Phase 5B2.3 stopped at the anonymous security boundary: Atomic Core `0.13.0-rc.5` rendered the private Drop gate without protected facts, but its private PDP 404 body leaked title/slug and WooCommerce 11 Store API exposed the PRIVATE_ACCESS product. Local Core `0.13.0-rc.6` adds request-scoped Store API lifecycle filtering and scrubs unauthorized PDP query context before rendering the 404 template. Grant/session/cart/checkout tests remain unrun pending deployment and anonymous retest.
 - M13 Phase 5B2 final retest stopped at the same anonymous boundary under Atomic Core `0.13.0-rc.6`: the Drop gate passed, but the private 404 still entered the theme index loop and Store API still exposed the private product. Local Core `0.13.0-rc.7` now scrubs all query/loop identifiers and applies a fail-closed Store API response filter. Grant/session/cache/cart/checkout remain unrun pending rc.7 deployment and anonymous retest.
+- M13 Phase 5B2 rc.7-target retest again stopped at the anonymous boundary. The live Core version was not externally observable, and behavior remained unchanged: PDP 404 title/slug leakage and Store API product leakage persisted. Local Core `0.13.0-rc.8` adds a non-looping generic 404 template plus final REST serialization filtering. QA identity and all grant/session/cache/cart/checkout paths remain untouched.
 
 ## Local environment
 
@@ -35,7 +36,7 @@ Updated: 2026-08-15
 
 ## Deployment state
 
-`https://mystatement.store/` is hosted on WordPress.com Atomic. Atomic currently runs Core `0.13.0-rc.6` + Fixtures `0.2.2` with Secret Vault initialized and private fixture `CREATED`. Core `0.13.0-rc.7` is the replacement candidate pending operator upload and anonymous retest. GitHub repository `https://github.com/rizvee/statement-wp-theme-plugin.git` is synchronized with local `main`.
+`https://mystatement.store/` is hosted on WordPress.com Atomic. The operator target is Core `0.13.0-rc.7` + Fixtures `0.2.2` with Secret Vault initialized and private fixture `CREATED`, but Core version is not externally observable. Core `0.13.0-rc.8` is the replacement candidate pending operator upload, WP Admin version confirmation, and anonymous retest. GitHub repository `https://github.com/rizvee/statement-wp-theme-plugin.git` is synchronized with local `main`.
 
 ## Verification
 

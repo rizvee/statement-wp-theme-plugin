@@ -179,6 +179,7 @@ statement_assert_same( 1, count( $statement_actions['woocommerce_product_query']
 statement_assert_same( 2, $statement_actions['woocommerce_product_query'][0]['accepted_args'] ?? null, 'Visibility callback must accept the Woo query context.' );
 statement_assert_same( 1, count( $statement_filters['rest_pre_dispatch'] ?? array() ), 'Visibility must register the WooCommerce 11 Store API dispatch boundary.' );
 statement_assert_same( 1, count( $statement_filters['rest_post_dispatch'] ?? array() ), 'Visibility must register the fail-closed Store API response boundary.' );
+statement_assert_same( 1, count( $statement_filters['rest_pre_echo_response'] ?? array() ), 'Visibility must register the final Store API serialization boundary.' );
 
 Visibility::prepare_store_api_boundary( null, null, new Statement_Store_Api_Request_Double( '/wc/store/v1/products' ) );
 statement_assert_same( 1, count( $statement_actions['pre_get_posts'] ?? array() ), 'Store API product route must install one request-scoped query boundary.' );
@@ -202,6 +203,8 @@ $private_store_response = new Statement_Store_Api_Response_Double( array( 'id' =
 Visibility::filter_store_api_response( $private_store_response, null, new Statement_Store_Api_Request_Double( '/wc/store/v1/products/20' ) );
 statement_assert_same( 404, $private_store_response->status, 'Direct Store API request for a PRIVATE_ACCESS product must become a true 404.' );
 statement_assert_same( 'woocommerce_rest_product_not_found', $private_store_response->get_data()['code'] ?? null, 'Direct Store API 404 must return a generic not-found code.' );
+$echo_data = Visibility::filter_store_api_echo_data( array( array( 'id' => 10 ), array( 'id' => 20 ) ), null, new Statement_Store_Api_Request_Double( '/wc/store/v1/products' ) );
+statement_assert_same( array( array( 'id' => 10 ) ), $echo_data, 'Final Store API serialization must remove PRIVATE_ACCESS products.' );
 
 $shop_existing = array(
 	array(

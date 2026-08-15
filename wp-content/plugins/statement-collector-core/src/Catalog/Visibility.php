@@ -31,6 +31,7 @@ final class Visibility {
 		add_filter( 'woocommerce_store_api_product_query_args', array( self::class, 'filter_public_store_api_query' ), 10, 2 );
 		add_filter( 'rest_pre_dispatch', array( self::class, 'prepare_store_api_boundary' ), 9, 3 );
 		add_filter( 'rest_post_dispatch', array( self::class, 'filter_store_api_response' ), 10, 3 );
+		add_filter( 'rest_pre_echo_response', array( self::class, 'filter_store_api_echo_data' ), 10, 3 );
 	}
 
 	/**
@@ -342,6 +343,40 @@ final class Visibility {
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Final serialization boundary for Store API collections.
+	 *
+	 * @param mixed  $data    Response data.
+	 * @param object $server  REST server.
+	 * @param object $request REST request.
+	 * @return mixed
+	 */
+	public static function filter_store_api_echo_data( $data, $server, $request ) {
+		unset( $server );
+
+		if ( function_exists( 'current_user_can' ) && current_user_can( 'edit_products' ) ) {
+			return $data;
+		}
+
+		$route = is_object( $request ) && method_exists( $request, 'get_route' )
+			? (string) $request->get_route()
+			: '';
+		if ( '/wc/store/v1/products' !== $route || ! is_array( $data ) || ! array_is_list( $data ) ) {
+			return $data;
+		}
+
+		return array_values(
+			array_filter(
+				$data,
+				static function ( $item ): bool {
+					return is_array( $item )
+						&& isset( $item['id'] )
+						&& self::is_public_store_api_product_id( (int) $item['id'] );
+				}
+			)
+		);
 	}
 
 	/**
