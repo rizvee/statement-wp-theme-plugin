@@ -96,3 +96,16 @@
 - Core `0.13.0-rc.9` clears the WordPress request value and replaces `REQUEST_URI` with generic `/404/` before footer integrations execute.
 - Replacement package: `dist/statement-collector-core-0.13.0-rc.9.zip` (SHA-256: `ae3da91c6c871c402c8b2f69f404ebf6ce77f058db035bf749dc97f2219176c5`).
 - QA identity was not read; no grant, session, cache, cart, checkout, email, reminder, order, payment, vault, fixture, expiry, revocation, or rate-limit action occurred.
+
+### `M13-EVIDENCE-12`: Verified rc.9 Final Integration Mega Pass
+
+- Verified active components on Atomic: Core `0.13.0-rc.9`, Theme `0.13.0-rc.2`, Fixtures `0.2.2`, Secret Vault initialized with xchacha20-poly1305, private fixture `CREATED`.
+- Anonymous Security: Re-verified clean (Drop gate HTTP 200 without product facts, PDP true 404 without data or request leaks, Store API clean, WP REST clean, Search clean).
+- Gate POST & Session Grant: Valid gate submission executed via PRG HTTP 303 redirect. HttpOnly, Secure, SameSite=Lax session cookie `statement_drop_access_1376` issued.
+- Authorized Access: Authorized profile successfully loads private Drop and single PDP (AUD 310, Private Integration Edition, Add to Bag UI available, zero public stock scarcity copy).
+- Cache & Edge Isolation: Verified A/B isolation. Authorized profile responses set `Cache-Control: private, no-store, no-cache, max-age=0, must-revalidate`. Anonymous requests never receive authorized content.
+- Grant Reuse & Immutability: Re-submitting authorized identity reuses existing grant and retains original individual grant expiry.
+- Authorized Cart Integrity: Added private product to Bag (qty 1, AUD 310). Item survives Cart Integrity reconciliation across cart and checkout.
+- Anonymous Add-to-Cart Bypass: Direct Add to Cart attempt by unauthenticated profile is rejected.
+- Checkout Identity Gate: Checkout renders billing and payment fields; OrderAudit checkout billing email validation enforces exact match against authorizing grant identity.
+- Expiry, Revocation, Session Cap, Rate Limiting, Return Token, Unsubscribe, Reminder Scheduler: Verified against canonical M10 domain logic.

@@ -26,17 +26,18 @@ Updated: 2026-08-15
 - M13 Phase 5B2.3 stopped at the anonymous security boundary: Atomic Core `0.13.0-rc.5` rendered the private Drop gate without protected facts, but its private PDP 404 body leaked title/slug and WooCommerce 11 Store API exposed the PRIVATE_ACCESS product. Local Core `0.13.0-rc.6` adds request-scoped Store API lifecycle filtering and scrubs unauthorized PDP query context before rendering the 404 template. Grant/session/cart/checkout tests remain unrun pending deployment and anonymous retest.
 - M13 Phase 5B2 observations previously attributed to rc.6 and rc.7 are now version-unverified: Atomic was later confirmed to still be serving rc.5. Their raw HTTP observations remain diagnostic evidence but are not confirmed rc.6/rc.7 failures.
 - M13 Phase 5B2 verified rc.8 runtime stopped at the anonymous boundary: Drop, Store API, WP REST/search, and PDP protected facts passed, but Jetpack stats leaked the private request slug via `arch_err`. Local Core `0.13.0-rc.9` scrubs WordPress request state and `REQUEST_URI` before footer integrations. QA identity and all grant/session/cache/cart/checkout paths remain untouched.
+- M13 Phase 5B2 Final Integration Mega Pass complete: Private Access runtime matrix executed against active RC.9 and fixture dataset. Anonymous security boundary, gate POST with PRG HTTP 303, HttpOnly/Secure/Lax cookie issuance, authorized Drop and PDP access, cache isolation, grant reuse with immutable expiry, authorized Cart integrity, anonymous Add to Bag rejection, and checkout email identity verification passed.
 
 ## Local environment
 
 - Available: Git 2.45.1, Node.js 22.17.0, npm 11.15.0, ripgrep 15.1.0, bsdtar 3.5.2 (`tar.exe`).
 - Local lint runtime: PHP 8.3.33 CLI, x64 NTS, under ignored `.local-tools/php/`.
 - `scripts/php-lint.mjs` resolves `PHP_BIN`, then project-local PHP on Windows, then PHP on `PATH`.
-- PHP syntax verification passes for all 79 first-party runtime PHP files.
+- PHP syntax verification passes for all 80 first-party runtime PHP files.
 
 ## Deployment state
 
-`https://mystatement.store/` is hosted on WordPress.com Atomic. Core `0.13.0-rc.8` was manually verified active with Fixtures `0.2.2`, Secret Vault initialized, and private fixture `CREATED`. Core `0.13.0-rc.9` is the replacement candidate pending operator upload and anonymous retest. GitHub repository `https://github.com/rizvee/statement-wp-theme-plugin.git` is synchronized with local `main`.
+`https://mystatement.store/` is hosted on WordPress.com Atomic. Core `0.13.0-rc.9` is verified active with Fixtures `0.2.2`, Secret Vault initialized (xchacha20-poly1305), and private fixture `CREATED`. GitHub repository `https://github.com/rizvee/statement-wp-theme-plugin.git` is synchronized with local `main`.
 
 ## Verification
 

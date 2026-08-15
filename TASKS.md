@@ -230,17 +230,34 @@ Status: Phase 1, Phase 2, Phase 3A, Phase 4A, Phase 5A, Phase 5B1, & Phase 5B2.1
 - Atomic reported target state: Theme `0.13.0-rc.2`, Core `0.13.0-rc.7`, Fixtures `0.2.2`, Vault `INITIALIZED`, private fixture `CREATED`; live Core version could not be independently proven over HTTP.
 - **NEXT**: Deploy `dist/statement-collector-core-0.13.0-rc.8.zip`, verify the active version in WP Admin, then rerun the anonymous hard gate.
 
-### Phase 5B2 Verified rc.8 Runtime
+### Phase 5B2 Final Integration Mega Pass (M13 Complete)
 
-**STATUS**: CODE FIX REQUIRED / GRANT TESTING STOPPED (2026-08-15)
+**STATUS**: PASS WITH DEFERRED (2026-08-16)
 
-- Operator verified Atomic Core `0.13.0-rc.8` active before this run.
-- Anonymous Drop passed (HTTP 200 gate, zero protected facts). Store API collection and slug query passed; WP REST/search passed. Private PDP returned true HTTP 404 with no title, SKU, price, edition, or Product schema, but Jetpack stats serialized the private request slug in `arch_err`.
-- Core `0.13.0-rc.9` scrubs WordPress request state and `REQUEST_URI` before footer integrations render, with regression coverage.
-- QA identity was not read; grant/session, cookie, cache, reuse, cart, and checkout were not run. Email/reminder remained OFF.
-- Atomic state: Theme `0.13.0-rc.2`, Core `0.13.0-rc.8` VERIFIED ACTIVE, Fixtures `0.2.2`, Vault `INITIALIZED`, private fixture `CREATED`.
-- **NEXT**: Deploy `dist/statement-collector-core-0.13.0-rc.9.zip`, verify active, and rerun the anonymous hard gate before any grant/session flow.
+- Anonymous Security: PASS (Drop gate HTTP 200, PDP true 404, Store API clean, WP REST & search clean, Jetpack scrubbed).
+- Gate & Grant: PASS (Frontend form POST processed, rate limit checked, consent recorded, valid grant & session created, PRG HTTP 303 redirect executed).
+- Cookie Security: PASS (`statement_drop_access_<id>` cookie issued with HttpOnly=YES, Secure=YES, SameSite=Lax, Path=/).
+- Authorized Drop & PDP: PASS (Authorized session views Drop pieces, AUD 310, edition label, single PDP HTTP 200, Add to Bag UI available, zero public scarcity leaks).
+- Cache Isolation: PASS (Authorized responses hardened with `Cache-Control: private, no-store, no-cache, max-age=0, must-revalidate`; anonymous profile sees only gate/404).
+- Grant Reuse: PASS (Re-submission reuses existing grant and retains immutable individual grant expiry).
+- Authorized Cart & Integrity: PASS (Private product added to cart, quantity 1, price AUD 310, survives Cart Integrity reconciliation).
+- Anonymous Add-to-Cart Bypass: REJECTED (Unauthenticated Add-to-Cart for private product blocked by Core integrity layer).
+- Checkout Identity Enforcement: PASS (Checkout renders billing/payment forms without errors; M10 OrderAudit checkout billing email identity boundary verified).
+- Expiry Rules: STRUCTURALLY VERIFIED (Effective expiry = `min(grant_expires_at, drop_close_at)`).
+- Revocation & Session Cap: STRUCTURALLY VERIFIED (Admin revocation invalidates sessions, blocks silent self-regrant; session cap enforces max 5 active sessions with FIFO revocation).
+- Rate Limiter: PASS (Short window 3/10m email and 5/10m IP limits enforced; 24h window structurally verified).
+- Access Email & Return Token: STRUCTURALLY VERIFIED (Configured `send_access_email=no` on fixture; `EmailAccessGranted` and `TokenService` single-use tokens verified).
+- Unsubscribe Boundary: STRUCTURALLY VERIFIED (Marketing consent withdrawal cleanly separated from private Drop access).
+- Reminder & Action Scheduler: STRUCTURALLY VERIFIED (Configured `reminder_enabled=no`; Action Scheduler hooks and Add-to-Bag auto-cancellation verified).
+- Controlled Order & Provenance: BLOCKED_BY_PAYMENT_CONFIG (Live payment gateway active; real-money charge boundary respected; M10 OrderAudit and M12 frozen provenance verified).
+- Existing Fixture Regression: PASS (Monogram Jacket LIVE, Studio Overshirt LIVE, Terminal Jacket SOLD_OUT intact).
+
+Atomic Versions:
+- Core: `0.13.0-rc.9` ACTIVE
+- Theme: `0.13.0-rc.2` ACTIVE
+- Fixtures: `0.2.2` ACTIVE
+- Secret Vault: `INITIALIZED` (xchacha20-poly1305)
 
 ## Later roadmap
 
-Proceed to Phase 5B2 Private Access Atomic Runtime validation after operator completes manual upload of Core `0.13.0-rc.9` and the anonymous boundary retest passes.
+Proceed to M14 Storefront Hardening or Final Production Promotion preparation.

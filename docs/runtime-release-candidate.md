@@ -1,23 +1,24 @@
-# Release Candidate Record — M13 Phase 5B1.1
+# Release Candidate Record — M13 Phase 5B2 Final Integration
 
 ## Overview
 
 | Attribute | Value |
 | --- | --- |
-| Candidate Version | `Core 0.13.0-rc.3 / Theme 0.13.0-rc.2 / Fixture 0.2.1` |
-| Historical Candidate Version | `0.13.0-rc.2`, `0.13.0-rc.1` |
-| Git Commit | `HEAD` (*"feat: add secure Private Access secret vault fallback"*) |
+| Candidate Version | `Core 0.13.0-rc.9 / Theme 0.13.0-rc.2 / Fixture 0.2.2` |
+| Historical Candidate Version | `0.13.0-rc.8`, `0.13.0-rc.7`, `0.13.0-rc.6`, `0.13.0-rc.5`, `0.13.0-rc.4`, `0.13.0-rc.3`, `0.13.0-rc.2`, `0.13.0-rc.1` |
+| Git Commit | `HEAD` |
 | Git Branch | `main` |
 | Theme Version | `0.13.0-rc.2` (Active on Atomic) |
-| Plugin Version | `0.13.0-rc.3` (Packaged locally in `dist/`) |
-| Plugin Header Version | `0.13.0-rc.3` (Verified matching) |
-| Plugin Constant Version | `0.13.0-rc.3` (Verified matching) |
-| Fixture Plugin Version | `0.2.1` (Packaged locally in `dist/`) |
+| Plugin Version | `0.13.0-rc.9` (Active on Atomic, Packaged in `dist/`) |
+| Plugin Header Version | `0.13.0-rc.9` (Verified matching) |
+| Plugin Constant Version | `0.13.0-rc.9` (Verified matching) |
+| Fixture Plugin Version | `0.2.2` (Active on Atomic, Packaged in `dist/`) |
 | Theme ZIP Checksum (SHA-256) | `ad12e8c699aa8657e929779813dad38e2113d95c6018da2a565481b209ec0054` |
-| Plugin ZIP Checksum (SHA-256) | `ef4edaaea0c385a819970c8a56c0ec5a679ec1b23ff01fc66934cf8d5a290028` (VERIFIED MATCH) |
-| Fixture ZIP Checksum (SHA-256) | `5cfbe5a3a6cfdcc4ec6ef863b284e3718f9715d6c90581006cbb2a2fc82f459e` (VERIFIED MATCH) |
-| Package Verification Status | PASS (38 files, 38 PHP files in Core; 6 PHP files in Fixture) |
-| Local Test Suite Status | PASS (116 Node subtests, 26 PHP SecretVault assertions, 78 PHP files linted) |
+| Plugin ZIP Checksum (SHA-256) | `ae3da91c6c871c402c8b2f69f404ebf6ce77f058db035bf749dc97f2219176c5` (VERIFIED MATCH) |
+| Fixture ZIP Checksum (SHA-256) | `37fae7b165b509ef54fb30c11ec18991a0ec947df34a7813a3036bcfa3dcf8c8` (VERIFIED MATCH) |
+| Package Verification Status | PASS (40 files in Core; 7 files in Fixture) |
+| Local Test Suite Status | PASS (116 Node subtests, 80 PHP files linted, foundation & tracking verifiers clean) |
+
 
 ---
 
