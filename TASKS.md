@@ -141,7 +141,7 @@ Status: complete (2026-08-15)
 
 ## M13 — Runtime Integration Preparation & Verification
 
-Status: Phase 1, Phase 2, Phase 3A, Phase 4A, Phase 5A, & Phase 5B1 complete (2026-08-15)
+Status: Phase 1, Phase 2, Phase 3A, Phase 4A, Phase 5A, Phase 5B1, & Phase 5B2.1 complete (2026-08-15)
 
 - [x] Create deterministic packaging scripts (`package-theme.mjs`, `package-plugin.mjs`, `package-all.mjs`) generating single-root ZIP artifacts in `dist/`.
 - [x] Implement package content verification (`verify-package.mjs`) checking root directory, required runtime files, packaged PHP linting, and dev/secret exclusions.
@@ -157,8 +157,35 @@ Status: Phase 1, Phase 2, Phase 3A, Phase 4A, Phase 5A, & Phase 5B1 complete (20
 - [x] Phase 4A: Perform local theme runtime-readiness audit and contract verification (`docs/theme-atomic-runtime-readiness.md` and `tests/m13-theme-runtime-readiness.test.mjs`).
 - [x] Phase 5A: Execute Atomic Storefront + Commerce + Lifecycle Runtime Matrix across all 9 primary routes. Decouple WooCommerce stock from Statement release state. Verify forward-only `ARCHIVED` lifecycle transition. Publish verified local Git repository history to GitHub remote `https://github.com/rizvee/statement-wp-theme-plugin.git`.
 - [x] Phase 5B1: Build Private Access Atomic Runtime Harness & Secret Preparation. Create local secret generator `scripts/generate-private-access-secrets.mjs` writing to ignored `.local-runtime/private-access-wp-config.php` without printing secret values. Upgrade fixture tool to `0.2.0` (`dist/statement-integration-fixtures-0.2.0.zip`) adding **PRIVATE ACCESS RUNTIME PREFLIGHT**, crypto backend diagnostic, and M10 database schema table existence checks (`M13-DB-01`). Build anonymous API test harness `scripts/test-private-access-api.mjs` and test plan `docs/private-access-atomic-test-plan.md`.
+- [x] Phase 5B1.2: Fix `.gitignore` tracking for `src/Access/Secrets.php` runtime source and add `scripts/verify-git-runtime-tracking.mjs`.
+- [x] Phase 5B2.1: Private Fixture API Contract & Partial Recovery Hotfix:
+  - Added canonical `DropConfig::save_config( int $term_id, array $config ): bool` writer API with UTC conversion, duration validation, and transactional rollback.
+  - Added `DropConfigAdmin` for WP Admin `statement_drop` taxonomy screen management.
+  - Repaired `PrivateFixtureService` to operate on `WC_Product` objects for `Metadata::set_edition_label()` and `Metadata::set_release_state()`, with explicit `$product->save()`.
+  - Implemented 4-state fixture lifecycle (`NOT_CREATED`, `PARTIAL`, `CREATED`, `RECOVERY_REQUIRED`) with idempotent adoption/recovery of existing test entities (`test-private-drop-01` / `TEST-PD01-PAJ`).
+  - Packaged `statement-collector-core-0.13.0-rc.4.zip` and `statement-integration-fixtures-0.2.2.zip`.
+  - Added 19-assertion PHP behavior test (`tests/php/test-drop-config-fixture-recovery.php`).
+  - Full test suite green (116 Node subtests, 79 PHP files linted).
+  - Pushed commit `3138927` to GitHub `main`.
+
+### Phase 5B2.1 Runtime Status & Next Steps
+
+**STATUS**: COMPLETE / CODE FIX READY FOR ATOMIC RETEST
+
+**Atomic Current**:
+- Core `0.13.0-rc.3` currently deployed
+- Fixtures `0.2.1` currently deployed
+- Secret Vault initialized
+- Partial private fixture exists (Drop `test-private-drop-01` ID 1376, Product `TEST-PD01-PAJ` ID 213)
+- Awaiting Core `0.13.0-rc.4` + Fixtures `0.2.2` deployment and recovery retest
+
+**Next**:
+- Deploy Core `0.13.0-rc.4`
+- Deploy Fixtures `0.2.2`
+- Recover partial fixture on Atomic via "Adopt & Recover Private Access Test Fixture"
+- Verify `/drop/test-private-drop-01/` email gate
+- Continue M13 Phase 5B2 validation
 
 ## Later roadmap
 
-Proceed to Phase 5B2 Private Access Atomic Runtime validation after user completes `wp-config.php` secret placement via SFTP and fixture tool 0.2.0 upgrade.
-
+Proceed to Phase 5B2 Private Access Atomic Runtime validation after operator completes manual upload of Core `0.13.0-rc.4` and Fixtures `0.2.2`.

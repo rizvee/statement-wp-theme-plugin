@@ -21,18 +21,19 @@ Updated: 2026-08-15
 - M12 is complete: purchase provenance (`_statement_provenance_version`, `_statement_product_id_at_purchase`, etc.) captured write-once during order line item creation; frozen across product/Drop edits; status-aware Thank You and customer order view; plain-text and HTML email integration; and commercial completion helper.
 - M13 Phase 5A complete: Atomic Storefront + Commerce + Lifecycle Runtime Matrix executed against active RC.2 and fixture dataset. All primary routes (Home, Shop, Drop, Variable PDP, Simple PDP, Terminal PDP, Cart, Checkout, My Account) verified HTTP 200 with zero PHP fatals or JS errors. Decoupling of WooCommerce stock quantity and Statement release state proven. Terminal transition to `ARCHIVED` verified forward-only. Initial publication of verified Git history pushed to `https://github.com/rizvee/statement-wp-theme-plugin.git`.
 - M13 Phase 5B1 complete: Private Access Atomic Runtime Harness + Secret Preparation completed. Local secret generator `scripts/generate-private-access-secrets.mjs` generates cryptographically strong `wp-config` definitions into ignored `.local-runtime/private-access-wp-config.php` without printing secret values to stdout. Fixture tool upgraded to `0.2.0` (`dist/statement-integration-fixtures-0.2.0.zip`) with **PRIVATE ACCESS RUNTIME PREFLIGHT**, crypto backend diagnostic, and M10 database schema table existence checks (`M13-DB-01`). Anonymous API privacy test harness `scripts/test-private-access-api.mjs` and test plan `docs/private-access-atomic-test-plan.md` created.
+- M13 Phase 5B2.1 complete: Private Fixture API Contract + Partial Recovery Hotfix completed. Added canonical `DropConfig::save_config()` writer API, `DropConfigAdmin` taxonomy UI screens, fixed `PrivateFixtureService` product object metadata handling, and added 4-state lifecycle model (`NOT_CREATED`, `PARTIAL`, `CREATED`, `RECOVERY_REQUIRED`) with idempotent adoption of existing test entities. Packaged Core `0.13.0-rc.4` and Fixtures `0.2.2`.
 
 ## Local environment
 
 - Available: Git 2.45.1, Node.js 22.17.0, npm 11.15.0, ripgrep 15.1.0, bsdtar 3.5.2 (`tar.exe`).
 - Local lint runtime: PHP 8.3.33 CLI, x64 NTS, under ignored `.local-tools/php/`.
 - `scripts/php-lint.mjs` resolves `PHP_BIN`, then project-local PHP on Windows, then PHP on `PATH`.
-- PHP syntax verification passes for all 77 first-party runtime PHP files.
+- PHP syntax verification passes for all 79 first-party runtime PHP files.
 
 ## Deployment state
 
-`https://mystatement.store/` is hosted on WordPress.com Atomic. Core plugin `statement-collector-core` version `0.13.0-rc.2` and theme `statement-collector-theme` version `0.13.0-rc.2` are installed and active. GitHub repository `https://github.com/rizvee/statement-wp-theme-plugin.git` is synchronized with local `main`. Fixture tool candidate `0.2.0` packaged in `dist/` and ready for operator upload.
+`https://mystatement.store/` is hosted on WordPress.com Atomic. Core candidate `0.13.0-rc.4` and Fixture tool `0.2.2` packaged in `dist/` and ready for operator upload. Atomic currently runs Core `0.13.0-rc.3` + Fixtures `0.2.1` with Secret Vault initialized. GitHub repository `https://github.com/rizvee/statement-wp-theme-plugin.git` is synchronized with local `main`.
 
 ## Verification
 
-M1–M13 Node structural tests (117 subtests), PHP lint (77 PHP files), `verify-foundation.mjs`, secret generator safety assertions, fixture tool package verifier, and GitHub remote synchronization pass cleanly.
+M1–M13 Node structural tests (116 subtests), PHP lint (79 PHP files), `verify-foundation.mjs`, `verify-git-runtime-tracking.mjs`, DropConfig & Fixture Recovery behavior tests (19 assertions), fixture tool package verifier, and GitHub remote synchronization pass cleanly.
