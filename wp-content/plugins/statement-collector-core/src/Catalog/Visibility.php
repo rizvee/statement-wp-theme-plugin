@@ -30,6 +30,7 @@ final class Visibility {
 		add_filter( 'woocommerce_rest_product_object_query', array( self::class, 'filter_public_rest_query' ), 10, 2 );
 		add_filter( 'woocommerce_store_api_product_query_args', array( self::class, 'filter_public_store_api_query' ), 10, 2 );
 		add_filter( 'rest_pre_dispatch', array( self::class, 'prepare_store_api_boundary' ), 9, 3 );
+		add_filter( 'rest_post_dispatch', array( self::class, 'filter_store_api_response' ), 10, 3 );
 	}
 
 	/**
@@ -242,7 +243,7 @@ final class Visibility {
 		$route = is_object( $request ) && method_exists( $request, 'get_route' )
 			? (string) $request->get_route()
 			: '';
-		if ( ! preg_match( '#^/wc/store/v1/products(?:/|$)#', $route ) ) {
+		if ( ! preg_match( '#^/wc/store/v1/products(?:/\d+)?$#', $route ) ) {
 			return $result;
 		}
 
@@ -276,5 +277,81 @@ final class Visibility {
 			'compare' => 'IN',
 		);
 		$query->set( 'meta_query', $meta_query );
+	}
+
+	/**
+	 * Fail closed at the Store API response boundary if a host/WooCommerce query
+	 * path bypasses the earlier query filters.
+	 *
+	 * @param object $response REST response.
+	 * @param object $server   REST server.
+	 * @param object $request  REST request.
+	 * @return object
+	 */
+	public static function filter_store_api_response( $response, $server, $request ) {
+		unset( $server );
+
+		if ( function_exists( 'current_user_can' ) && current_user_can( 'edit_products' ) ) {
+			return $response;
+		}
+
+		$route = is_object( $request ) && method_exists( $request, 'get_route' )
+			? (string) $request->get_route()
+			: '';
+		if (
+			! preg_match( '#^/wc/store/v1/products(?:/\d+)?$#', $route )
+			|| ! is_object( $response )
+			|| ! method_exists( $response, 'get_data' )
+			|| ! method_exists( $response, 'set_data' )
+		) {
+			return $response;
+		}
+
+		$data = $response->get_data();
+		if ( ! is_array( $data ) ) {
+			return $response;
+		}
+
+		if ( array_is_list( $data ) ) {
+			$filtered = array_values(
+				array_filter(
+					$data,
+					static function ( $item ): bool {
+						return is_array( $item )
+							&& isset( $item['id'] )
+							&& self::is_public_store_api_product_id( (int) $item['id'] );
+					}
+				)
+			);
+			$response->set_data( $filtered );
+
+			return $response;
+		}
+
+		if ( isset( $data['id'] ) && ! self::is_public_store_api_product_id( (int) $data['id'] ) ) {
+			$response->set_data(
+				array(
+					'code'    => 'woocommerce_rest_product_not_found',
+					'message' => 'Product not found.',
+					'data'    => array( 'status' => 404 ),
+				)
+			);
+			if ( method_exists( $response, 'set_status' ) ) {
+				$response->set_status( 404 );
+			}
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Whether a product ID is safe for the anonymous Store API.
+	 */
+	private static function is_public_store_api_product_id( int $product_id ): bool {
+		$product = $product_id > 0 && function_exists( 'wc_get_product' ) ? wc_get_product( $product_id ) : false;
+		$owner   = Metadata::get_release_owner( $product );
+
+		return is_object( $owner )
+			&& in_array( Metadata::get_release_state( $owner ), array( ReleaseState::LIVE, ReleaseState::SOLD_OUT ), true );
 	}
 }

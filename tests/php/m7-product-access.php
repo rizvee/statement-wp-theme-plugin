@@ -123,9 +123,18 @@ final class Statement_M7_Query {
 	public $post = 'private-post';
 	public $posts = array( 'private-post' );
 	public $queried_object = 'private-product';
+	public $queried_object_id = 2;
+	public $post_count = 1;
+	public $current_post = 0;
+	public $in_the_loop = true;
+	public $vars = array( 'p' => 2, 'name' => 'private-product', 'product' => 'private-product' );
 
 	public function set_404(): void {
 		$this->is_404 = true;
+	}
+
+	public function set( string $key, $value ): void {
+		$this->vars[ $key ] = $value;
 	}
 }
 
@@ -172,6 +181,9 @@ statement_assert_same( null, $wp_query->post, 'Public hidden product response mu
 statement_assert_same( array(), $wp_query->posts, 'Public hidden product response must scrub private query results.' );
 statement_assert_same( null, $wp_query->queried_object, 'Public hidden product response must scrub the private queried object.' );
 statement_assert_same( null, $post, 'Public hidden product response must scrub the global private post.' );
+statement_assert_same( 0, $wp_query->queried_object_id, 'Public hidden product response must scrub the queried object ID.' );
+statement_assert_same( 0, $wp_query->post_count, 'Public hidden product response must expose zero loop posts.' );
+statement_assert_same( array( 'p' => 0, 'name' => '', 'product' => '' ), $wp_query->vars, 'Public hidden product response must scrub product query variables.' );
 
 $statement_products[3] = new Statement_M7_Access_Product( 3, ReleaseState::LIVE );
 $statement_queried_id  = 3;

@@ -3,8 +3,8 @@
 ## Environment
 
 - Site: `https://mystatement.store/`
-- Current Core Candidate: `0.13.0-rc.6`
-- Historical Candidates: `0.13.0-rc.1`, `0.13.0-rc.2`, `0.13.0-rc.3`, `0.13.0-rc.4`, `0.13.0-rc.5`
+- Current Core Candidate: `0.13.0-rc.7`
+- Historical Candidates: `0.13.0-rc.1`, `0.13.0-rc.2`, `0.13.0-rc.3`, `0.13.0-rc.4`, `0.13.0-rc.5`, `0.13.0-rc.6`
 - Temporary Fixture Tool: `statement-integration-fixtures 0.2.2` (Historical: `0.1.0`, `0.1.1`, `0.2.0`, `0.2.1`)
 - WordPress: `6.7.x` (WordPress.com Atomic)
 - WooCommerce: `11.0.1`
@@ -27,7 +27,7 @@
 | `M13-ISSUE-04` | `M13-PA-01` | Core Source Tracking (`Secrets.php`) | Packaged runtime source files tracked in GitHub repository | `Access/Secrets.php` existed locally but was ignored by generic `secrets.*` `.gitignore` rule | BUILD / REPOSITORY INTEGRITY | HIGH | `acc2073` | rc.3 / v0.2.1 | Retested | RESOLVED (Unignored + Git Tracking Verifier) |
 | `M13-ISSUE-06` | `M13-5B2-01` | Private Drop Config & Fixture Creation | Private Access fixture creates term config and transitions product state | Fatal `Call to undefined method DropConfig::save_config()` + `Metadata` ID argument mismatch | CODE / CONTRACT | HIGH | `3138927` | rc.4 / v0.2.2 | Retested on Atomic | RESOLVED (Core save_config API + DropConfigAdmin + Idempotent Entity Adoption) |
 | `M13-ISSUE-07` | `M13-5B2-02` | Private Access Gate Detection | `/drop/test-private-drop-01/` intercepted by PrivateAccessGate | Gate passed integer product ID to object-based `Metadata::get_release_state()`, normalized state to `UPCOMING`, and fell through to standard Drop template ("NO CURRENT RELEASE") | CORE / API CONTRACT | HIGH | `HEAD` | rc.5 | Pending Retest | RESOLVED (WC_Product Resolution Helper + Metadata Contract Sweep) |
-| `M13-ISSUE-08` | `M13-5B2-03` | Anonymous Private Product Boundary | Private PDP body and public Store API expose no PRIVATE_ACCESS product facts | PDP returned HTTP 404 but retained title/slug in rendered body; WooCommerce 11 Store API collection returned private slug/SKU | CORE / PRIVACY | HIGH | `HEAD` | rc.6 | Pending Atomic Retest | FIXED LOCALLY |
+| `M13-ISSUE-08` | `M13-5B2-03` | Anonymous Private Product Boundary | Private PDP body and public Store API expose no PRIVATE_ACCESS product facts | rc.6 retest still rendered private title/slug through the theme index loop and Store API still returned private slug/SKU | CORE / PRIVACY | HIGH | `HEAD` | rc.7 | Pending Atomic Retest | FIXED LOCALLY IN RC.7 |
 
 *Note: Classifications: CODE, CONFIGURATION, WORDPRESS CONFIG, PLATFORM, CONTENT, BUILD / REPOSITORY INTEGRITY, UNKNOWN. Severities: BLOCKER, HIGH, MEDIUM, LOW.*
 
@@ -73,3 +73,10 @@
 - Core `0.13.0-rc.6` adds a WooCommerce 11 Store API `WP_Query` lifecycle boundary and clears private post/query context before unauthorized 404 rendering.
 - Replacement package: `dist/statement-collector-core-0.13.0-rc.6.zip` (SHA-256: `baabc4c1726372adea59b735cc8e7262b63b947ee2e0ec022ffda894119562ce`).
 - Grant/session runtime matrix stopped before gate POST. QA identity file was not read or emitted. No production mutation occurred.
+
+### `M13-EVIDENCE-09`: Phase 5B2 Final rc.6 Anonymous Retest and rc.7 Fix
+
+- Cookie-free rc.6 evidence: Drop HTTP 200 gate passed with no protected facts; PDP returned HTTP 404 but rendered the private article through the theme index loop; Store API HTTP 200 exposed private slug/SKU; WP product REST and search remained clean.
+- Core `0.13.0-rc.7` clears post counts, loop state, queried IDs, and product query variables at the unauthorized 404 boundary. A response-level Store API filter removes non-public lifecycle products even when the host query path bypasses earlier constraints.
+- Replacement package: `dist/statement-collector-core-0.13.0-rc.7.zip` (SHA-256: `c5c0f83b8ce7db93b5f8cc10695bd78450a45f93e6b59e03d06668ac9d66298f`).
+- Grant/session/cache/cart/checkout testing stopped before QA identity access. Email and reminder flags remained OFF. No order, payment, vault, fixture, expiry, revocation, reminder, or rate-limit mutation occurred.

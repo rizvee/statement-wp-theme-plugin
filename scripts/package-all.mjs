@@ -7,7 +7,7 @@ import { verifyPackage } from './verify-package.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const themeVersion = '0.13.0-rc.2';
-const pluginVersion = '0.13.0-rc.6';
+const pluginVersion = '0.13.0-rc.7';
 
 export function packageAll(options = {}) {
   const silent = options.silent ?? false;

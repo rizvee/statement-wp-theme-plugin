@@ -73,12 +73,22 @@ final class Access {
 			return;
 		}
 
-		global $wp_query;
+		global $wp_query, $wp_the_query;
 		if ( is_object( $wp_query ) && method_exists( $wp_query, 'set_404' ) ) {
 			$wp_query->set_404();
 			$wp_query->post           = null;
 			$wp_query->posts          = array();
 			$wp_query->queried_object = null;
+			$wp_query->queried_object_id = 0;
+			$wp_query->post_count      = 0;
+			$wp_query->current_post    = -1;
+			$wp_query->in_the_loop     = false;
+			if ( method_exists( $wp_query, 'set' ) ) {
+				$wp_query->set( 'p', 0 );
+				$wp_query->set( 'name', '' );
+				$wp_query->set( 'product', '' );
+			}
+			$wp_the_query = $wp_query;
 		}
 
 		global $post;
