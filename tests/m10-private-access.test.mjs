@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import test from 'node:test';
@@ -69,6 +70,10 @@ test('Database Schema defines 5 dedicated operational tables with WP prefix', ()
 });
 
 test('Secrets, SecretVault, and Crypto manage authenticated encryption, keyring versioning, provider precedence, and HMAC identities', () => {
+  const trackedFiles = execSync('git ls-files', { encoding: 'utf8' }).replace(/\\/g, '/');
+  assert.match(trackedFiles, /wp-content\/plugins\/statement-collector-core\/src\/Access\/Secrets\.php/);
+  assert.match(trackedFiles, /wp-content\/plugins\/statement-collector-core\/src\/Access\/SecretVault\.php/);
+
   const secrets = read('src/Access/Secrets.php');
   const vault = read('src/Access/SecretVault.php');
   const crypto = read('src/Access/Crypto.php');

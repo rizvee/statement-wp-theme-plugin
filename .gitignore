@@ -20,6 +20,7 @@ auth.json
 credentials.json
 secrets.*
 !secrets.example.*
+!wp-content/plugins/statement-collector-core/src/Access/Secrets.php
 
 # Dependency and build output
 node_modules/

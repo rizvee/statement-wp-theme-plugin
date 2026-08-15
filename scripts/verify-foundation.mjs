@@ -24,6 +24,7 @@ const requiredFiles = [
   '.ai/skills/repository-verification.md',
   'scripts/lib/resolve-php.mjs',
   'scripts/php-lint.mjs',
+  'scripts/verify-git-runtime-tracking.mjs',
   'tests/m1-skeleton.test.mjs',
   'tests/m2-design-system.test.mjs',
   'tests/m3-global-navigation.test.mjs',

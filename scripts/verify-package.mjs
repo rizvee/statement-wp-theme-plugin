@@ -66,7 +66,7 @@ export function verifyPackage(zipPath, targetExpectedVersion = null) {
   let expectedVersion = targetExpectedVersion;
   if (!expectedVersion) {
     const filename = zipPath.replace(/\\/g, '/').split('/').pop();
-    const verMatch = filename.match(/-(.+)\.zip$/i);
+    const verMatch = filename.match(/-(\d+\.\d+\.\d+(?:-[a-z0-9.]+)?)\.zip$/i);
     if (verMatch) expectedVersion = verMatch[1];
   }
 
@@ -134,7 +134,7 @@ export function verifyPackage(zipPath, targetExpectedVersion = null) {
     }
 
     if ('statement-collector-core' === packageRootName) {
-      const requiredPlugin = ['statement-collector-core.php', 'src/Plugin.php'];
+      const requiredPlugin = ['statement-collector-core.php', 'src/Plugin.php', 'src/Access/Secrets.php', 'src/Access/SecretVault.php'];
       for (const req of requiredPlugin) {
         if (!existsSync(join(packageRoot, req))) {
           errors.push(`Packaged plugin missing required file: ${req}`);
@@ -164,6 +164,24 @@ export function verifyPackage(zipPath, targetExpectedVersion = null) {
         if (constantVersion !== expectedVersion) {
           errors.push(`Packaged plugin STATEMENT_COLLECTOR_CORE_VERSION constant mismatch. Found "${constantVersion}", expected "${expectedVersion}".`);
         }
+      }
+
+      // Package ↔ Git Source Parity Check for Core
+      try {
+        const trackedGitOutput = execSync('git ls-files wp-content/plugins/statement-collector-core', { cwd: root, encoding: 'utf8' });
+        const trackedCoreFiles = trackedGitOutput
+          .split(/\r?\n/)
+          .map(f => f.trim().replace(/^wp-content\/plugins\/statement-collector-core\//, '').replace(/\\/g, '/'))
+          .filter(Boolean);
+
+        for (const gitFile of trackedCoreFiles) {
+          const expectedPackagedPath = join(packageRoot, gitFile);
+          if (!existsSync(expectedPackagedPath)) {
+            errors.push(`Package ↔ Git Source Parity failure: Tracked Git file "${gitFile}" missing from packaged plugin ZIP.`);
+          }
+        }
+      } catch (err) {
+        errors.push(`Failed to verify Package ↔ Git Source Parity: ${err.message}`);
       }
     }
 

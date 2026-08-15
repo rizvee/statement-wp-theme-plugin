@@ -17,7 +17,7 @@ const zipBytes = readFileSync(zipPath);
 const sha256 = createHash('sha256').update(zipBytes).digest('hex');
 const sizeBytes = zipBytes.length;
 
-const tmpParent = join(projectRoot, 'tmp', 'verify-fixture-pkg');
+const tmpParent = join(projectRoot, 'tmp', `verify-fixture-pkg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`);
 if (existsSync(tmpParent)) rmSync(tmpParent, { recursive: true, force: true });
 mkdirSync(tmpParent, { recursive: true });
 

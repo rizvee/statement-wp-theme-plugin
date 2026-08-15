@@ -18,6 +18,7 @@ export function packageAll(options = {}) {
   log('Step 1: Verifying source repository prerequisites...');
   try {
     execSync('node scripts/verify-foundation.mjs', { cwd: root, stdio: 'pipe' });
+    execSync('node scripts/verify-git-runtime-tracking.mjs', { cwd: root, stdio: 'pipe' });
   } catch (err) {
     throw new Error(`Source foundation verification failed prior to packaging: ${err.message}`);
   }
