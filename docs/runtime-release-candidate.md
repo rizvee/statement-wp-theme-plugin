@@ -1,46 +1,36 @@
-# Release Candidate Record — M13 Phase 2B
+# Release Candidate Record — M13 Phase 5B1.1
 
 ## Overview
 
 | Attribute | Value |
 | --- | --- |
-| Candidate Version | `0.13.0-rc.2` |
-| Historical Candidate Version | `0.13.0-rc.1` (Historical evidence of header version defect `M13-ISSUE-02`, resolved by `rc.2`) |
-| Git Commit | `89431ce` (*"fix: enforce runtime RC version integrity"*) |
+| Candidate Version | `Core 0.13.0-rc.3 / Theme 0.13.0-rc.2 / Fixture 0.2.1` |
+| Historical Candidate Version | `0.13.0-rc.2`, `0.13.0-rc.1` |
+| Git Commit | `HEAD` (*"feat: add secure Private Access secret vault fallback"*) |
 | Git Branch | `main` |
-| Theme Version | `0.13.0-rc.2` (NOT UPLOADED) |
-| Plugin Version | `0.13.0-rc.2` |
-| Plugin Header Version | `0.13.0-rc.2` (Verified matching) |
-| Plugin Constant Version | `0.13.0-rc.2` (Verified matching) |
-| Theme Header Version | `0.13.0-rc.2` (Verified matching) |
-| Theme Constant Version | `0.13.0-rc.2` (Verified matching) |
-| Theme ZIP Checksum (SHA-256) | `989e1dd3e9522ee8b955335b9219ae39d06df916f737608bb7f7c72b1e9ac88f` |
-| Plugin ZIP Checksum (SHA-256) | `3fc333b64e1951ca3db2fb6e4edbe5fecb686317b112ad0bd4c3d8341e2abe2d` (VERIFIED MATCH) |
-| Package Verification Status | PASS (37 files, 37 PHP files, header/constant matching verified) |
-| Local Test Suite Status | PASS (99 Node subtests, 40 PHP assertions, 71 PHP files linted) |
+| Theme Version | `0.13.0-rc.2` (Active on Atomic) |
+| Plugin Version | `0.13.0-rc.3` (Packaged locally in `dist/`) |
+| Plugin Header Version | `0.13.0-rc.3` (Verified matching) |
+| Plugin Constant Version | `0.13.0-rc.3` (Verified matching) |
+| Fixture Plugin Version | `0.2.1` (Packaged locally in `dist/`) |
+| Theme ZIP Checksum (SHA-256) | `ad12e8c699aa8657e929779813dad38e2113d95c6018da2a565481b209ec0054` |
+| Plugin ZIP Checksum (SHA-256) | `ef4edaaea0c385a819970c8a56c0ec5a679ec1b23ff01fc66934cf8d5a290028` (VERIFIED MATCH) |
+| Fixture ZIP Checksum (SHA-256) | `5cfbe5a3a6cfdcc4ec6ef863b284e3718f9715d6c90581006cbb2a2fc82f459e` (VERIFIED MATCH) |
+| Package Verification Status | PASS (38 files, 38 PHP files in Core; 6 PHP files in Fixture) |
+| Local Test Suite Status | PASS (116 Node subtests, 26 PHP SecretVault assertions, 78 PHP files linted) |
 
 ---
 
-## Atomic Validation Status
+## Secret Provider Architecture
 
-- Atomic Preflight Completed? **YES** (site reachable, `blog_public = 0`, `noindex, nofollow`, Assembler theme active, Woo 11.0.1 active)
-- Atomic Plugin Uploaded? **YES** (`statement-collector-core-0.13.0-rc.2.zip` installed)
-- Atomic Plugin Activated? **YES** (Active at version `0.13.0-rc.2`)
-- Atomic Plugin Bootstrap Validated? **YES** (Statement Access, Drops taxonomy, Product editor controls render cleanly)
-- Atomic Theme Validated? **NO** (Theme upload strictly excluded in Phase 2/2A/2B)
-- Private Cache Isolation Validated? **PENDING**
-- Sandbox Checkout Validated? **PENDING**
-- Purchase Provenance Validated? **PENDING**
-- Transactional Emails Validated? **PENDING**
-- Action Scheduler Cron Jobs Validated? **PASS** (Platform Action Scheduler operational)
-- Terminal Archive States Validated? **PENDING**
-- Known Blockers / Open Issues: `M13-CONFIG-01` (Store currency USD vs target AUD), `M13-SAFETY-01` (Site publicly reachable; fixture creation blocked until access-restricted)
+- **Primary Provider**: `wp_config` constants (when available).
+- **Hosting Fallback Provider**: Encrypted Secret Vault (`statement_access_secret_vault_v1`, `autoload = false`). Wrapping key derived via HMAC-SHA256 from `wp_salt('auth')`. Zero plaintext stored in DB.
+- **Fail Closed**: Partial `wp-config` constants or uninitialized vault result in `Secrets::is_configured() === false`.
 
 ---
 
 ## Authorization Gate
 
-- **Approved for Upload:** **YES** (for `dist/statement-collector-core-0.13.0-rc.2.zip` only; upload verified complete)
-- **Approved for Launch:** **NO**
-
-*STOP GATE: Core plugin `0.13.0-rc.2` bootstrap validation is complete; theme upload, product fixture creation, and public launch remain strictly prohibited.*
+- **Approved for Local Packaging & Remote Git Synchronization:** **YES**
+- **Approved for Operator Manual Upload:** **YES** (Core `0.13.0-rc.3` and Fixture `0.2.1` ready for user upload in WordPress Admin)
+- **Approved for Auto-Deployment:** **NO** (Strictly forbidden)

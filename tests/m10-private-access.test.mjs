@@ -8,6 +8,7 @@ const pluginRoot = resolve(root, 'wp-content', 'plugins', 'statement-collector-c
 const themeRoot = resolve(root, 'wp-content', 'themes', 'statement-collector-theme');
 
 const requiredAccessFiles = [
+  'src/Access/SecretVault.php',
   'src/Access/Secrets.php',
   'src/Access/Crypto.php',
   'src/Access/Schema.php',
@@ -67,14 +68,24 @@ test('Database Schema defines 5 dedicated operational tables with WP prefix', ()
   assert.match(schema, /dbDelta\s*\(/);
 });
 
-test('Secrets and Crypto manage authenticated encryption, keyring versioning, and HMAC identities', () => {
+test('Secrets, SecretVault, and Crypto manage authenticated encryption, keyring versioning, provider precedence, and HMAC identities', () => {
   const secrets = read('src/Access/Secrets.php');
+  const vault = read('src/Access/SecretVault.php');
   const crypto = read('src/Access/Crypto.php');
 
   assert.match(secrets, /STATEMENT_ACCESS_IDENTITY_KEY/);
   assert.match(secrets, /STATEMENT_ACCESS_RATE_LIMIT_KEY/);
   assert.match(secrets, /STATEMENT_ACCESS_ENCRYPTION_ACTIVE_VERSION/);
   assert.match(secrets, /STATEMENT_ACCESS_ENCRYPTION_KEYS/);
+  assert.match(secrets, /get_provider/);
+  assert.match(secrets, /invalid_wp_config/);
+  assert.match(secrets, /encrypted_vault/);
+
+  assert.match(vault, /statement_access_secret_vault_v1/);
+  assert.match(vault, /statement-access-secret-vault-v1/);
+  assert.match(vault, /wp_salt/);
+  assert.match(vault, /create_vault/);
+  assert.match(vault, /decrypt_bundle/);
 
   assert.match(crypto, /hash_hmac\s*\(\s*'sha256'/);
   assert.match(crypto, /normalize_email\s*\(/);

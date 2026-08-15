@@ -4,6 +4,7 @@ namespace Statement\Integration\Fixtures;
 
 use Statement\Collector\Core\Access\DropConfig;
 use Statement\Collector\Core\Access\Secrets;
+use Statement\Collector\Core\Access\SecretVault;
 use Statement\Collector\Core\Product\Metadata;
 use Statement\Collector\Core\Release\ReleaseState;
 
@@ -41,15 +42,17 @@ class PrivateFixtureService {
 	}
 
 	/**
-	 * Diagnostic check for required Private Access secrets in wp-config.
+	 * Diagnostic check for required Private Access secrets provider status.
 	 *
-	 * @return array{has_core: bool, identity_key: bool, rate_limit_key: bool, encryption_active_version: string, encryption_config: bool, all_configured: bool}
+	 * @return array{has_core: bool, provider: string, vault_initialized: bool, identity_key: bool, rate_limit_key: bool, encryption_active_version: string, encryption_config: bool, all_configured: bool}
 	 */
 	public static function get_secret_diagnostics(): array {
 		$has_core = class_exists( 'Statement\Collector\Core\Access\Secrets' );
 		if ( ! $has_core ) {
 			return array(
 				'has_core'                  => false,
+				'provider'                  => 'unavailable',
+				'vault_initialized'         => false,
 				'identity_key'              => false,
 				'rate_limit_key'            => false,
 				'encryption_active_version' => '',
@@ -58,6 +61,8 @@ class PrivateFixtureService {
 			);
 		}
 
+		$provider  = Secrets::get_provider();
+		$vault_init = class_exists( SecretVault::class ) && SecretVault::is_initialized();
 		$identity   = Secrets::has_identity_key();
 		$rate_limit = Secrets::has_rate_limit_key();
 		$active_ver = Secrets::get_active_key_version();
@@ -65,11 +70,13 @@ class PrivateFixtureService {
 
 		return array(
 			'has_core'                  => true,
+			'provider'                  => $provider,
+			'vault_initialized'         => $vault_init,
 			'identity_key'              => $identity,
 			'rate_limit_key'            => $rate_limit,
 			'encryption_active_version' => $active_ver,
 			'encryption_config'         => $enc_config,
-			'all_configured'            => $identity && $rate_limit && $enc_config,
+			'all_configured'            => Secrets::is_configured(),
 		);
 	}
 
@@ -122,6 +129,86 @@ class PrivateFixtureService {
 	}
 
 	/**
+	 * Checks if active Private Access grant or session data exists in database.
+	 */
+	public static function has_active_grant_data(): bool {
+		global $wpdb;
+
+		if ( ! isset( $wpdb ) || ! is_object( $wpdb ) || ! method_exists( $wpdb, 'get_var' ) ) {
+			return false;
+		}
+
+		$grants_table   = $wpdb->prefix . 'statement_access_grants';
+		$sessions_table = $wpdb->prefix . 'statement_access_sessions';
+
+		$grants_count   = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$grants_table}" );
+		$sessions_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$sessions_table}" );
+
+		return $grants_count > 0 || $sessions_count > 0;
+	}
+
+	/**
+	 * Explicit administrator action to initialize Secret Vault fallback.
+	 *
+	 * @return array{success: bool, message: string}
+	 */
+	public static function init_vault(): array {
+		if ( ! class_exists( SecretVault::class ) ) {
+			return array(
+				'success' => false,
+				'message' => 'Statement Core SecretVault class is not available.',
+			);
+		}
+
+		if ( 'wp_config' === Secrets::get_provider() ) {
+			return array(
+				'success' => false,
+				'message' => 'Valid wp-config secrets are already active; Secret Vault initialization is not needed.',
+			);
+		}
+
+		$ok = SecretVault::create_vault();
+		if ( $ok ) {
+			return array(
+				'success' => true,
+				'message' => 'Private Access Secret Vault initialized and verified successfully.',
+			);
+		}
+
+		return array(
+			'success' => false,
+			'message' => 'Failed to initialize Secret Vault. Check server crypto extension support.',
+		);
+	}
+
+	/**
+	 * Explicit administrator action to reset test Secret Vault.
+	 *
+	 * @return array{success: bool, message: string}
+	 */
+	public static function reset_vault(): array {
+		if ( ! class_exists( SecretVault::class ) ) {
+			return array(
+				'success' => false,
+				'message' => 'Statement Core SecretVault class is not available.',
+			);
+		}
+
+		if ( self::has_active_grant_data() ) {
+			return array(
+				'success' => false,
+				'message' => 'Cannot reset Secret Vault: Active Private Access grants or sessions exist in database.',
+			);
+		}
+
+		SecretVault::delete_vault();
+		return array(
+			'success' => true,
+			'message' => 'Secret Vault reset successfully.',
+		);
+	}
+
+	/**
 	 * Diagnostic check for private test fixture seeding state.
 	 *
 	 * @return string 'CREATED' | 'NOT_CREATED'
@@ -151,7 +238,7 @@ class PrivateFixtureService {
 		if ( ! $secret_diag['all_configured'] || ! $crypto_diag['ready'] ) {
 			return array(
 				'success' => false,
-				'message' => 'Private Access fixture creation blocked: Required wp-config secrets or crypto backend missing.',
+				'message' => 'Private Access fixture creation blocked: Secrets provider is unavailable or invalid.',
 			);
 		}
 

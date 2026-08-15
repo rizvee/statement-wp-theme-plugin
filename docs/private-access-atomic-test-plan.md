@@ -6,51 +6,44 @@ This document defines the Atomic runtime test procedures and verification matrix
 
 ---
 
-## 2. Cryptographic Secret Contract
+## 2. Secret Provider Architecture
 
-The Private Access architecture requires four `wp-config.php` constants. Zero secret values are stored in Git, documentation, or candidate artifacts.
+Private Access supports two secret providers evaluated in order:
 
-| Constant | Description | Format |
-|---|---|---|
-| `STATEMENT_ACCESS_IDENTITY_KEY` | HMAC key for email identity hashing (`Crypto::hash_email`) | 64-char hex string (32 random bytes) |
-| `STATEMENT_ACCESS_RATE_LIMIT_KEY` | HMAC key for IP rate-limit hashing (`Crypto::hash_ip`) | 64-char hex string (32 random bytes) |
-| `STATEMENT_ACCESS_ENCRYPTION_ACTIVE_VERSION` | Active key version identifier | String (e.g., `'v1'`) |
-| `STATEMENT_ACCESS_ENCRYPTION_KEYS` | Versioned encryption keyring array or JSON string | JSON string `{"v1":"<64-char-hex>"}` |
-
----
-
-## 3. Atomic Operator Secret Installation Runbook
-
-1. Generate local secret snippet without printing values to stdout:
-   ```bash
-   node scripts/generate-private-access-secrets.mjs
-   ```
-2. Open the ignored local file `.local-runtime/private-access-wp-config.php`.
-3. Connect to WordPress.com Atomic site via SFTP.
-4. Back up current `wp-config.php` locally.
-5. Paste the generated PHP `define()` snippet into `wp-config.php` before the WordPress bootstrap completion line (`/* That's all, stop editing! */`).
-6. Save and close.
-7. **DO NOT** commit `wp-config.php` or paste secret values into chat/logs.
+1. **Preferred Provider (`wp_config`):**
+   Requires four `wp-config.php` constants (`STATEMENT_ACCESS_IDENTITY_KEY`, `STATEMENT_ACCESS_RATE_LIMIT_KEY`, `STATEMENT_ACCESS_ENCRYPTION_ACTIVE_VERSION`, `STATEMENT_ACCESS_ENCRYPTION_KEYS`). Use when server configuration file access (SFTP/SSH) is available.
+2. **WordPress.com Compatible Fallback (`encrypted_vault`):**
+   Uses option `statement_access_secret_vault_v1` (`autoload = false`). The secret bundle is encrypted server-side using AEAD (libsodium XChaCha20-Poly1305 or OpenSSL AES-256-GCM) with a wrapping key derived via HMAC-SHA256 from `wp_salt('auth')`. **Zero plaintext secrets are stored in the database.**
+3. **Fail-Closed Gate (`unavailable` / `invalid_wp_config`):**
+   If `wp-config` constants are partially defined, or if the vault is uninitialized/corrupted, provider evaluates to `unavailable` or `invalid_wp_config`. Commerce eligibility checks fail closed.
 
 ---
 
-## 4. Fixture Tool v0.2.0 Deployment & Preflight Verification
+## 3. Atomic Operator Secret Installation Runbook (No-SFTP Path)
 
-1. Upload `dist/statement-integration-fixtures-0.2.0.zip` via WordPress.com Dashboard or WP Admin Plugins screen.
-2. Confirm plugin is active.
-3. Open `WooCommerce -> Statement Integration Fixtures`.
-4. Inspect the **PRIVATE ACCESS RUNTIME PREFLIGHT** diagnostic panel:
-   - Encryption Active Version: `CONFIGURED (v1)`
-   - Encryption Keyring: `CONFIGURED`
+On hosting environments such as WordPress.com Atomic where SFTP/file-manager access is unavailable:
+
+1. Upload `dist/statement-collector-core-0.13.0-rc.3.zip` in WordPress Admin -> Plugins -> Add New -> Upload Plugin.
+2. Upload `dist/statement-integration-fixtures-0.2.1.zip` in WordPress Admin.
+3. Navigate to `WooCommerce -> Statement Fixtures`.
+4. Under **PRIVATE ACCESS RUNTIME PREFLIGHT**, observe:
+   - Secret Provider: `UNAVAILABLE`
+   - Secret Vault Status: `NOT INITIALIZED`
+5. Click **INITIALIZE PRIVATE ACCESS SECRET VAULT**.
+6. Observe status update:
+   - Secret Provider: `ENCRYPTED VAULT`
+   - Secret Vault Status: `INITIALIZED`
    - Identity Key: `CONFIGURED`
    - Rate-Limit Key: `CONFIGURED`
+   - Encryption Keyring: `CONFIGURED`
    - Required Crypto Backend: `AVAILABLE (xchacha20-poly1305)` or `AVAILABLE (aes-256-gcm)`
    - Database / Schema (M10): `EXISTS (5 tables, db_version: 1.0.0)`
-   - Private Fixture Status: `NOT CREATED`
+
+*Optional WP-Config Tool (`scripts/generate-private-access-secrets.mjs`) remains available for environments with SFTP/wp-config access.*
 
 ---
 
-## 5. Phase 5B2 Execution Matrix
+## 4. Phase 5B2 Execution Matrix
 
 ### A. Edge Cache Isolation Plan
 - **Profile A (Authorized Session):** Submits valid gate POST on `/drop/test-private-drop-01/`. Accesses private Drop/product.

@@ -18,27 +18,33 @@ Tables created via versioned manager (`Schema::install()`) using `$wpdb->prefix`
 4. `statement_access_rate_limits`: Stores short-lived attempt events for IP (5/10m, 20/24h) and email (3/10m, 10/24h) scopes.
 5. `statement_consent_events`: Stores append-only audit trail of marketing consent actions (`consent_granted`, `consent_withdrawn`).
 
-## 3. Secret Setup & Key Rotation
+## 3. Secret Setup & Provider Architecture
 
-Constants in `wp-config.php`:
+Secrets Provider Precedence:
 
-```php
-define( 'STATEMENT_ACCESS_IDENTITY_KEY', 'your-random-32-byte-hex-key-here' );
-define( 'STATEMENT_ACCESS_RATE_LIMIT_KEY', 'your-random-32-byte-hex-key-here' );
-define( 'STATEMENT_ACCESS_ENCRYPTION_ACTIVE_VERSION', 'v1' );
-define( 'STATEMENT_ACCESS_ENCRYPTION_KEYS', json_encode( array(
-    'v1' => 'your-32-byte-encryption-key-v1',
-    'v2' => 'your-32-byte-encryption-key-v2',
-) ) );
-```
+1. **Preferred Provider (`wp_config`):**
+   Evaluates when all four `wp-config.php` constants are present and valid:
+   ```php
+   define( 'STATEMENT_ACCESS_IDENTITY_KEY', 'your-random-32-byte-hex-key-here' );
+   define( 'STATEMENT_ACCESS_RATE_LIMIT_KEY', 'your-random-32-byte-hex-key-here' );
+   define( 'STATEMENT_ACCESS_ENCRYPTION_ACTIVE_VERSION', 'v1' );
+   define( 'STATEMENT_ACCESS_ENCRYPTION_KEYS', json_encode( array(
+       'v1' => 'your-32-byte-encryption-key-v1',
+   ) ) );
+   ```
+2. **WordPress.com Compatible Fallback (`encrypted_vault`):**
+   Evaluates when `wp-config` constants are absent. Encrypts the secret bundle into option `statement_access_secret_vault_v1` (`autoload = false`) using an AEAD key derived via HMAC-SHA256 from `wp_salt('auth')`. Zero plaintext secrets are stored in the database.
+3. **Fail-Closed Security Gate (`unavailable` / `invalid_wp_config`):**
+   Partial `wp-config` definitions or uninitialized vaults fail closed (`Secrets::is_configured() === false`).
 
 - **Identity HMAC**: `email_hash = HMAC-SHA256(normalized_email, IDENTITY_KEY)`.
 - **IP HMAC**: `scope_hash = HMAC-SHA256(ip_address, RATE_LIMIT_KEY)`.
-- **Key Rotation**: When rotating encryption keys, update `STATEMENT_ACCESS_ENCRYPTION_ACTIVE_VERSION` to `'v2'` and append key `'v2'` to `STATEMENT_ACCESS_ENCRYPTION_KEYS`. Historical records continue decrypting safely using their stored `key_version`.
+- **Key Rotation**: When rotating encryption keys in `wp_config`, update `STATEMENT_ACCESS_ENCRYPTION_ACTIVE_VERSION` to `'v2'` and append key `'v2'` to `STATEMENT_ACCESS_ENCRYPTION_KEYS`.
 
 ## 4. Admin Operations & Make Drop Live
 
-- **Admin UI**: Located under WooCommerce → Statement Access (`manage_woocommerce` capability). Enables searching grants by email or Drop, inspecting masked emails (`u***r@e***e.com`), revoking grants, or issuing admin re-grants (which create new grant rows with `supersedes_grant_id` and do not auto-grant marketing consent).
+- **Admin UI**: Located under WooCommerce → Statement Access (`manage_woocommerce` capability). Enables searching grants by email or Drop, inspecting masked emails (`u***r@e***e.com`), revoking grants, or issuing admin re-grants.
+- **Fixture Preflight**: Located under WooCommerce → Statement Fixtures. Allows initializing the encrypted secret vault on hosting environments without SFTP/file-manager access.
 - **Make Drop Live**: Admin action for transitioning all `PRIVATE_ACCESS` products in a target Drop to `LIVE`. Preflight checks verify capability, show transition counts, preserve `UPCOMING` products, revoke return tokens, and cancel pending reminders.
 
 ## 5. Marketing Consent, Reminders & Unsubscribe
@@ -59,7 +65,7 @@ define( 'STATEMENT_ACCESS_ENCRYPTION_KEYS', json_encode( array(
 ## 7. Runtime & WordPress.com Atomic Validation Checklist
 
 Before staging/production acceptance:
-- [ ] Verify `wp-config.php` contains all required `STATEMENT_ACCESS_*` constants.
+- [ ] Verify Secrets provider is active (`WP-CONFIG` or `ENCRYPTED VAULT`).
 - [ ] Verify database migration succeeded and 5 `statement_access_*` tables exist.
 - [ ] Verify POST / 303 PRG flow sets HttpOnly, Secure, SameSite=Lax session cookie on HTTPS.
 - [ ] Verify WordPress.com Atomic edge caching bypasses private Drop gate responses (`Vary: Cookie` & `no-store`).

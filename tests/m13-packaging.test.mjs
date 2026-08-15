@@ -20,19 +20,19 @@ test('Theme packaging generates single-root ZIP artifact with matching 0.13.0-rc
   assert.ok(result.sha256.length === 64, 'SHA-256 hash must be 64 hex characters');
 });
 
-test('Plugin packaging generates single-root ZIP artifact with matching 0.13.0-rc.2 version', () => {
-  const result = packagePlugin('0.13.0-rc.2');
+test('Plugin packaging generates single-root ZIP artifact with matching 0.13.0-rc.3 version', () => {
+  const result = packagePlugin('0.13.0-rc.3');
   assert.ok(existsSync(result.path), 'Plugin ZIP must exist in dist/');
   assert.equal(result.rootFolder, 'statement-collector-core', 'Plugin root folder must be statement-collector-core');
-  assert.equal(result.version, '0.13.0-rc.2');
+  assert.equal(result.version, '0.13.0-rc.3');
   assert.ok(result.fileCount > 0, 'File count must be greater than 0');
   assert.ok(result.phpCount > 0, 'PHP file count must be greater than 0');
   assert.ok(result.sha256.length === 64, 'SHA-256 hash must be 64 hex characters');
 });
 
-test('Package verification confirms 0.13.0-rc.2 headers, constants, exclusions, and PHP syntax', () => {
+test('Package verification confirms headers, constants, exclusions, and PHP syntax', () => {
   const themePath = resolve(root, 'dist', 'statement-collector-theme-0.13.0-rc.2.zip');
-  const pluginPath = resolve(root, 'dist', 'statement-collector-core-0.13.0-rc.2.zip');
+  const pluginPath = resolve(root, 'dist', 'statement-collector-core-0.13.0-rc.3.zip');
 
   const themeVerify = verifyPackage(themePath, '0.13.0-rc.2');
   assert.ok(themeVerify.ok, `Theme package verification must pass. Errors: ${themeVerify.errors?.join(', ')}`);
@@ -40,11 +40,11 @@ test('Package verification confirms 0.13.0-rc.2 headers, constants, exclusions, 
   assert.equal(themeVerify.headerVersion, '0.13.0-rc.2');
   assert.equal(themeVerify.constantVersion, '0.13.0-rc.2');
 
-  const pluginVerify = verifyPackage(pluginPath, '0.13.0-rc.2');
+  const pluginVerify = verifyPackage(pluginPath, '0.13.0-rc.3');
   assert.ok(pluginVerify.ok, `Plugin package verification must pass. Errors: ${pluginVerify.errors?.join(', ')}`);
   assert.equal(pluginVerify.rootFolder, 'statement-collector-core');
-  assert.equal(pluginVerify.headerVersion, '0.13.0-rc.2');
-  assert.equal(pluginVerify.constantVersion, '0.13.0-rc.2');
+  assert.equal(pluginVerify.headerVersion, '0.13.0-rc.3');
+  assert.equal(pluginVerify.constantVersion, '0.13.0-rc.3');
 });
 
 test('Negative regression test: verifier rejects ZIP when internal plugin header Version is 0.1.0 vs filename 0.13.0-rc.9', () => {
@@ -84,14 +84,13 @@ test('Package verifier rejects non-existent or invalid ZIP files', () => {
   assert.equal(badResult.ok, false, 'Verifier must fail for non-existent ZIP file');
 });
 
-test('Master packageAll script generates manifest with candidate_version 0.13.0-rc.2 and deployment_authorized = false', () => {
+test('Master packageAll script generates manifest with candidate_versions and deployment_authorized = false', () => {
   const { manifest } = packageAll({ silent: true });
   const manifestPath = resolve(root, 'dist', 'manifest.json');
   assert.ok(existsSync(manifestPath), 'manifest.json must exist in dist/');
 
-  assert.equal(manifest.candidate_version, '0.13.0-rc.2', 'candidate_version must be 0.13.0-rc.2');
-  assert.equal(manifest.plugin.header_version, '0.13.0-rc.2', 'plugin header_version must be 0.13.0-rc.2');
-  assert.equal(manifest.plugin.runtime_version, '0.13.0-rc.2', 'plugin runtime_version must be 0.13.0-rc.2');
+  assert.equal(manifest.plugin.header_version, '0.13.0-rc.3', 'plugin header_version must be 0.13.0-rc.3');
+  assert.equal(manifest.plugin.runtime_version, '0.13.0-rc.3', 'plugin runtime_version must be 0.13.0-rc.3');
   assert.equal(manifest.theme.header_version, '0.13.0-rc.2', 'theme header_version must be 0.13.0-rc.2');
   assert.equal(manifest.theme.runtime_version, '0.13.0-rc.2', 'theme runtime_version must be 0.13.0-rc.2');
   assert.equal(manifest.deployment_authorized, false, 'deployment_authorized must be false');

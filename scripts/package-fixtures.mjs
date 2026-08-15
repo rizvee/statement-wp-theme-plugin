@@ -5,7 +5,7 @@ import { dirname, join, resolve } from 'node:path';
 import { lintPhp } from './php-lint.mjs';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.2.0';
+const defaultVersion = '0.2.1';
 
 export const approvedFixtureFiles = [
   'statement-integration-fixtures.php',

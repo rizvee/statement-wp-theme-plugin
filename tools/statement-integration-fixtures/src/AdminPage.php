@@ -46,6 +46,12 @@ class AdminPage {
 				} elseif ( 'restore_currency' === $action ) {
 					check_admin_referer( 'statement_fixtures_restore_currency' );
 					$result_notice = CleanupService::restore_currency();
+				} elseif ( 'init_vault' === $action ) {
+					check_admin_referer( 'statement_fixtures_init_vault' );
+					$result_notice = PrivateFixtureService::init_vault();
+				} elseif ( 'reset_vault' === $action ) {
+					check_admin_referer( 'statement_fixtures_reset_vault' );
+					$result_notice = PrivateFixtureService::reset_vault();
 				} elseif ( 'create_private_fixture' === $action ) {
 					check_admin_referer( 'statement_fixtures_create_private' );
 					$result_notice = PrivateFixtureService::create_private_fixture();
@@ -69,9 +75,10 @@ class AdminPage {
 		$secret_diag   = PrivateFixtureService::get_secret_diagnostics();
 		$db_diag       = PrivateFixtureService::get_db_diagnostics();
 		$private_state = PrivateFixtureService::get_private_fixture_state();
+		$has_active_grants = PrivateFixtureService::has_active_grant_data();
 		?>
 		<div class="wrap">
-			<h1>Statement Integration Fixtures (v0.2.0)</h1>
+			<h1>Statement Integration Fixtures (v0.2.1)</h1>
 			<p>Temporary administrator-only runtime fixture tool for Statement Atomic integration testing.</p>
 
 			<?php if ( $result_notice ) : ?>
@@ -168,19 +175,27 @@ class AdminPage {
 				<table class="widefat striped" style="margin-bottom: 15px;">
 					<tbody>
 						<tr>
-							<td><strong>Encryption Active Version:</strong></td>
+							<td><strong>Secret Provider:</strong></td>
 							<td>
-								<?php if ( '' !== $secret_diag['encryption_active_version'] ) : ?>
-									<span style="color:green;">CONFIGURED (<?php echo esc_html( $secret_diag['encryption_active_version'] ); ?>)</span>
+								<?php if ( 'wp_config' === $secret_diag['provider'] ) : ?>
+									<span style="color:green;"><strong>WP-CONFIG</strong></span>
+								<?php elseif ( 'encrypted_vault' === $secret_diag['provider'] ) : ?>
+									<span style="color:green;"><strong>ENCRYPTED VAULT</strong></span>
+								<?php elseif ( 'invalid_wp_config' === $secret_diag['provider'] ) : ?>
+									<span style="color:red;"><strong>INVALID WP-CONFIG (PARTIAL)</strong></span>
 								<?php else : ?>
-									<span style="color:red;">MISSING</span>
+									<span style="color:red;"><strong>UNAVAILABLE</strong></span>
 								<?php endif; ?>
 							</td>
 						</tr>
 						<tr>
-							<td><strong>Encryption Keyring:</strong></td>
+							<td><strong>Secret Vault Status:</strong></td>
 							<td>
-								<?php echo $secret_diag['encryption_config'] ? '<span style="color:green;">CONFIGURED</span>' : '<span style="color:red;">MISSING / INVALID</span>'; ?>
+								<?php if ( $secret_diag['vault_initialized'] ) : ?>
+									<span style="color:green;">INITIALIZED</span>
+								<?php else : ?>
+									<span style="color:gray;">NOT INITIALIZED</span>
+								<?php endif; ?>
 							</td>
 						</tr>
 						<tr>
@@ -193,6 +208,22 @@ class AdminPage {
 							<td><strong>Rate-Limit Key:</strong></td>
 							<td>
 								<?php echo $secret_diag['rate_limit_key'] ? '<span style="color:green;">CONFIGURED</span>' : '<span style="color:red;">MISSING</span>'; ?>
+							</td>
+						</tr>
+						<tr>
+							<td><strong>Encryption Keyring:</strong></td>
+							<td>
+								<?php echo $secret_diag['encryption_config'] ? '<span style="color:green;">CONFIGURED</span>' : '<span style="color:red;">MISSING / INVALID</span>'; ?>
+							</td>
+						</tr>
+						<tr>
+							<td><strong>Active Version:</strong></td>
+							<td>
+								<?php if ( '' !== $secret_diag['encryption_active_version'] ) : ?>
+									<span style="color:green;">CONFIGURED (<?php echo esc_html( $secret_diag['encryption_active_version'] ); ?>)</span>
+								<?php else : ?>
+									<span style="color:red;">MISSING</span>
+								<?php endif; ?>
 							</td>
 						</tr>
 						<tr>
@@ -228,28 +259,46 @@ class AdminPage {
 					</tbody>
 				</table>
 
-				<?php if ( 'NOT_CREATED' === $private_state ) : ?>
-					<form method="post" action="" style="margin-top: 15px;">
-						<?php wp_nonce_field( 'statement_fixtures_create_private' ); ?>
-						<input type="hidden" name="statement_fixtures_action" value="create_private_fixture">
-						<?php
-						$can_create_private = $secret_diag['all_configured'] && $crypto_diag['ready'];
-						submit_button(
-							'Create Private Access Test Fixture',
-							'primary',
-							'submit_create_private',
-							true,
-							$can_create_private ? array() : array( 'disabled' => 'disabled' )
-						);
-						?>
-					</form>
-				<?php else : ?>
-					<form method="post" action="" style="margin-top: 15px;" onsubmit="return confirm('Clean up Private Access test fixture?');">
-						<?php wp_nonce_field( 'statement_fixtures_cleanup_private' ); ?>
-						<input type="hidden" name="statement_fixtures_action" value="cleanup_private_fixture">
-						<?php submit_button( 'Clean Up Private Access Test Fixture', 'delete', 'submit_cleanup_private', false ); ?>
-					</form>
-				<?php endif; ?>
+				<div style="margin-top: 15px;">
+					<?php if ( 'unavailable' === $secret_diag['provider'] && ! $secret_diag['vault_initialized'] ) : ?>
+						<form method="post" action="" style="display: inline-block; margin-right: 15px;">
+							<?php wp_nonce_field( 'statement_fixtures_init_vault' ); ?>
+							<input type="hidden" name="statement_fixtures_action" value="init_vault">
+							<?php submit_button( 'INITIALIZE PRIVATE ACCESS SECRET VAULT', 'primary', 'submit_init_vault', false ); ?>
+						</form>
+					<?php endif; ?>
+
+					<?php if ( 'encrypted_vault' === $secret_diag['provider'] && ! $has_active_grants && 'NOT_CREATED' === $private_state ) : ?>
+						<form method="post" action="" style="display: inline-block; margin-right: 15px;" onsubmit="return confirm('Reset Secret Vault? This will delete the encrypted secret vault option.');">
+							<?php wp_nonce_field( 'statement_fixtures_reset_vault' ); ?>
+							<input type="hidden" name="statement_fixtures_action" value="reset_vault">
+							<?php submit_button( 'RESET TEST SECRET VAULT', 'secondary', 'submit_reset_vault', false ); ?>
+						</form>
+					<?php endif; ?>
+
+					<?php if ( 'NOT_CREATED' === $private_state ) : ?>
+						<form method="post" action="" style="display: inline-block;">
+							<?php wp_nonce_field( 'statement_fixtures_create_private' ); ?>
+							<input type="hidden" name="statement_fixtures_action" value="create_private_fixture">
+							<?php
+							$can_create_private = $secret_diag['all_configured'] && $crypto_diag['ready'];
+							submit_button(
+								'Create Private Access Test Fixture',
+								'primary',
+								'submit_create_private',
+								false,
+								$can_create_private ? array() : array( 'disabled' => 'disabled' )
+							);
+							?>
+						</form>
+					<?php else : ?>
+						<form method="post" action="" style="display: inline-block;" onsubmit="return confirm('Clean up Private Access test fixture?');">
+							<?php wp_nonce_field( 'statement_fixtures_cleanup_private' ); ?>
+							<input type="hidden" name="statement_fixtures_action" value="cleanup_private_fixture">
+							<?php submit_button( 'Clean Up Private Access Test Fixture', 'delete', 'submit_cleanup_private', false ); ?>
+						</form>
+					<?php endif; ?>
+				</div>
 			</div>
 
 			<?php if ( ! empty( $verification['seeded'] ) && ! empty( $verification['products'] ) ) : ?>

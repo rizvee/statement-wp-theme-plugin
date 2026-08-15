@@ -24,11 +24,10 @@ Operational tables using `$wpdb->prefix`:
 
 ## Secrets & Cryptography
 
-Constants defined in `wp-config.php` (never stored in DB or code):
-- `STATEMENT_ACCESS_ENCRYPTION_ACTIVE_VERSION`
-- `STATEMENT_ACCESS_ENCRYPTION_KEYS` (JSON map of version => secret key)
-- `STATEMENT_ACCESS_IDENTITY_KEY` (used for email HMAC-SHA256)
-- `STATEMENT_ACCESS_RATE_LIMIT_KEY` (used for IP HMAC-SHA256)
+Secrets Provider Precedence:
+1. `wp_config`: All four `wp-config.php` constants defined and valid (`STATEMENT_ACCESS_IDENTITY_KEY`, `STATEMENT_ACCESS_RATE_LIMIT_KEY`, `STATEMENT_ACCESS_ENCRYPTION_ACTIVE_VERSION`, `STATEMENT_ACCESS_ENCRYPTION_KEYS`).
+2. `encrypted_vault`: `wp-config` constants absent, valid encrypted vault option `statement_access_secret_vault_v1` (`autoload = false`) present. Wrapping key derived from `wp_salt('auth')` and purpose string `statement-access-secret-vault-v1` via HMAC-SHA256. Plaintext secrets are NEVER stored in the database.
+3. `invalid_wp_config` / `unavailable`: Partial `wp-config` constants or uninitialized vault -> fail closed (`Secrets::is_configured() === false`). No split-provider behavior.
 
 Email identity: HMAC-SHA256(normalized_email, IDENTITY_KEY).
 IP identity: HMAC-SHA256(normalized_ip, RATE_LIMIT_KEY).

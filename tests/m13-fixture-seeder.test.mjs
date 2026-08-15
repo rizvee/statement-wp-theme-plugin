@@ -24,12 +24,12 @@ test('Temporary Fixture Plugin files exist in tools/statement-integration-fixtur
   }
 });
 
-test('Fixture Plugin version is 0.2.0 and activation is strictly side-effect free with zero auto-seeding', () => {
+test('Fixture Plugin version is 0.2.1 and activation is strictly side-effect free with zero auto-seeding', () => {
   const mainPhp = readFileSync(resolve(pluginDir, 'statement-integration-fixtures.php'), 'utf8');
 
   assert.match(mainPhp, /Plugin Name:\s*Statement Integration Fixtures/);
-  assert.match(mainPhp, /Version:\s*0\.2\.0/);
-  assert.match(mainPhp, /STATEMENT_INTEGRATION_FIXTURES_VERSION['"]\s*,\s*['"]0\.2\.0['"]/);
+  assert.match(mainPhp, /Version:\s*0\.2\.1/);
+  assert.match(mainPhp, /STATEMENT_INTEGRATION_FIXTURES_VERSION['"]\s*,\s*['"]0\.2\.1['"]/);
 
   // Must not call FixtureService::create or seed automatically on activation or plugins_loaded
   assert.doesNotMatch(mainPhp, /FixtureService::create/i, 'Main plugin file must not auto-create fixtures on boot/activation');
@@ -45,6 +45,8 @@ test('AdminPage requires manage_woocommerce capability and checks nonces on all 
   assert.match(adminPhp, /check_admin_referer\(\s*['"]statement_fixtures_adopt['"]\s*\)/, 'Adopt action must check nonce');
   assert.match(adminPhp, /check_admin_referer\(\s*['"]statement_fixtures_cleanup['"]\s*\)/, 'Cleanup action must check nonce');
   assert.match(adminPhp, /check_admin_referer\(\s*['"]statement_fixtures_restore_currency['"]\s*\)/, 'Restore currency action must check nonce');
+  assert.match(adminPhp, /check_admin_referer\(\s*['"]statement_fixtures_init_vault['"]\s*\)/, 'Init vault action must check nonce');
+  assert.match(adminPhp, /check_admin_referer\(\s*['"]statement_fixtures_reset_vault['"]\s*\)/, 'Reset vault action must check nonce');
   assert.match(adminPhp, /check_admin_referer\(\s*['"]statement_fixtures_create_private['"]\s*\)/, 'Create private action must check nonce');
   assert.match(adminPhp, /check_admin_referer\(\s*['"]statement_fixtures_cleanup_private['"]\s*\)/, 'Cleanup private action must check nonce');
 });
@@ -76,6 +78,8 @@ test('PrivateFixtureService defines preflight diagnostics and canonical Private 
   assert.match(privatePhp, /function get_crypto_diagnostics/, 'Must have get_crypto_diagnostics method');
   assert.match(privatePhp, /function get_secret_diagnostics/, 'Must have get_secret_diagnostics method');
   assert.match(privatePhp, /function get_db_diagnostics/, 'Must have get_db_diagnostics method');
+  assert.match(privatePhp, /function init_vault/, 'Must have init_vault method');
+  assert.match(privatePhp, /function reset_vault/, 'Must have reset_vault method');
   assert.match(privatePhp, /function create_private_fixture/, 'Must have create_private_fixture method');
   assert.match(privatePhp, /function cleanup_private_fixture/, 'Must have cleanup_private_fixture method');
 
@@ -107,6 +111,7 @@ test('Contract-drift check: Fixture Tool references only real static methods and
   const corePurchasabilityPhp = readFileSync(resolve(coreDir, 'src', 'Release', 'Purchasability.php'), 'utf8');
   const coreReleaseStatePhp = readFileSync(resolve(coreDir, 'src', 'Release', 'ReleaseState.php'), 'utf8');
   const coreSecretsPhp = readFileSync(resolve(coreDir, 'src', 'Access', 'Secrets.php'), 'utf8');
+  const coreVaultPhp = readFileSync(resolve(coreDir, 'src', 'Access', 'SecretVault.php'), 'utf8');
 
   for (const file of fixtureSourceFiles) {
     const content = readFileSync(file, 'utf8');
@@ -137,6 +142,9 @@ test('Contract-drift check: Fixture Tool references only real static methods and
     }
     if (content.includes('Secrets::get_active_key_version')) {
       assert.ok(coreSecretsPhp.includes('function get_active_key_version'), 'Core Secrets::get_active_key_version must exist');
+    }
+    if (content.includes('SecretVault::create_vault')) {
+      assert.ok(coreVaultPhp.includes('function create_vault'), 'Core SecretVault::create_vault must exist');
     }
 
     // Verify Purchasability has no is_purchasable method

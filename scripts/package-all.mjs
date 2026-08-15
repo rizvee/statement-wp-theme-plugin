@@ -6,7 +6,8 @@ import { packageTheme } from './package-theme.mjs';
 import { verifyPackage } from './verify-package.mjs';
 
 const root = resolve(import.meta.dirname, '..');
-const candidateVersion = '0.13.0-rc.2';
+const themeVersion = '0.13.0-rc.2';
+const pluginVersion = '0.13.0-rc.3';
 
 export function packageAll(options = {}) {
   const silent = options.silent ?? false;
@@ -22,19 +23,19 @@ export function packageAll(options = {}) {
   }
 
   log('Step 2: Packaging Statement Collector Theme...');
-  const themePkg = packageTheme(candidateVersion);
+  const themePkg = packageTheme(themeVersion);
 
   log('Step 3: Packaging Statement Collector Core Plugin...');
-  const pluginPkg = packagePlugin(candidateVersion);
+  const pluginPkg = packagePlugin(pluginVersion);
 
   log('Step 4: Verifying packaged theme ZIP artifact...');
-  const themeVerify = verifyPackage(themePkg.path, candidateVersion);
+  const themeVerify = verifyPackage(themePkg.path, themeVersion);
   if (!themeVerify.ok) {
     throw new Error(`Packaged theme verification failed:\n  ${themeVerify.errors.join('\n  ')}`);
   }
 
   log('Step 5: Verifying packaged plugin ZIP artifact...');
-  const pluginVerify = verifyPackage(pluginPkg.path, candidateVersion);
+  const pluginVerify = verifyPackage(pluginPkg.path, pluginVersion);
   if (!pluginVerify.ok) {
     throw new Error(`Packaged plugin verification failed:\n  ${pluginVerify.errors.join('\n  ')}`);
   }
@@ -53,7 +54,10 @@ export function packageAll(options = {}) {
     generated_at: new Date().toISOString(),
     git_commit: gitCommit,
     branch: gitBranch,
-    candidate_version: candidateVersion,
+    candidate_version: {
+      theme: themeVersion,
+      plugin: pluginVersion,
+    },
     theme: {
       candidate_version: themePkg.version,
       header_version: themeVerify.headerVersion,

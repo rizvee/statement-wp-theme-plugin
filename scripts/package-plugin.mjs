@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.13.0-rc.2';
+const defaultVersion = '0.13.0-rc.3';
 
 export const approvedPluginFiles = [
   'statement-collector-core.php',
@@ -18,6 +18,7 @@ export const approvedPluginFiles = [
   'src/Product/Metadata.php',
   'src/Release/ReleaseState.php',
   'src/Release/Purchasability.php',
+  'src/Access/SecretVault.php',
   'src/Access/Secrets.php',
   'src/Access/Crypto.php',
   'src/Access/Schema.php',
