@@ -267,19 +267,40 @@ Status: Phase 1, Phase 2, Phase 3A, Phase 4A, Phase 5A, Phase 5B1, & Phase 5B2.1
 2. **Access Email QA Action Added in 0.3.3**: Added `run_access_email_test()` to temporarily enable `send_access_email = yes`, trigger single canonical `EmailAccessGranted::trigger()`, assert return token creation in `wp_statement_access_tokens`, and restore original DropConfig in `finally`.
 3. **Terminal Lifecycle Revalidation in 0.3.3**: Added `run_terminal_lifecycle_test()` to verify `TEST — Terminal Jacket` (`TEST-TJ01-ARC`) cannot be purchased in `SOLD_OUT`, advance to `ARCHIVED`, confirm unpurchasability regardless of stock, and assert illegal reversal to `LIVE` is rejected.
 
-**Artifacts & Verification:**
-- Package: `dist/statement-integration-fixtures-0.3.3.zip` (27,311 bytes, SHA-256: `351683dcebc50d99e3c51a24a5d671b0aef308680817e94d416b9d020efda72f`).
-- Package: `dist/statement-collector-theme-0.13.0-rc.3.zip` (43,493 bytes, SHA-256: `bb10562d7aac431219aed4cb1317f2d85b4f8ef12b867906779a569a1085a68d`).
-- Package: `dist/statement-collector-core-0.13.0-rc.9.zip` (66,782 bytes, SHA-256: `13beee9332297fb90f3c8c6b1cd20f90ed63c1d9e839152e6af1c0c7a78868a6`).
-- 82 PHP files linted clean, 121 Node subtests across 17 suites pass (100% clean), 19 fixture bootstrap assertions pass, 9 QA contract assertions pass.
+**Authoritative Release Candidates & Verification:**
+- Package: `dist/statement-integration-fixtures-0.3.3.zip` (27,311 bytes, SHA-256: `97fbb481613fc619434e87b5d81fb3815ab7b690bd2d1e80e94dbf547ec70850`).
+- Package: `dist/statement-collector-theme-0.13.0-rc.4.zip` (44,858 bytes, SHA-256: `d3053c00d3674666cfd870b8557cfde90e70d47be2a6c0af25a0183c31d3e1bf`).
+- Package: `dist/statement-collector-core-0.13.0-rc.9.zip` (66,782 bytes, SHA-256: `6e1ab1ea2571c757852c299631834f4aa5f59040e7afe021e18cb0d803e4c3d4`).
+- 82 PHP files linted clean, 130 Node subtests across 17 suites pass (100% clean), 19 fixture bootstrap assertions pass, 9 QA contract assertions pass.
 
 ## M14 — Storefront Hardening & Luxury Polish
 
-
 Status: complete (2026-08-16)
 
-- [x] Private Access Gate UI: Integrated `"Instrument Serif"` display typography, luxury uppercase inputs, high-contrast ink-navy CTA buttons, accessible focus rings, and responsive layout into `assets/css/catalog.css`.
-- [x] Global Navigation & Header: Hardened accessible dialog navigation, `aria-controls`, `aria-expanded` attributes, responsive mobile drawer toggle, and WooCommerce Bag counter.
-- [x] Theme Version & Constant Invariants: Promoted theme version from `0.13.0-rc.2` to `0.13.0-rc.3` in `style.css` and `functions.php`.
-- [x] Dedicated Test Suite: Added `tests/m14-theme-hardening.test.mjs` verifying theme tokens, typography, navigation accessibility, and package integrity.
-- [x] Packaged single-root artifact: `dist/statement-collector-theme-0.13.0-rc.3.zip`.
+- [x] Design System Tokens & Typography: Locked palette tokens, Instrument Serif display typography, and Inter UI typography defined in `theme.json` v3.
+- [x] Editorial Fallback Navigation: Added `get_shop_url()`, `get_archive_url()`, `render_primary_navigation()`, and `render_mobile_primary_navigation()` in `inc/navigation.php` to guarantee graceful SHOP and ARCHIVE fallback links when no WordPress menu is assigned.
+- [x] Accessible Dialog Navigation: Hardened `assets/js/navigation.js` with backdrop click close, body scroll locking via `.statement-dialog-open`, and window resize listeners.
+- [x] Search Privacy & Dialog Accessibility: Role search, autofocus, close button, and escape key management in `search-dialog.php`.
+- [x] Homepage LIVE-only Contract: Bounded 4-product showcase loop, hero editorial layout, and principle statement in `front-page.php`.
+- [x] Catalog & Shop Lifecycle Ordering: LIVE pieces first, SOLD OUT pieces second, 4:5 portrait card proportions, and missing image placeholders in `assets/css/catalog.css` and `product-card.css`.
+- [x] Dedicated Archive Page: Historical drops and archived piece presentation in `page-archive.php` enforcing permanent record scarcity without waitlist or restock wording.
+- [x] Product Detail Page Lifecycle UI: Simple and variable native WooCommerce variation support, commerce locks on terminal products, and responsive gallery layout in `assets/css/product.css`.
+- [x] Cart & Bag Responsive Protection: Responsive table, mobile stacked items, and 320px viewport overflow protection in `assets/css/cart.css`.
+- [x] Checkout & Order Presentation: Styled WooCommerce Checkout override, Order Received confirmation, My Account dashboard, and frozen provenance presentation in `assets/css/checkout.css`.
+- [x] Theme Version & Constant Invariants: Promoted theme candidate from `0.13.0-rc.3` to `0.13.0-rc.4` in `style.css` and `functions.php`.
+- [x] Comprehensive Test Suite: Expanded `tests/m14-theme-hardening.test.mjs` with 14 comprehensive behavioral, contract, accessibility, and override boundary assertions.
+- [x] Single-Root Packaged Artifact: `dist/statement-collector-theme-0.13.0-rc.4.zip`.
+
+## M15 — Production Launch Readiness
+
+Status: started (2026-08-16)
+
+- [x] Final Fixture Cleanup Plan: Created `docs/final-fixture-cleanup.md` detailing complete test entity inventory, database table purge sequence, and clean uninstallation procedures.
+- [x] Technical SEO Launch Checklist: Created `docs/seo-launch-checklist.md` detailing semantic heading hierarchy, title tag format, canonical URLs, and private access indexing boundaries.
+- [x] Shipping Launch Readiness: Created `docs/shipping-launch-readiness.md` detailing Australia Post / MyPost Business operational integration and shipping zone configuration.
+- [x] Payment Launch Checklist: Created `docs/payment-launch-checklist.md` detailing WooPayments AUD live activation, test card verification, and QA gateway deactivation.
+- [x] Transactional & Access Email Readiness: Created `docs/email-launch-readiness.md` detailing complete 9-email transactional matrix, deliverability guidelines, and unsubscribe separation.
+- [x] Legal & Content Gap Inventory: Created `docs/legal-content-gap-inventory.md` classifying required statutory Australian Consumer Law policies and editorial content requirements.
+- [x] Production Plugin Stack Audit: Created `docs/production-plugin-audit.md` classifying all plugins on Atomic into Keep, Remove After Migration (Elementor, Fixtures), and Review.
+- [x] Authoritative Release Candidate Manifest: Created `docs/final-rc-manifest.md` documenting verified checksums and deployment prerequisites.
+- [ ] Post-Deployment Runtime Execution: Awaiting operator manual upload on Atomic to complete final M13 runtime gates.

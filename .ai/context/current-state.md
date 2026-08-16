@@ -1,12 +1,12 @@
 # Current State
 
-Updated: 2026-08-15
+Updated: 2026-08-16
 
 ## Repository
 
 - M0 repository foundation is complete.
 - The M0 foundation baseline exists on `main`; the local PHP tooling checkpoint follows it.
-- `origin` is configured as `https://github.com/rizvee/statement-wp-theme-plugin.git`; it has not been pushed.
+- `origin` is configured as `https://github.com/rizvee/statement-wp-theme-plugin.git`.
 - M1 is complete: standalone theme and core plugin skeletons are version `0.1.0`.
 - M2 is complete: `theme.json` v3 defines palette, typography, spacing, layout tokens; frontend asset boundary active.
 - M3 is complete: header, mobile navigation, search dialog, conditional WooCommerce Account/Bag links, and footer active.
@@ -27,7 +27,8 @@ Updated: 2026-08-15
 - M13 Phase 5B2 observations previously attributed to rc.6 and rc.7 are now version-unverified: Atomic was later confirmed to still be serving rc.5. Their raw HTTP observations remain diagnostic evidence but are not confirmed rc.6/rc.7 failures.
 - M13 Phase 5B2 verified rc.8 runtime stopped at the anonymous boundary: Drop, Store API, WP REST/search, and PDP protected facts passed, but Jetpack stats leaked the private request slug via `arch_err`. Local Core `0.13.0-rc.9` scrubs WordPress request state and `REQUEST_URI` before footer integrations. QA identity and all grant/session/cache/cart/checkout paths remain untouched.
 - M13 Phase 5B2 Fixture 0.3.3 Upgrades: Normalized `run_expiry_test()` to update formatted UTC `closes_at` string along with `closes_at_ts` for proper `DropConfig::save_config()` persistence and re-reading. Added `run_access_email_test()` for canonical single email dispatch and return token creation verification. Added `run_terminal_lifecycle_test()` to advance `TEST — Terminal Jacket` from `SOLD_OUT` to `ARCHIVED`, verify non-purchasability, and assert illegal reversal blocking. Added admin UI buttons in `AdminPage.php`.
-- M14 Storefront Hardening: Upgraded theme presentation to `0.13.0-rc.3` in `style.css` and `functions.php`. Added `"Instrument Serif"` display typography, luxury uppercase inputs, high-contrast CTA buttons, and responsive styles for `.statement-access-gate`. Hardened accessible mobile navigation and Bag counter. Added dedicated test suite `tests/m14-theme-hardening.test.mjs`.
+- M14 Storefront Hardening (COMPLETE): Upgraded theme presentation to `0.13.0-rc.4` across `style.css`, `functions.php`, packaging scripts, and tests. Implemented editorial fallback navigation (`render_primary_navigation()`, `render_mobile_primary_navigation()`), dialog backdrop click and body scroll locking (`.statement-dialog-open`), WooCommerce notice standardization, status badges, cart 320px responsive overflow protection, Order Received / My Account provenance presentation, and comprehensive 14-test verification suite (`tests/m14-theme-hardening.test.mjs`).
+- M15 Launch Readiness (STARTED): Completed 8 authoritative operational and technical launch readiness guides in `docs/`: `final-fixture-cleanup.md`, `seo-launch-checklist.md`, `shipping-launch-readiness.md`, `payment-launch-checklist.md`, `email-launch-readiness.md`, `legal-content-gap-inventory.md`, `production-plugin-audit.md`, `final-rc-manifest.md`.
 
 ## Local environment
 
@@ -38,8 +39,14 @@ Updated: 2026-08-15
 
 ## Deployment state
 
-`https://mystatement.store/` is hosted on WordPress.com Atomic. Core `0.13.0-rc.9` is verified active with Fixtures `0.3.2` active on Atomic (ready to be replaced with `0.3.3`), Theme `0.13.0-rc.2` active (ready to be replaced with `0.13.0-rc.3`), Secret Vault initialized (xchacha20-poly1305), and private fixture `CREATED`. GitHub repository `https://github.com/rizvee/statement-wp-theme-plugin.git` is synchronized with local `main`.
+`https://mystatement.store/` is hosted on WordPress.com Atomic. Core `0.13.0-rc.9` is verified active with Fixtures `0.3.2` active on Atomic (ready to be replaced with `0.3.3`), Theme `0.13.0-rc.2` active (ready to be replaced with `0.13.0-rc.4`), Secret Vault initialized (xchacha20-poly1305), and private fixture `CREATED`. GitHub repository `https://github.com/rizvee/statement-wp-theme-plugin.git` is synchronized with local `main`.
+
+## Authoritative Release Candidates
+
+- **Theme Candidate**: `statement-collector-theme-0.13.0-rc.4.zip` (44,858 bytes, SHA-256: `d3053c00d3674666cfd870b8557cfde90e70d47be2a6c0af25a0183c31d3e1bf`)
+- **Core Candidate**: `statement-collector-core-0.13.0-rc.9.zip` (66,782 bytes, SHA-256: `6e1ab1ea2571c757852c299631834f4aa5f59040e7afe021e18cb0d803e4c3d4`)
+- **Fixture Candidate**: `statement-integration-fixtures-0.3.3.zip` (27,311 bytes, SHA-256: `97fbb481613fc619434e87b5d81fb3815ab7b690bd2d1e80e94dbf547ec70850`)
 
 ## Verification
 
-M1–M14 Node structural tests (121 subtests across 17 suites pass 100% clean), PHP lint (82 PHP files), `verify-foundation.mjs`, `verify-git-runtime-tracking.mjs`, QA Contract PHP tests (9 assertions), Fixture Bootstrap & QA Gateway Behavior PHP tests (19 assertions), PrivateAccessGate contract tests (14 assertions), DropConfig & Fixture Recovery behavior tests (19 assertions), fixture tool package verifier (`statement-integration-fixtures-0.3.3.zip`), theme package verifier (`statement-collector-theme-0.13.0-rc.3.zip`), and master `packageAll` manifest generation pass cleanly.
+M1–M14 Node structural tests (130 subtests across 17 suites pass 100% clean), PHP lint (82 PHP files), `verify-foundation.mjs`, `verify-git-runtime-tracking.mjs`, QA Contract PHP tests (9 assertions), Fixture Bootstrap & QA Gateway Behavior PHP tests (19 assertions), PrivateAccessGate contract tests (14 assertions), DropConfig & Fixture Recovery behavior tests (19 assertions), fixture tool package verifier (`statement-integration-fixtures-0.3.3.zip`), theme package verifier (`statement-collector-theme-0.13.0-rc.4.zip`), and master `packageAll` manifest generation pass cleanly.

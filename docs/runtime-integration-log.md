@@ -162,8 +162,18 @@
 
 - **Private Access Gate Styling**: Added dedicated luxury editorial typography and responsive form styling to `assets/css/catalog.css` (`.statement-access-gate`), featuring `"Instrument Serif"` display headings, subtle luxury uppercase inputs, high-contrast ink-navy CTA buttons, and accessible focus states.
 - **Header & Navigation Hardening**: Verified keyboard accessibility, `aria-controls`, `aria-expanded` attributes, responsive mobile drawer toggle, and WooCommerce Bag counter integration.
-- **Theme Version Bump**: Promoted theme version from `0.13.0-rc.2` to `0.13.0-rc.3` in `style.css` and `functions.php`.
-- **Packaging & Verification**:
-  - Package: `dist/statement-collector-theme-0.13.0-rc.3.zip` (43,492 bytes, SHA-256: `2bf1d5e92c672c99b1b4c7f4a70eec1c58889dc7703cc78b645ded2553154a11`).
-  - All 47 packaged files (34 PHP files) verified clean.
-  - Dedicated M14 test suite `tests/m14-theme-hardening.test.mjs` passes 5/5 subtests.
+
+### `M14-EVIDENCE-02`: Full M14 Storefront Hardening, Theme 0.13.0-rc.4 Bump, and M15 Launch Readiness
+
+- **Editorial Fallback Navigation**: Added `get_shop_url()`, `get_archive_url()`, `render_primary_navigation()`, and `render_mobile_primary_navigation()` in `inc/navigation.php` to provide graceful luxury fallback links when no WordPress primary menu is assigned.
+- **Dialog Navigation JS**: Enhanced `assets/js/navigation.js` with backdrop click close, body scroll locking via `.statement-dialog-open`, and window resize event listener to automatically dismiss open mobile menus on viewport expansion.
+- **Design System & WooCommerce Notices**: Standardized `.woocommerce-message`, `.woocommerce-info`, `.woocommerce-error`, `.statement-badge` (live, sold out, archived) in `assets/css/base.css`.
+- **Checkout & Order Presentation**: Fully styled Order Received, My Account, Order details, and provenance presentation in `assets/css/checkout.css`.
+- **Cart Responsive Protection**: Added 320px viewport media query with `overflow-wrap: anywhere` in `assets/css/cart.css`.
+- **Theme Version Bump**: Promoted theme candidate from `0.13.0-rc.3` to `0.13.0-rc.4` across `style.css`, `functions.php`, packaging scripts, and tests.
+- **M15 Launch Readiness Documentation Suite**: Created 8 comprehensive operational guides in `docs/`: `final-fixture-cleanup.md`, `seo-launch-checklist.md`, `shipping-launch-readiness.md`, `payment-launch-checklist.md`, `email-launch-readiness.md`, `legal-content-gap-inventory.md`, `production-plugin-audit.md`, `final-rc-manifest.md`.
+- **Authoritative Candidate Checksums (Reconciled)**:
+  - Theme Candidate `0.13.0-rc.4`: `statement-collector-theme-0.13.0-rc.4.zip` (44,858 bytes, SHA-256: `d3053c00d3674666cfd870b8557cfde90e70d47be2a6c0af25a0183c31d3e1bf`).
+  - Core Candidate `0.13.0-rc.9`: `statement-collector-core-0.13.0-rc.9.zip` (66,782 bytes, SHA-256: `6e1ab1ea2571c757852c299631834f4aa5f59040e7afe021e18cb0d803e4c3d4`).
+  - Fixtures Tool `0.3.3`: `statement-integration-fixtures-0.3.3.zip` (27,311 bytes, SHA-256: `97fbb481613fc619434e87b5d81fb3815ab7b690bd2d1e80e94dbf547ec70850`).
+- **Test Suite Expansion**: Comprehensive 14-test suite in `tests/m14-theme-hardening.test.mjs` verifying design tokens, fallback nav, dialog a11y, search privacy, homepage LIVE-only bounds, catalog card aspect ratio, archive permanence, PDP lifecycle locks, cart 320px overflow protection, checkout hooks, order provenance presentation, scarcity invariant, and exact four WooCommerce template overrides.
