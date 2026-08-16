@@ -799,14 +799,34 @@ class QaTestService {
 
 		$products = wc_get_products(
 			array(
-				'sku'    => 'TEST-TJ01-ARC',
+				'sku'    => 'TEST-LD01-TJ',
 				'status' => 'any',
 				'limit'  => 1,
 			)
 		);
 
+		if ( empty( $products ) ) {
+			$products = wc_get_products(
+				array(
+					'slug'   => 'test-terminal-jacket',
+					'status' => 'any',
+					'limit'  => 1,
+				)
+			);
+		}
+
+		if ( empty( $products ) ) {
+			$products = wc_get_products(
+				array(
+					'sku'    => 'TEST-TJ01-ARC',
+					'status' => 'any',
+					'limit'  => 1,
+				)
+			);
+		}
+
 		if ( empty( $products ) || ! is_object( $products[0] ) ) {
-			return array( 'success' => false, 'message' => 'TEST — Terminal Jacket (SKU: TEST-TJ01-ARC) not found.' );
+			return array( 'success' => false, 'message' => 'TEST — Terminal Jacket (SKU: TEST-LD01-TJ / slug: test-terminal-jacket) not found.' );
 		}
 
 		$product = $products[0];

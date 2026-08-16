@@ -255,8 +255,8 @@ Status: Phase 1, Phase 2, Phase 3A, Phase 4A, Phase 5A, Phase 5B1, & Phase 5B2.1
 | QA Payment Gateway Availability | `RUNTIME_PASS` | `TEST ONLY — NO PAYMENT (Statement QA)` available for exact test SKU `TEST-PD01-PAJ` |
 | Expiry Normalization Runtime (0.3.3) | `RUNTIME_PASS` | Verified live on Atomic: Earlier close shortened effective expiry; later close kept grant expiry invariant; Drop config restored clean |
 | Reminder Scheduler Runtime (0.3.3) | `RUNTIME_PASS` | Verified live on Atomic: Reminder action scheduled cleanly and auto-cancelled upon Add to Bag with valid session context |
-| Access Email Dispatch | `RUNTIME_PENDING` | `RUN ACCESS EMAIL TEST` available in Fixtures 0.3.3 admin suite |
-| Terminal Lifecycle Revalidation | `RUNTIME_PENDING` | `REVALIDATE TERMINAL LIFECYCLE` available in Fixtures 0.3.3 admin suite |
+| Access Email Dispatch (0.3.3) | `RUNTIME_PASS` | Verified live on Atomic: Return token created safely, mail trigger executed, and Drop config restored clean |
+| Terminal Lifecycle Revalidation | `RUNTIME_PENDING` | `run_terminal_lifecycle_test()` updated in source with resilient multi-SKU (`TEST-LD01-TJ`/`TEST-TJ01-ARC`) and slug lookup |
 | Controlled QA Order Execution | `RUNTIME_PENDING` | Ready for execution via `scripts/test-private-access-order.mjs` / WP checkout on active session |
 | Exactly-Once Stock Reduction | `RUNTIME_PENDING` | Hardened in gateway `process_payment()` via WooCommerce standard `payment_complete()` |
 | M10 Order Authorization Audit | `RUNTIME_PENDING` | Ready for verification via `verify_last_order()` upon order placement |
@@ -264,11 +264,11 @@ Status: Phase 1, Phase 2, Phase 3A, Phase 4A, Phase 5A, Phase 5B1, & Phase 5B2.1
 | Provenance Immutability | `RUNTIME_PENDING` | Ready for verification via `test_provenance_immutability()` upon order placement |
 | Order Received / My Account UI | `RUNTIME_PENDING` | Presentation metadata verified via server-side contract; visual confirmation pending order placement |
 
-**Harness Diagnostics in 0.3.2 & Fixes in 0.3.3 (Verified Live):**
-1. **Expiry Test Normalization in 0.3.3**: Verified `RUNTIME_PASS` on Atomic: Both `closes_at` (formatted UTC string) and `closes_at_ts` are updated, ensuring deterministic persistence and reading from term meta.
-2. **Reminder Scheduler in 0.3.3**: Verified `RUNTIME_PASS` on Atomic: Scheduled action auto-cancels upon cart placement.
-3. **Access Email QA Action in 0.3.3**: Added `run_access_email_test()` to temporarily enable `send_access_email = yes`, trigger single canonical `EmailAccessGranted::trigger()`, assert return token creation, and restore config.
-4. **Terminal Lifecycle Revalidation in 0.3.3**: Added `run_terminal_lifecycle_test()` to advance `TEST — Terminal Jacket` (`TEST-TJ01-ARC`) to `ARCHIVED`, confirm unpurchasability regardless of stock, and assert illegal reversal to `LIVE` is rejected.
+**Harness Diagnostics & Live Verifications:**
+1. **Expiry Test Normalization**: Verified `RUNTIME_PASS` on Atomic: Both `closes_at` and `closes_at_ts` updated, ensuring deterministic persistence and reading from term meta.
+2. **Reminder Scheduler**: Verified `RUNTIME_PASS` on Atomic: Scheduled action auto-cancels upon cart placement.
+3. **Access Email QA Action**: Verified `RUNTIME_PASS` on Atomic: Branded `EmailAccessGranted` triggered, return token created in `wp_statement_access_tokens`, and temporary Drop config restored clean.
+4. **Terminal Lifecycle Revalidation**: Fixed SKU lookup mismatch in `QaTestService.php` to resolve `TEST-LD01-TJ`, fallback to slug `test-terminal-jacket`, and fallback to `TEST-TJ01-ARC`.
 
 **Authoritative Release Candidates & Verification:**
 - Package: `dist/statement-integration-fixtures-0.3.3.zip` (27,311 bytes, SHA-256: `97fbb481613fc619434e87b5d81fb3815ab7b690bd2d1e80e94dbf547ec70850`).
@@ -314,7 +314,15 @@ Status: started (2026-08-16)
 - [x] SEO Production Input Pack: Created `docs/seo-production-input.md` for global metadata, OpenGraph cards, and indexing launch timings.
 - [x] Objective Launch Gate Matrix: Created `docs/launch-gate-matrix.md` detailing 12-gate assessment from Gate A to Gate L.
 - [x] Production Verification Scripts: Created `scripts/verify-production-clean-state.mjs` and `scripts/test-production-readiness.mjs`.
+- [x] Production Input Validation Tooling: Created `scripts/validate-drop-production-input.mjs`, `scripts/validate-production-readiness-configs.mjs`, and `config/drop-001.example.json`.
+- [x] Production Product Importer Design: Created `docs/production-product-importer-design.md` specifying idempotent, dry-run-first import architecture.
 - [x] Drop 001 Launch Runbook: Created `docs/drop-001-launch-runbook.md` defining operational lifecycle management from Private Access through SOLD OUT and permanent archive.
-- [x] Final Release Runbook: Created `docs/final-release-runbook.md` detailing exact sequential cutover protocol for live production deployment.
+- [x] Final Release Runbook: Created `docs/final-release-runbook.md` detailing exact sequential cutover protocol with automatic backup verification.
 - [x] Authoritative Release Candidate Manifest: Created `docs/final-rc-manifest.md` documenting verified checksums and deployment prerequisites.
-- [ ] Production Cutover Execution: Awaiting operator execution of post-RC backup, Jetpack scan, fixture cleanup, and Drop 001 product import.
+
+## M16 — Production Content & Final Cutover Preparation
+
+Status: started (2026-08-16)
+
+- [x] Content Layer Architecture & Slots: Created `docs/m16-production-content-layer.md` defining slot mapping for root hero, showcase loop, brand manifesto, archive intro, craft PDP tabs, and footer link map.
+- [ ] Production Cutover Execution: Awaiting operator execution of post-RC automatic backup verification, Jetpack scan, fixture cleanup, and Drop 001 product import.

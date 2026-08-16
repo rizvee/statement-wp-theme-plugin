@@ -210,4 +210,19 @@
   - Verified: "Reminder Scheduler verified: Action scheduled cleanly and auto-cancelled upon Add to Bag with valid session context."
 - **Production Pre-Cutover Verification Scripts**:
   - Created `scripts/verify-production-clean-state.mjs` (read-only verification of post-purge clean state).
-  - Created `scripts/test-production-readiness.mjs` (read-only smoke test across storefront routes: 6/6 passed, 0 fatals).
+  - Created `scripts/test-production-readiness.mjs` (read-only smoke test across storefront routes: 10/10 passed, 0 fatals).
+
+### `M13-EVIDENCE-04`: Access Email Live Runtime Verification & Automation Tooling
+
+- **Access Email Dispatch Runtime Verification (`RUNTIME_PASS`)**:
+  - Executed `RUN ACCESS EMAIL TEST` on Atomic.
+  - Verified: "Access Email Dispatch verified: Return token created safely, mail trigger executed, and Drop config restored clean."
+  - Proved: `ACCESS_EMAIL_DISPATCH = RUNTIME_PASS`, `RETURN_TOKEN_CREATED = YES`, `CONFIG_RESTORED = YES`, `INBOX_RECEIPT = OPERATOR_CONFIRMATION_PENDING`.
+- **Terminal Lifecycle Revalidation Diagnosis**:
+  - Observed SKU lookup mismatch on Atomic (`TEST-LD01-TJ` / `test-terminal-jacket` vs `TEST-TJ01-ARC`).
+  - Patched `QaTestService.php` with multi-lookup resilience.
+- **Production Automation & Validation Tooling**:
+  - Created `scripts/validate-drop-production-input.mjs` for dry-run verification of commercial JSON drops.
+  - Created `scripts/validate-production-readiness-configs.mjs` for auditing all 6 M15 intake documents.
+  - Created `config/drop-001.example.json` machine-readable template.
+  - Created `docs/production-product-importer-design.md` and `docs/m16-production-content-layer.md`.

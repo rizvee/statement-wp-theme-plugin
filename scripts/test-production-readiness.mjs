@@ -10,6 +10,10 @@ export async function testProductionReadiness(options = {}) {
     { path: '/cart/', name: 'Cart / Bag', allowedStatuses: [200] },
     { path: '/checkout/', name: 'Checkout', allowedStatuses: [200, 302] },
     { path: '/my-account/', name: 'My Account', allowedStatuses: [200] },
+    { path: '/?s=statement', name: 'Search Query', allowedStatuses: [200] },
+    { path: '/wp-json/wc/store/v1/products', name: 'WooCommerce Store API', allowedStatuses: [200] },
+    { path: '/wp-json/', name: 'WordPress REST Root', allowedStatuses: [200] },
+    { path: '/statement-404-smoke-check/', name: 'Standard 404 Fallback', allowedStatuses: [404] },
   ];
 
   const results = {
@@ -32,7 +36,7 @@ export async function testProductionReadiness(options = {}) {
 
     try {
       const res = await fetch(new URL(r.path, siteUrl), {
-        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/127.0' },
         redirect: 'manual',
       });
       routeRes.status = res.status;

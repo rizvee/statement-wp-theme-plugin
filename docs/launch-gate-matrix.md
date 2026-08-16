@@ -15,8 +15,8 @@ This matrix provides the single authoritative criteria checklist required before
 | Gate ID | Gate Name | Description / Requirement | Current Status | Objective Evidence / Prerequisite |
 | --- | --- | --- | --- | --- |
 | **GATE A** | **M13 Runtime Verification** | Full verification of Core, Theme, and Fixtures on Atomic | `PASS` | Theme `0.13.0-rc.4`, Core `0.13.0-rc.9`, Fixtures `0.3.3` active; Expiry & Reminder tests `RUNTIME_PASS` |
-| **GATE B** | **Post-RC Full Backup** | Complete point-in-time backup on WordPress.com hosting | `BLOCKED` | Operator must trigger manual backup in WordPress.com dashboard prior to fixture purge |
-| **GATE C** | **Post-RC Security Scan** | Clean Jetpack security scan post-dating current RC code | `BLOCKED` | Latest audit scan started 2026-08-15; operator must confirm clean scan post-dating Aug 16 RC code |
+| **GATE B** | **Post-RC Automatic Backup** | Fresh automatic backup on WordPress.com/VaultPress | `WAITING_FOR_AUTOMATIC_BACKUP` | Awaiting automatic VaultPress point-in-time snapshot post-dating Aug 16 RC deployment |
+| **GATE C** | **Post-RC Security Scan** | Clean Jetpack security scan post-dating current RC code | `WAITING_FOR_POST_RC_SCAN` | Operator to trigger fresh scan via ChatGPT/WordPress.com connector |
 | **GATE D** | **Fixture Clean Purge** | Test products, drop terms, and fixture plugin uninstalled | `NOT_STARTED` | Awaiting Gate B and Gate C completion |
 | **GATE E** | **Storefront Smoke Test** | Post-purge smoke test of Home, Shop, Archive, Cart, Checkout | `NOT_STARTED` | Verified ready via `scripts/test-production-readiness.mjs` |
 | **GATE F** | **Legal Policies Published** | Statutory Australian Consumer Law pages live on storefront | `INPUT_REQUIRED` | Awaiting business entity details via `docs/legal-content-input.md` |

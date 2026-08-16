@@ -1,0 +1,61 @@
+{
+  "schema_version": "1.0.0",
+  "drop": {
+    "title": "Statement Drop 001",
+    "slug": "drop-001",
+    "private_access_duration": 7,
+    "duration_unit": "days",
+    "closes_at_utc": "2026-09-01 00:00:00",
+    "send_access_email": true,
+    "reminder_enabled": true,
+    "reminder_delay_hours": 24,
+    "seo_title": "Statement Drop 001 | Statement",
+    "seo_description": "Exclusive private access to Statement Drop 001."
+  },
+  "products": [
+    {
+      "title": "Statement Monogram Overshirt",
+      "slug": "statement-monogram-overshirt",
+      "type": "variable",
+      "edition_label": "Drop 001 Edition",
+      "release_state": "PRIVATE_ACCESS",
+      "regular_price_aud": 340.00,
+      "manage_stock": true,
+      "sku": "STMT-D01-MOS",
+      "short_description": "Crafted from heavyweight organic Japanese cotton twill with signature horn buttons.",
+      "full_description": "Detailed tailoring craftsmanship and architectural silhouette.",
+      "variations": [
+        { "attribute": "pa_size", "value": "Small", "sku": "STMT-D01-MOS-S", "stock": 10 },
+        { "attribute": "pa_size", "value": "Medium", "sku": "STMT-D01-MOS-M", "stock": 15 },
+        { "attribute": "pa_size", "value": "Large", "sku": "STMT-D01-MOS-L", "stock": 15 },
+        { "attribute": "pa_size", "value": "X-Large", "sku": "STMT-D01-MOS-XL", "stock": 5 }
+      ],
+      "featured_image": "stmt-d01-mos-hero.webp",
+      "gallery_images": [
+        "stmt-d01-mos-texture.webp",
+        "stmt-d01-mos-back.webp"
+      ],
+      "seo_title": "Statement Monogram Overshirt — Drop 001 | Statement",
+      "seo_description": "Limited edition Statement Monogram Overshirt in Australian luxury apparel."
+    },
+    {
+      "title": "Statement Tailored Trouser",
+      "slug": "statement-tailored-trouser",
+      "type": "simple",
+      "edition_label": "Drop 001 Edition",
+      "release_state": "PRIVATE_ACCESS",
+      "regular_price_aud": 290.00,
+      "manage_stock": true,
+      "stock_quantity": 25,
+      "sku": "STMT-D01-STR",
+      "short_description": "Straight-leg pleated trouser in virgin wool blend.",
+      "full_description": "Refined everyday tailoring with discreet hand-stitched hem finish.",
+      "featured_image": "stmt-d01-str-hero.webp",
+      "gallery_images": [
+        "stmt-d01-str-texture.webp"
+      ],
+      "seo_title": "Statement Tailored Trouser — Drop 001 | Statement",
+      "seo_description": "Limited edition Statement Tailored Trouser."
+    }
+  ]
+}
