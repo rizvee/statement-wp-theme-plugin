@@ -1,49 +1,101 @@
-.statement-piece {
-	min-inline-size: 0;
-}
-
-.statement-piece__link {
-	color: var(--wp--preset--color--near-black);
+/* LUXURY PRODUCT CARD */
+.statement-card {
+	display: flex;
+	flex-direction: column;
 	text-decoration: none;
+	color: var(--wp--preset--color--near-black);
+	group: card;
 }
 
-.statement-piece__media,
-.statement-piece__empty {
-	display: block;
+.statement-card__media {
+	position: relative;
 	inline-size: 100%;
 	aspect-ratio: 4 / 5;
-}
-
-.statement-piece__media {
 	overflow: hidden;
 	background: var(--wp--preset--color--gallery-ivory);
+	margin-block-end: var(--wp--preset--spacing--30);
 }
 
-.statement-piece__image {
+.statement-card__media img {
 	inline-size: 100%;
 	block-size: 100%;
 	object-fit: cover;
+	object-position: center;
+	transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.statement-piece__empty {
-	border: 1px solid var(--wp--preset--color--border-grey);
+.statement-card:hover .statement-card__media img {
+	transform: scale(1.02);
 }
 
-.statement-piece__name {
-	margin-block: var(--wp--preset--spacing--20) 0;
-	font-family: var(--wp--preset--font-family--display);
-	font-size: var(--wp--preset--font-size--heading-small);
-	overflow-wrap: anywhere;
-}
-
-.statement-piece__drop,
-.statement-piece__price {
-	margin-block: var(--wp--preset--spacing--10) 0;
-	font-size: var(--wp--preset--font-size--small);
-}
-
-.statement-piece__drop {
+.statement-card__placeholder {
+	inline-size: 100%;
+	block-size: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--wp--preset--color--gallery-ivory);
 	color: var(--wp--preset--color--soft-graphite);
-	letter-spacing: 0.08em;
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.6875rem;
+	letter-spacing: 0.18em;
 	text-transform: uppercase;
+}
+
+.statement-card__badges {
+	position: absolute;
+	inset-block-start: var(--wp--preset--spacing--20);
+	inset-inline-end: var(--wp--preset--spacing--20);
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	gap: 0.375rem;
+}
+
+.statement-card__body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.375rem;
+}
+
+.statement-card__header-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: var(--wp--preset--spacing--20);
+}
+
+.statement-card__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: clamp(0.875rem, 0.82rem + 0.2vw, 1rem);
+	font-weight: 500;
+	line-height: 1.35;
+	letter-spacing: 0.04em;
+	color: var(--wp--preset--color--near-black);
+	text-transform: uppercase;
+}
+
+.statement-card__price {
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: clamp(0.875rem, 0.82rem + 0.2vw, 1rem);
+	font-weight: 600;
+	color: var(--wp--preset--color--near-black);
+	white-space: nowrap;
+}
+
+.statement-card__edition {
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.16em;
+	color: var(--wp--preset--color--soft-graphite);
+	text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.statement-card__media img {
+		transition: none !important;
+		transform: none !important;
+	}
 }

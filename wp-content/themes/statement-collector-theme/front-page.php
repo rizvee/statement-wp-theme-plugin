@@ -25,6 +25,7 @@ $has_editorial = has_home_editorial_content( $page_id );
 		array(
 			'page_id'  => $page_id,
 			'drop_url' => $drop_url,
+			'drop'     => $release_data['drop'],
 		)
 	);
 

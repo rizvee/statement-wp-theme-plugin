@@ -1,214 +1,208 @@
-.woocommerce-shop .site-main,
-.post-type-archive-product .site-main {
-	inline-size: 100%;
-	max-inline-size: calc(var(--wp--style--global--wide-size) + (2 * var(--wp--preset--spacing--30)));
-	margin-inline: auto;
-	padding: var(--wp--preset--spacing--60) var(--wp--preset--spacing--30);
-}
-
-.woocommerce-products-header,
-.statement-catalog__header {
-	margin-block-end: var(--wp--preset--spacing--50);
-}
-
-.woocommerce-products-header__title,
-.statement-catalog__header h1 {
-	margin: 0;
-	font-size: var(--wp--preset--font-size--display);
-}
-
+/* CATALOG / COLLECTION INDEX */
 .statement-catalog {
-	padding-block: var(--wp--preset--spacing--60);
+	padding-block: clamp(3rem, 6vw, 7rem) clamp(5rem, 8vw, 9rem);
+}
+
+.statement-catalog__header {
+	margin-block-end: clamp(3rem, 5vw, 5.5rem);
+	max-inline-size: 50rem;
+}
+
+.statement-catalog__title {
+	margin: 0 0 var(--wp--preset--spacing--30);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(2.5rem, 1.8rem + 3.5vw, 5rem);
+	font-weight: 400;
+	line-height: 1;
+	letter-spacing: -0.02em;
+	text-transform: uppercase;
 }
 
 .statement-catalog__description {
-	max-inline-size: var(--wp--style--global--content-size);
-	margin-block-start: var(--wp--preset--spacing--30);
+	margin: 0;
 	color: var(--wp--preset--color--soft-graphite);
+	font-size: clamp(1rem, 0.95rem + 0.2vw, 1.125rem);
+	line-height: 1.6;
 }
 
-.statement-catalog__description > :first-child {
-	margin-block-start: 0;
-}
-
-.statement-catalog__description > :last-child {
-	margin-block-end: 0;
-}
-
-.woocommerce ul.products,
-.statement-catalog ul.products {
-	list-style: none;
+.statement-collection-grid {
 	display: grid;
 	grid-template-columns: 1fr;
-	gap: var(--wp--preset--spacing--50) var(--wp--preset--spacing--30);
-	padding: 0;
-	margin: 0;
+	gap: clamp(3rem, 5vw, 5.5rem) clamp(1.5rem, 3vw, 3.5rem);
 }
 
-.woocommerce ul.products::before,
-.woocommerce ul.products::after,
-.statement-catalog ul.products::before,
-.statement-catalog ul.products::after {
-	display: none;
-}
-
-.woocommerce ul.products li.product,
-.statement-catalog ul.products li.product {
-	float: none;
-	inline-size: auto;
-	margin: 0;
-}
-
-.statement-catalog-empty {
-	padding-block: var(--wp--preset--spacing--60);
-}
-
-.statement-catalog-empty h2 {
-	margin: 0;
-	font-family: var(--wp--preset--font-family--ui);
-	font-size: var(--wp--preset--font-size--small);
-	font-weight: 600;
-	letter-spacing: 0.12em;
-}
-
-.woocommerce-pagination {
-	margin-block-start: var(--wp--preset--spacing--60);
-}
-
-.woocommerce-pagination ul.page-numbers {
-	list-style: none;
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--wp--preset--spacing--20);
-	padding: 0;
-	margin: 0;
-}
-
-.woocommerce-pagination .page-numbers a,
-.woocommerce-pagination .page-numbers span {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-inline-size: 2.75rem;
-	min-block-size: 2.75rem;
-	color: var(--wp--preset--color--near-black);
-}
-
-@media (min-width: 48rem) {
-	.woocommerce ul.products,
-	.statement-catalog ul.products {
+@media (min-width: 40rem) {
+	.statement-collection-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
 
 @media (min-width: 64rem) {
-	.woocommerce ul.products,
-	.statement-catalog ul.products {
+	.statement-collection-grid {
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
 }
 
-/* -------------------------------------------------------------------------
- * Private Access Gate
- * ------------------------------------------------------------------------- */
+.statement-catalog__empty,
+.statement-catalog-empty {
+	padding-block: clamp(4rem, 8vw, 8rem);
+	text-align: center;
+	border-block: 1px solid var(--wp--preset--color--border-grey);
+}
 
+.statement-catalog__empty-title {
+	margin: 0 0 var(--wp--preset--spacing--20);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 2rem;
+	text-transform: uppercase;
+}
+
+.statement-catalog__empty-message {
+	margin: 0;
+	color: var(--wp--preset--color--soft-graphite);
+}
+
+/* HISTORICAL ARCHIVE PAGE */
+.statement-archive-page {
+	padding-block: clamp(3rem, 6vw, 7rem) clamp(5rem, 8vw, 9rem);
+}
+
+.statement-archive-page__header {
+	margin-block-end: clamp(3.5rem, 6vw, 6rem);
+	max-inline-size: 48rem;
+}
+
+.statement-archive-page__title {
+	margin: 0 0 var(--wp--preset--spacing--30);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(2.5rem, 1.8rem + 3.5vw, 5rem);
+	font-weight: 400;
+	line-height: 1;
+	letter-spacing: -0.02em;
+	text-transform: uppercase;
+}
+
+.statement-archive-page__subtitle {
+	margin: 0;
+	color: var(--wp--preset--color--soft-graphite);
+	font-family: var(--wp--preset--font-family--display);
+	font-style: italic;
+	font-size: clamp(1.125rem, 1rem + 0.5vw, 1.5rem);
+}
+
+.statement-archive-list {
+	display: grid;
+	gap: clamp(4rem, 8vw, 8rem);
+}
+
+.statement-archive-drop {
+	border-block-start: 1px solid var(--wp--preset--color--border-grey);
+	padding-block-start: clamp(2.5rem, 4vw, 4rem);
+}
+
+.statement-archive-drop__header {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: var(--wp--preset--spacing--30);
+	margin-block-end: clamp(2rem, 4vw, 3.5rem);
+}
+
+.statement-archive-drop__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(1.75rem, 1.3rem + 2vw, 3rem);
+	font-weight: 400;
+	text-transform: uppercase;
+}
+
+.statement-archive-drop__meta {
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.16em;
+	color: var(--wp--preset--color--soft-graphite);
+	text-transform: uppercase;
+}
+
+/* PRIVATE ACCESS GATE */
+.statement-private-gate,
 .statement-access-gate {
+	min-block-size: 70vh;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	min-block-size: clamp(24rem, 60vh, 42rem);
-	padding: var(--wp--preset--spacing--60) var(--wp--preset--spacing--30);
-	text-align: center;
+	padding-block: clamp(4rem, 8vw, 8rem);
 }
 
-.statement-access-gate__container {
+.statement-private-gate__inner {
 	inline-size: 100%;
-	max-inline-size: 28rem;
-	margin-inline: auto;
+	max-inline-size: 32rem;
+	text-align: center;
+	padding: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 3vw, 3rem);
+	border: 1px solid var(--wp--preset--color--border-grey);
+	background: var(--wp--preset--color--gallery-ivory);
 }
 
-.statement-access-gate__title {
-	margin: 0 0 var(--wp--preset--spacing--20);
+.statement-private-gate__title {
+	margin: 0 0 var(--wp--preset--spacing--30);
 	font-family: var(--wp--preset--font-family--display);
-	font-size: var(--wp--preset--font-size--display);
+	font-size: clamp(2rem, 1.6rem + 2vw, 3.25rem);
 	font-weight: 400;
-	letter-spacing: 0.04em;
-	line-height: 1.05;
-	color: var(--wp--preset--color--near-black);
+	line-height: 1.1;
+	text-transform: uppercase;
+	letter-spacing: -0.01em;
 }
 
-.statement-access-gate__subtitle {
+.statement-private-gate__copy {
 	margin: 0 0 var(--wp--preset--spacing--40);
-	font-family: var(--wp--preset--font-family--ui);
-	font-size: var(--wp--preset--font-size--body);
 	color: var(--wp--preset--color--soft-graphite);
-	line-height: 1.5;
+	font-size: 0.9375rem;
+	line-height: 1.6;
 }
 
-.statement-access-gate__form {
-	display: flex;
-	flex-direction: column;
+.statement-private-gate__form {
+	display: grid;
 	gap: var(--wp--preset--spacing--30);
 }
 
-.statement-access-gate__field {
-	position: relative;
-	inline-size: 100%;
-}
-
-.statement-access-gate__input {
+.statement-private-gate__input {
 	inline-size: 100%;
 	min-block-size: 3.25rem;
-	padding: var(--wp--preset--spacing--20) var(--wp--preset--spacing--30);
-	background: transparent;
+	padding: 0.75rem 1rem;
 	border: 1px solid var(--wp--preset--color--border-grey);
 	border-radius: 0;
-	font-family: var(--wp--preset--font-family--ui);
-	font-size: var(--wp--preset--font-size--small);
-	letter-spacing: 0.12em;
-	text-transform: uppercase;
+	background: var(--wp--preset--color--warm-white);
 	color: var(--wp--preset--color--near-black);
-	text-align: center;
-	transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.statement-access-gate__input:focus {
-	outline: 2px solid var(--wp--preset--color--ink-navy);
-	outline-offset: 2px;
-	border-color: var(--wp--preset--color--ink-navy);
-}
-
-.statement-access-gate__button {
-	inline-size: 100%;
-	min-block-size: 3.25rem;
-	padding: var(--wp--preset--spacing--20) var(--wp--preset--spacing--30);
-	background: var(--wp--preset--color--ink-navy);
-	color: var(--wp--preset--color--warm-white);
-	border: 1px solid var(--wp--preset--color--ink-navy);
-	border-radius: 0;
 	font-family: var(--wp--preset--font-family--ui);
-	font-size: var(--wp--preset--font-size--small);
-	font-weight: 600;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
-	cursor: pointer;
-	transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+	font-size: 0.9375rem;
+	text-align: center;
 }
 
-.statement-access-gate__button:hover {
-	background: var(--wp--preset--color--near-black);
+.statement-private-gate__input:focus {
+	outline: none;
 	border-color: var(--wp--preset--color--near-black);
 }
 
-.statement-access-gate__button:focus-visible {
-	outline: 2px solid var(--wp--preset--color--ink-navy);
-	outline-offset: 3px;
+.statement-private-gate__button {
+	inline-size: 100%;
+	min-block-size: 3.25rem;
+	padding: 0.875rem 1.5rem;
+	border: 1px solid var(--wp--preset--color--near-black);
+	border-radius: 0;
+	background: var(--wp--preset--color--near-black);
+	color: var(--wp--preset--color--warm-white);
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: all 250ms ease;
 }
 
-.statement-access-gate__consent {
-	margin: var(--wp--preset--spacing--10) 0 0;
-	font-family: var(--wp--preset--font-family--ui);
-	font-size: var(--wp--preset--font-size--small);
-	color: var(--wp--preset--color--soft-graphite);
-	line-height: 1.5;
+.statement-private-gate__button:hover {
+	background: var(--wp--preset--color--ink-navy);
+	border-color: var(--wp--preset--color--ink-navy);
 }

@@ -3,9 +3,14 @@
 defined( 'ABSPATH' ) || exit;
 
 $page_id   = isset( $args['page_id'] ) ? absint( $args['page_id'] ) : 0;
+$drop      = isset( $args['drop'] ) && is_object( $args['drop'] ) ? $args['drop'] : null;
 $drop_url  = isset( $args['drop_url'] ) && is_string( $args['drop_url'] ) && '' !== $args['drop_url'] ? $args['drop_url'] : null;
+$shop_url  = \Statement\Collector\Theme\get_shop_url();
 $has_image = $page_id > 0 && has_post_thumbnail( $page_id );
 $site_name = get_bloginfo( 'name' );
+$title     = is_object( $drop ) && isset( $drop->name ) && '' !== trim( (string) $drop->name ) ? trim( (string) $drop->name ) : $site_name;
+$cta_url   = null !== $drop_url ? $drop_url : $shop_url;
+$cta_label = null !== $drop_url ? __( 'ENTER DROP', 'statement-collector-theme' ) : __( 'SHOP PIECES', 'statement-collector-theme' );
 ?>
 <section class="statement-home-hero<?php echo $has_image ? ' statement-home-hero--image' : ' statement-home-hero--surface'; ?>" aria-labelledby="statement-home-title">
 	<?php if ( $has_image ) : ?>
@@ -28,11 +33,17 @@ $site_name = get_bloginfo( 'name' );
 	<?php endif; ?>
 
 	<div class="statement-home-hero__content statement-container--wide">
-		<h1 class="statement-home-hero__title" id="statement-home-title"><?php echo esc_html( $site_name ); ?></h1>
-		<?php if ( null !== $drop_url ) : ?>
-			<a class="statement-home-link statement-home-hero__link" href="<?php echo esc_url( $drop_url ); ?>">
-				<?php esc_html_e( 'ENTER DROP', 'statement-collector-theme' ); ?>
-			</a>
-		<?php endif; ?>
+		<div class="statement-home-hero__inner">
+			<p class="statement-eyebrow statement-home-hero__eyebrow"><?php esc_html_e( 'STATEMENT / CURRENT RELEASE', 'statement-collector-theme' ); ?></p>
+			<h1 class="statement-home-hero__title" id="statement-home-title"><?php echo esc_html( $title ); ?></h1>
+			<?php if ( null !== $drop_url ) : ?>
+				<div class="statement-home-hero__actions">
+					<a class="statement-home-hero__cta" href="<?php echo esc_url( $drop_url ); ?>">
+						<span><?php echo esc_html( $cta_label ); ?></span>
+						<span aria-hidden="true" class="statement-home-hero__arrow">&rarr;</span>
+					</a>
+				</div>
+			<?php endif; ?>
+		</div>
 	</div>
 </section>

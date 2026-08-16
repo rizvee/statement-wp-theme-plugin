@@ -6,15 +6,15 @@ import test from 'node:test';
 const root = resolve(import.meta.dirname, '..');
 const themeDir = resolve(root, 'wp-content', 'themes', 'statement-collector-theme');
 
-test('M14 Storefront Hardening: Theme Version & Constant Invariants (0.13.0-rc.4)', () => {
+test('M14 Storefront Hardening: Theme Version & Constant Invariants (0.13.0-rc.5)', () => {
   const styleCss = readFileSync(resolve(themeDir, 'style.css'), 'utf8');
   const functionsPhp = readFileSync(resolve(themeDir, 'functions.php'), 'utf8');
 
-  assert.match(styleCss, /Version:\s*0\.13\.0-rc\.4/i, 'style.css must specify Version: 0.13.0-rc.4');
+  assert.match(styleCss, /Version:\s*0\.13\.0-rc\.5/i, 'style.css must specify Version: 0.13.0-rc.5');
   assert.match(
     functionsPhp,
-    /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.4['"]\s*\);/,
-    'functions.php must define STATEMENT_COLLECTOR_THEME_VERSION 0.13.0-rc.4'
+    /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.5['"]\s*\);/,
+    'functions.php must define STATEMENT_COLLECTOR_THEME_VERSION 0.13.0-rc.5'
   );
 });
 
@@ -202,11 +202,14 @@ test('M14 Storefront Hardening: Scarcity Invariant Across All Theme Templates', 
       assert.ok(!content.includes('back in stock'), `${file} must not contain "back in stock"`);
       assert.ok(!content.includes('join waitlist'), `${file} must not contain "join waitlist"`);
       assert.ok(!content.includes('hurry, only'), `${file} must not contain fake scarcity urgency`);
+      assert.ok(!content.includes('never restocked'), `${file} must not contain "never restocked"`);
     }
   }
 
   const principlePhp = readFileSync(resolve(themeDir, 'template-parts', 'home', 'principle.php'), 'utf8');
-  assert.match(principlePhp, /Crafted\.\s*Limited\.\s*Never Restocked\./i, 'Principle must state "Crafted. Limited. Never Restocked."');
+  assert.match(principlePhp, /CRAFTED\./i, 'Principle must state "CRAFTED."');
+  assert.match(principlePhp, /NOT MASS MADE\./i, 'Principle must state "NOT MASS MADE."');
+  assert.match(principlePhp, /Produced with intention, not volume\./i, 'Principle must state supporting line');
 });
 
 test('M14 Storefront Hardening: Exact Four WooCommerce Template Overrides Boundary', () => {

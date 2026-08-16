@@ -11,7 +11,8 @@ if ( empty( $products ) ) {
 ?>
 <section class="statement-home-products statement-container--wide" aria-labelledby="statement-home-products-title">
 	<header class="statement-home-products__header">
-		<h2 id="statement-home-products-title"><?php esc_html_e( 'Selected Pieces', 'statement-collector-theme' ); ?></h2>
+		<span class="statement-eyebrow"><?php esc_html_e( 'Selected Pieces', 'statement-collector-theme' ); ?></span>
+		<h2 id="statement-home-products-title" class="statement-home-products__title"><?php esc_html_e( 'CURRENT PIECES', 'statement-collector-theme' ); ?></h2>
 	</header>
 
 	<div class="statement-home-products__grid">

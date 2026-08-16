@@ -41,12 +41,10 @@ Updated: 2026-08-16
 
 `https://mystatement.store/` is hosted on WordPress.com Atomic. Core `0.13.0-rc.9` is verified active with Fixtures `0.3.3` active on Atomic, Theme `0.13.0-rc.4` active, Secret Vault initialized (xchacha20-poly1305), and private fixture adopted and recovered (`Product ID: 213`, `Drop ID: 1376`). GitHub repository `https://github.com/rizvee/statement-wp-theme-plugin.git` is synchronized with local `main`.
 
-## Authoritative Release Candidates
-
-- **Theme Candidate**: `statement-collector-theme-0.13.0-rc.4.zip` (44,858 bytes, SHA-256: `d3053c00d3674666cfd870b8557cfde90e70d47be2a6c0af25a0183c31d3e1bf`)
-- **Core Candidate**: `statement-collector-core-0.13.0-rc.9.zip` (66,782 bytes, SHA-256: `6e1ab1ea2571c757852c299631834f4aa5f59040e7afe021e18cb0d803e4c3d4`)
+- **Theme Candidate**: `statement-collector-theme-0.13.0-rc.5.zip` (47,970 bytes, SHA-256: `356979011b1e0e061a81b34f40956e0d59b03539f47112cab36ee651fcd7bf7e`)
+- **Core Candidate**: `statement-collector-core-0.13.0-rc.9.zip` (66,782 bytes, SHA-256: `4acc1dd006a83a1e4b15fcdf955397e55d512f0d3dbf0ca5b955e27506827b83`)
 - **Fixture Candidate**: `statement-integration-fixtures-0.3.3.zip` (27,311 bytes, SHA-256: `97fbb481613fc619434e87b5d81fb3815ab7b690bd2d1e80e94dbf547ec70850`)
 
 ## Verification
 
-M1–M14 Node structural tests (129 subtests across 17 suites pass 100% clean), PHP lint (82 PHP files), `verify-foundation.mjs`, `verify-git-runtime-tracking.mjs`, QA Contract PHP tests (9 assertions), Fixture Bootstrap & QA Gateway Behavior PHP tests (19 assertions), PrivateAccessGate contract tests (14 assertions), DropConfig & Fixture Recovery behavior tests (19 assertions), fixture tool package verifier (`statement-integration-fixtures-0.3.3.zip`), theme package verifier (`statement-collector-theme-0.13.0-rc.4.zip`), and master `packageAll` manifest generation pass cleanly.
+M1–M14 Node structural tests (129 subtests across 17 suites pass 100% clean), PHP lint (82 PHP files), `verify-foundation.mjs`, `verify-git-runtime-tracking.mjs`, QA Contract PHP tests (9 assertions), Fixture Bootstrap & QA Gateway Behavior PHP tests (19 assertions), PrivateAccessGate contract tests (14 assertions), DropConfig & Fixture Recovery behavior tests (19 assertions), fixture tool package verifier, theme package verifier (`statement-collector-theme-0.13.0-rc.5.zip`), and master `packageAll` manifest generation pass cleanly.

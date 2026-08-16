@@ -11,16 +11,22 @@ $drop_url    = isset( $args['drop_url'] ) && is_string( $args['drop_url'] ) && '
 $description = isset( $drop->description ) && is_string( $drop->description ) ? trim( $drop->description ) : '';
 ?>
 <section class="statement-home-drop statement-container--wide" aria-labelledby="statement-home-drop-title">
-	<div class="statement-home-drop__content">
-		<h2 class="statement-home-drop__title" id="statement-home-drop-title"><?php echo esc_html( $drop->name ); ?></h2>
-		<?php if ( '' !== $description ) : ?>
-			<div class="statement-home-drop__description"><?php echo wp_kses_post( wpautop( $description ) ); ?></div>
+	<div class="statement-home-drop__inner">
+		<div class="statement-home-drop__content">
+			<span class="statement-eyebrow"><?php esc_html_e( 'Current Release', 'statement-collector-theme' ); ?></span>
+			<h2 class="statement-home-drop__title" id="statement-home-drop-title"><?php echo esc_html( $drop->name ); ?></h2>
+			<?php if ( '' !== $description ) : ?>
+				<div class="statement-home-drop__description"><?php echo wp_kses_post( wpautop( $description ) ); ?></div>
+			<?php endif; ?>
+		</div>
+
+		<?php if ( null !== $drop_url ) : ?>
+			<div class="statement-home-drop__actions">
+				<a class="statement-home-link statement-home-drop__link" href="<?php echo esc_url( $drop_url ); ?>">
+					<span><?php esc_html_e( 'VIEW DROP', 'statement-collector-theme' ); ?></span>
+					<span aria-hidden="true">&rarr;</span>
+				</a>
+			</div>
 		<?php endif; ?>
 	</div>
-
-	<?php if ( null !== $drop_url ) : ?>
-		<a class="statement-home-link statement-home-drop__link" href="<?php echo esc_url( $drop_url ); ?>">
-			<?php esc_html_e( 'VIEW DROP', 'statement-collector-theme' ); ?> <span aria-hidden="true">&rarr;</span>
-		</a>
-	<?php endif; ?>
 </section>

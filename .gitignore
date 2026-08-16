@@ -47,3 +47,6 @@ wp-content/backups*/
 # Generated packages
 releases/*.zip
 *.zip.tmp
+
+# User intake media folders
+Photo downloaded from whatsapp/

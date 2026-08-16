@@ -16,9 +16,16 @@ function enqueue_assets(): void {
 	$is_checkout = is_statement_checkout();
 
 	wp_enqueue_style(
+		'statement-collector-fonts',
+		'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap',
+		array(),
+		null
+	);
+
+	wp_enqueue_style(
 		'statement-collector-base',
 		get_theme_file_uri( 'assets/css/base.css' ),
-		array(),
+		array( 'statement-collector-fonts' ),
 		STATEMENT_COLLECTOR_THEME_VERSION
 	);
 

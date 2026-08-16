@@ -6,7 +6,7 @@ import { packageTheme } from './package-theme.mjs';
 import { verifyPackage } from './verify-package.mjs';
 
 const root = resolve(import.meta.dirname, '..');
-const themeVersion = '0.13.0-rc.4';
+const themeVersion = '0.13.0-rc.5';
 const pluginVersion = '0.13.0-rc.9';
 
 

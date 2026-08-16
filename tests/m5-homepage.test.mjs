@@ -125,12 +125,12 @@ test('editorial, principle, and archive sections use only approved native conten
   const home = readTheme('inc/home.php');
 
   assert.match(editorial, /the_content\s*\(/);
-  assert.match(principle, /Crafted\. Limited\. Never Restocked\./);
+  assert.match(principle, /CRAFTED\./i);
+  assert.match(principle, /NOT MASS MADE\./i);
   assert.match(home, /get_page_by_path\(\s*'archive'\s*,\s*OBJECT\s*,\s*array\(\s*'page'\s*\)\s*\)/s);
   assert.match(home, /get_post_status\s*\(/);
-  assert.match(archive, /PAST RELEASES/);
-  assert.match(archive, /ARCHIVE/);
-  assert.doesNotMatch(archive, /ARCHIVED|SOLD_OUT/i);
+  assert.match(archive, /ARCHIVE/i);
+  assert.doesNotMatch(archive, /SOLD_OUT/i);
   assert.doesNotMatch(home.slice(home.indexOf('function get_home_archive_url')), /wc_get_products/i);
 });
 

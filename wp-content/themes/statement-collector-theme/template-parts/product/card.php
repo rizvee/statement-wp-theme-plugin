@@ -36,7 +36,13 @@ $image_html    = (int) $product->get_image_id() > 0
 		)
 	)
 	: '';
+$edition_label = class_exists( 'Statement\Collector\Core\PublicApi' )
+	? \Statement\Collector\Core\PublicApi::get_edition_label( $product )
+	: '';
 $price_html = $product->get_price_html();
+$state = class_exists( 'Statement\Collector\Core\PublicApi' )
+	? \Statement\Collector\Core\PublicApi::get_release_state( $product )
+	: 'LIVE';
 ?>
 <article class="statement-piece">
 	<a class="statement-piece__link" href="<?php echo esc_url( $permalink ); ?>">
@@ -46,30 +52,31 @@ $price_html = $product->get_price_html();
 			<?php else : ?>
 				<span class="statement-piece__empty" aria-hidden="true"></span>
 			<?php endif; ?>
+			<?php if ( in_array( $state, array( 'SOLD_OUT', 'ARCHIVED' ), true ) ) : ?>
+				<span class="statement-piece__status-tag">
+					<span class="statement-badge statement-badge--<?php echo esc_attr( strtolower( $state ) ); ?>"><?php echo esc_html( 'SOLD_OUT' === $state ? __( 'SOLD OUT', 'statement-collector-theme' ) : __( 'ARCHIVED', 'statement-collector-theme' ) ); ?></span>
+				</span>
+			<?php endif; ?>
 		</span>
-		<?php if ( 2 === $heading_level ) : ?>
-			<h2 class="statement-piece__name"><?php echo esc_html( $name ); ?></h2>
-		<?php else : ?>
-			<h3 class="statement-piece__name"><?php echo esc_html( $name ); ?></h3>
-		<?php endif; ?>
+		<div class="statement-piece__meta">
+			<div class="statement-piece__header">
+				<?php if ( 2 === $heading_level ) : ?>
+					<h2 class="statement-piece__name"><?php echo esc_html( $name ); ?></h2>
+				<?php else : ?>
+					<h3 class="statement-piece__name"><?php echo esc_html( $name ); ?></h3>
+				<?php endif; ?>
+				<?php if ( is_string( $price_html ) && '' !== $price_html ) : ?>
+					<span class="statement-piece__price"><?php echo wp_kses_post( $price_html ); ?></span>
+				<?php endif; ?>
+			</div>
+
+			<div class="statement-piece__subtext">
+				<?php if ( '' !== $edition_label ) : ?>
+					<span class="statement-piece__edition"><?php echo esc_html( $edition_label ); ?></span>
+				<?php elseif ( '' !== $drop_name ) : ?>
+					<span class="statement-piece__drop"><?php echo esc_html( $drop_name ); ?></span>
+				<?php endif; ?>
+			</div>
+		</div>
 	</a>
-
-	<?php if ( '' !== $drop_name ) : ?>
-		<p class="statement-piece__drop"><?php echo esc_html( $drop_name ); ?></p>
-	<?php endif; ?>
-
-	<?php if ( is_string( $price_html ) && '' !== $price_html ) : ?>
-		<div class="statement-piece__price"><?php echo wp_kses_post( $price_html ); ?></div>
-	<?php endif; ?>
-
-	<?php
-	$state = class_exists( 'Statement\Collector\Core\PublicApi' )
-		? \Statement\Collector\Core\PublicApi::get_release_state( $product )
-		: 'LIVE';
-	if ( in_array( $state, array( 'SOLD_OUT', 'ARCHIVED' ), true ) ) :
-	?>
-		<p class="statement-piece__status">
-			<span class="statement-badge statement-badge--<?php echo esc_attr( strtolower( $state ) ); ?>"><?php echo esc_html( 'SOLD_OUT' === $state ? __( 'SOLD OUT', 'statement-collector-theme' ) : __( 'ARCHIVED', 'statement-collector-theme' ) ); ?></span>
-		</p>
-	<?php endif; ?>
 </article>

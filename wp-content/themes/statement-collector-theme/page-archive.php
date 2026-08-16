@@ -15,10 +15,11 @@ $has_api  = class_exists( PublicApi::class );
 $products = $has_api ? PublicApi::get_archive_products( 24 ) : array();
 $drops    = $has_api ? PublicApi::get_past_drops() : array();
 ?>
-<main id="primary" class="statement-page statement-archive statement-container">
-	<header class="statement-archive__header statement-stack">
-		<h1 class="statement-archive__title"><?php esc_html_e( 'Archive', 'statement-collector-theme' ); ?></h1>
-		<p class="statement-archive__subtitle"><?php esc_html_e( 'Permanent record of past releases and historical pieces. Crafted. Limited. Permanent Archive.', 'statement-collector-theme' ); ?></p>
+<main id="primary" class="statement-page statement-archive statement-container--wide">
+	<header class="statement-archive__header">
+		<span class="statement-eyebrow"><?php esc_html_e( 'Historical Record', 'statement-collector-theme' ); ?></span>
+		<h1 class="statement-archive__title"><?php esc_html_e( 'ARCHIVE', 'statement-collector-theme' ); ?></h1>
+		<p class="statement-archive__subtitle"><?php esc_html_e( 'Past releases and pieces.', 'statement-collector-theme' ); ?></p>
 	</header>
 
 	<?php if ( ! empty( $products ) ) : ?>

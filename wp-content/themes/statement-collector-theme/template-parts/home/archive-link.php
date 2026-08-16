@@ -8,8 +8,11 @@ if ( null === $archive_url ) {
 }
 ?>
 <section class="statement-home-archive statement-container--wide" aria-labelledby="statement-home-archive-title">
-	<h2 id="statement-home-archive-title"><?php esc_html_e( 'PAST RELEASES', 'statement-collector-theme' ); ?></h2>
-	<a class="statement-home-link statement-home-archive__link" href="<?php echo esc_url( $archive_url ); ?>">
-		<?php esc_html_e( 'ARCHIVE', 'statement-collector-theme' ); ?> <span aria-hidden="true">&rarr;</span>
-	</a>
+	<div class="statement-home-archive__inner">
+		<span class="statement-eyebrow"><?php esc_html_e( 'The Archive', 'statement-collector-theme' ); ?></span>
+		<h2 id="statement-home-archive-title" class="statement-home-archive__title"><?php esc_html_e( 'Past pieces remain part of the record.', 'statement-collector-theme' ); ?></h2>
+		<a class="statement-home-link statement-home-archive__link" href="<?php echo esc_url( $archive_url ); ?>">
+			<?php esc_html_e( 'VIEW ARCHIVE', 'statement-collector-theme' ); ?> <span aria-hidden="true">&rarr;</span>
+		</a>
+	</div>
 </section>
