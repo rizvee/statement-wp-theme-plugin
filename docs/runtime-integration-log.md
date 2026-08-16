@@ -195,3 +195,19 @@
   - Created `docs/production-product-import-plan.md` defining schema, variations, AUD pricing, inventory, and scarcity rules for debut Statement Drop 001.
   - Created `docs/drop-001-launch-runbook.md` detailing operational management across Private Access, Live transition, Sold Out lock, and permanent archive.
   - Created `docs/final-release-runbook.md` specifying complete sequential cutover protocol (post-RC backup -> Jetpack scan -> fixture purge & removal -> production configuration -> live card test -> stable release tagging -> public launch).
+
+### `M13-EVIDENCE-03`: Fixtures 0.3.3 Live Atomic Deployment & Real Expiry/Reminder Runtime Verification
+
+- **Fixtures 0.3.3 Active on Atomic**: Verified `Statement Integration Fixtures (v0.3.3)` installed and active on `https://mystatement.store/`.
+- **Private Access Test Fixture Adoption**: Successfully adopted and recovered test fixture (`Product ID: 213`, `Drop ID: 1376`).
+- **Secret Vault & Identity Status**: Secret Provider: `ENCRYPTED VAULT`, Status: `INITIALIZED`, Identity Key: `CONFIGURED`, Rate-Limit Key: `CONFIGURED`.
+- **Expiry Rules Runtime Verification (`RUNTIME_PASS`)**:
+  - Executed `RUN EXPIRY TEST` on Atomic.
+  - Verified: "Expiry rules verified: Earlier close dynamically shortened effective authorization; later close did not extend immutable grant; original Drop config restored clean."
+  - Proved: `EARLIER_CLOSE_SHORTENED = YES`, `LATER_CLOSE_EXTENDED_GRANT = NO`, `ORIGINAL_CONFIG_RESTORED = YES`.
+- **Reminder Scheduler Runtime Verification (`RUNTIME_PASS`)**:
+  - Executed `RUN REMINDER TEST` on Atomic.
+  - Verified: "Reminder Scheduler verified: Action scheduled cleanly and auto-cancelled upon Add to Bag with valid session context."
+- **Production Pre-Cutover Verification Scripts**:
+  - Created `scripts/verify-production-clean-state.mjs` (read-only verification of post-purge clean state).
+  - Created `scripts/test-production-readiness.mjs` (read-only smoke test across storefront routes: 6/6 passed, 0 fatals).

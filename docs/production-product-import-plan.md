@@ -8,101 +8,68 @@ All production product creation strictly adheres to the core domain architecture
 - **Core Scarcity Invariant**: `ONE RELEASE → LIMITED AVAILABILITY → SOLD OUT → NEVER RESTOCKED → PERMANENT ARCHIVE`
 - **Zero Urgency Fabrication**: No fake countdown timers, no restock notifications, no waitlist buttons, no artificially generated stock count alerts.
 - **Durable Provenance Snapshotting**: Complete frozen metadata capture at the moment of checkout.
+- **Business Input Separation**: All commercial values (exact titles, prices, inventory counts, size matrices, photography assets) must be supplied via `docs/drop-001-production-input.md` before live import.
 
 ---
 
-## 2. Drop 001 Classification & Configuration
+## 2. Drop 001 Specification Schema
 
-| Field | Setting | Value / Format |
+| Field | Setting | Value / Status |
 | --- | --- | --- |
-| **Drop Name** | Name | `Statement Drop 001` |
-| **Drop Slug** | Slug | `drop-001` |
+| **Drop Name** | Name | `Statement Drop 001` (Or brand-specified title) |
+| **Drop Slug** | Slug | `drop-001` (Or brand-specified slug) |
 | **Taxonomy** | Taxonomy | `statement_drop` |
-| **Private Access Window** | Duration | 7 Days (e.g., `duration = 7`, `unit = days`) |
-| **Closes At (UTC)** | Target Datetime | Explicit UTC ISO string (e.g., `2026-09-01 00:00:00 UTC`) |
+| **Private Access Window** | Duration | `BUSINESS_INPUT_REQUIRED` (e.g., 3, 5, or 7 Days) |
+| **Closes At (UTC)** | Target Datetime | `BUSINESS_INPUT_REQUIRED` (Explicit UTC ISO string, e.g., `YYYY-MM-DD HH:MM:SS UTC`) |
 | **Send Access Email** | Email Delivery | `yes` (dispatches branded `EmailAccessGranted` with return token) |
-| **Reminder Email** | Lifecycle Delay | `yes`, 24 hours prior to access window close |
+| **Reminder Email** | Lifecycle Delay | `yes` / `no` (`BUSINESS_INPUT_REQUIRED`) |
 
 ---
 
-## 3. Product Catalog Specification & Mapping
+## 3. Product Catalog Specification Schema (Per Piece)
 
-### Piece 01: Statement Monogram Overshirt (Variable Piece)
+Each piece in Drop 001 must define the following required fields before creation:
 
-| Attribute | Value / Specification |
-| --- | --- |
-| **Product Title** | `Statement Monogram Overshirt` |
-| **Product Slug** | `statement-monogram-overshirt` |
-| **Product Type** | Variable Product (`variable`) |
-| **Initial Release State** | `PRIVATE_ACCESS` (`_statement_release_state = 'PRIVATE_ACCESS'`) |
-| **Edition Label** | `Drop 001 Edition` (`_statement_edition_label = 'Drop 001 Edition'`) |
-| **Drop Association** | Assigned to `statement_drop`: `drop-001` |
-| **Base Price (AUD)** | `$340.00` (`_price = 340`, `_regular_price = 340`) |
-| **Manage Stock** | `yes` (Strict physical inventory allocation) |
-| **Total Allocation** | 50 Units total across sizes |
-| **Variations** | Attribute: `pa_size` (Values: `Small` [10], `Medium` [18], `Large` [15], `X-Large` [7]) |
-| **Variation SKUs** | `STMT-D01-MOS-S`, `STMT-D01-MOS-M`, `STMT-D01-MOS-L`, `STMT-D01-MOS-XL` |
-| **Featured Image** | 4:5 portrait high-resolution photography with descriptive alt text (`Statement Monogram Overshirt in Japanese heavy cotton twill`) |
-| **Gallery Images** | Close-up texture, cuff detailing, back silhouette |
-| **Short Description** | "Structured Japanese cotton twill with bespoke monogram jacquard weave. Crafted for a relaxed architectural silhouette." |
-| **SEO Meta** | Title: `Statement Monogram Overshirt — Drop 001 | Statement`, Description: `Crafted in limited quantity. Piece 01 of Statement Drop 001.` |
-
----
-
-### Piece 02: Statement Tailored Trouser (Variable Piece)
-
-| Attribute | Value / Specification |
-| --- | --- |
-| **Product Title** | `Statement Tailored Trouser` |
-| **Product Slug** | `statement-tailored-trouser` |
-| **Product Type** | Variable Product (`variable`) |
-| **Initial Release State** | `PRIVATE_ACCESS` (`_statement_release_state = 'PRIVATE_ACCESS'`) |
-| **Edition Label** | `Drop 001 Edition` (`_statement_edition_label = 'Drop 001 Edition'`) |
-| **Drop Association** | Assigned to `statement_drop`: `drop-001` |
-| **Base Price (AUD)** | `$280.00` (`_price = 280`, `_regular_price = 280`) |
-| **Manage Stock** | `yes` |
-| **Total Allocation** | 40 Units total across sizes |
-| **Variations** | Attribute: `pa_size` (Values: `30` [8], `32` [14], `34` [12], `36` [6]) |
-| **Variation SKUs** | `STMT-D01-STR-30`, `STMT-D01-STR-32`, `STMT-D01-STR-34`, `STMT-D01-STR-36` |
-| **Featured Image** | 4:5 portrait clean studio photography |
-| **Short Description** | "High-twist virgin wool tailored trouser with clean single pleat and deep tab closure." |
-
----
-
-### Piece 03: Statement Collector Silk Scarf (Simple Piece)
-
-| Attribute | Value / Specification |
-| --- | --- |
-| **Product Title** | `Statement Collector Silk Scarf` |
-| **Product Slug** | `statement-collector-silk-scarf` |
-| **Product Type** | Simple Product (`simple`) |
-| **Initial Release State** | `PRIVATE_ACCESS` (`_statement_release_state = 'PRIVATE_ACCESS'`) |
-| **Edition Label** | `Drop 001 Edition` (`_statement_edition_label = 'Drop 001 Edition'`) |
-| **Drop Association** | Assigned to `statement_drop`: `drop-001` |
-| **Price (AUD)** | `$160.00` (`_price = 160`, `_regular_price = 160`) |
-| **Manage Stock** | `yes` |
-| **Total Allocation** | 30 Units |
-| **SKU** | `STMT-D01-CSS-01` |
-| **Featured Image** | 4:5 portrait artwork photography |
-| **Short Description** | "100% Mulberry silk twill hand-rolled scarf featuring architectural line illustrations from Drop 001." |
+```
+Piece [N]: [PRODUCT_TITLE]
+--------------------------------------------------------------------------------
+1. Product Title:       [BUSINESS_INPUT_REQUIRED] (e.g. "Statement Monogram Overshirt")
+2. Product Slug:        [BUSINESS_INPUT_REQUIRED] (e.g. "statement-monogram-overshirt")
+3. Product Type:        simple | variable
+4. Initial State:       PRIVATE_ACCESS (_statement_release_state = 'PRIVATE_ACCESS')
+5. Edition Label:       [BUSINESS_INPUT_REQUIRED] (e.g. "Drop 001 Edition")
+6. Drop Association:    Assigned to statement_drop term (e.g. "drop-001")
+7. Price (AUD):         [BUSINESS_INPUT_REQUIRED] (e.g. $340.00 AUD)
+8. Stock Management:    yes (Physical allocation managed at product or variation level)
+9. Total Inventory:     [BUSINESS_INPUT_REQUIRED] (Total units allocated to this release)
+10. Variations:         If variable: attribute pa_size (e.g. Small, Medium, Large, X-Large)
+11. Variation SKUs:     If variable: [SKU-S, SKU-M, SKU-L, SKU-XL]
+12. Featured Image:     4:5 portrait high-resolution photography asset
+13. Gallery Images:     Close-up texture, silhouette, back view photography assets
+14. Short Description:  [BUSINESS_INPUT_REQUIRED] (Editorial composition & craft details)
+15. SEO Title:          [BUSINESS_INPUT_REQUIRED]
+16. SEO Description:    [BUSINESS_INPUT_REQUIRED]
+17. Alt Text:           Descriptive image alt text
+--------------------------------------------------------------------------------
+```
 
 ---
 
 ## 4. Import & Setup Procedure
 
 1. **Pre-Import Verification**:
-   - Ensure `statement-integration-fixtures` is completely uninstalled.
+   - Ensure `statement-integration-fixtures` has been completely purged and uninstalled.
    - Confirm WooCommerce currency is set to `AUD` ($).
-   - Ensure Secret Vault is initialized and functional.
+   - Ensure Secret Vault is initialized and functional on Atomic hosting.
 2. **Create Drop Taxonomy Term**:
-   - In WP Admin -> Products -> Drops (or via WP CLI): Create term `Statement Drop 001` (slug: `drop-001`).
-   - Set term meta: `_statement_private_access_duration = 7`, `_statement_private_access_duration_unit = days`, `_statement_private_access_closes_at = [DATETIME UTC]`, `_statement_send_access_email = yes`.
+   - In WP Admin -> Products -> Drops (or via WP CLI): Create term for Drop 001.
+   - Set validated term meta: `_statement_private_access_duration`, `_statement_private_access_duration_unit`, `_statement_private_access_closes_at`, `_statement_send_access_email`.
 3. **Create Products**:
    - Upload high-resolution 4:5 portrait media assets to WP Media Library.
    - Create products with exact SKUs, variation attributes, AUD prices, and inventory counts.
    - Set custom field `_statement_release_state` to `PRIVATE_ACCESS`.
-   - Set custom field `_statement_edition_label` to `Drop 001 Edition`.
-   - Assign to Drop `Statement Drop 001`.
+   - Set custom field `_statement_edition_label` to the release edition string.
+   - Assign to the Drop taxonomy term.
 4. **Verification Gate**:
    - Verify products are completely invisible to anonymous visitors on `/shop/`, `/`, REST API, and Store API.
-   - Verify `/drop/drop-001/` renders the clean, branded Private Access Gate.
+   - Verify `/drop/[slug]/` renders the clean, branded Private Access Gate.

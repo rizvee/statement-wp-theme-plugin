@@ -253,25 +253,28 @@ Status: Phase 1, Phase 2, Phase 3A, Phase 4A, Phase 5A, Phase 5B1, & Phase 5B2.1
 | Admin Re-Grant Restoration | `RUNTIME_PASS` | Canonical admin re-grant created with `supersedes_grant_id`; new active session issued |
 | Checkout Email Mismatch Rejection | `RUNTIME_PASS` | Non-matching checkout billing email rejected by Cart/Checkout Integrity |
 | QA Payment Gateway Availability | `RUNTIME_PASS` | `TEST ONLY — NO PAYMENT (Statement QA)` available for exact test SKU `TEST-PD01-PAJ` |
+| Expiry Normalization Runtime (0.3.3) | `RUNTIME_PASS` | Verified live on Atomic: Earlier close shortened effective expiry; later close kept grant expiry invariant; Drop config restored clean |
+| Reminder Scheduler Runtime (0.3.3) | `RUNTIME_PASS` | Verified live on Atomic: Reminder action scheduled cleanly and auto-cancelled upon Add to Bag with valid session context |
+| Access Email Dispatch | `RUNTIME_PENDING` | `RUN ACCESS EMAIL TEST` available in Fixtures 0.3.3 admin suite |
+| Terminal Lifecycle Revalidation | `RUNTIME_PENDING` | `REVALIDATE TERMINAL LIFECYCLE` available in Fixtures 0.3.3 admin suite |
 | Controlled QA Order Execution | `RUNTIME_PENDING` | Ready for execution via `scripts/test-private-access-order.mjs` / WP checkout on active session |
 | Exactly-Once Stock Reduction | `RUNTIME_PENDING` | Hardened in gateway `process_payment()` via WooCommerce standard `payment_complete()` |
 | M10 Order Authorization Audit | `RUNTIME_PENDING` | Ready for verification via `verify_last_order()` upon order placement |
 | M12 Frozen Provenance Snapshot | `RUNTIME_PENDING` | Ready for verification via `verify_last_order()` upon order placement |
 | Provenance Immutability | `RUNTIME_PENDING` | Ready for verification via `test_provenance_immutability()` upon order placement |
-| Order Received / My Account UI | `RUNTIME_PENDING` | Presentation metadata verified via server-side contract |
-| Access Email Dispatch | `RUNTIME_PENDING` | Dedicated `RUN ACCESS EMAIL TEST` in Fixtures 0.3.3 |
-| Terminal Lifecycle Revalidation | `RUNTIME_PENDING` | Dedicated `REVALIDATE TERMINAL LIFECYCLE` in Fixtures 0.3.3 |
+| Order Received / My Account UI | `RUNTIME_PENDING` | Presentation metadata verified via server-side contract; visual confirmation pending order placement |
 
-**Harness Diagnostics in 0.3.2 & Fixes in 0.3.3:**
-1. **Expiry Test Normalization in 0.3.3**: `DropConfig::save_config()` checks `$config['closes_at']` (formatted date string or timestamp). In 0.3.2, `run_expiry_test()` mutated only `closes_at_ts`, leaving `closes_at` with the unchanged original date string. In 0.3.3, both `closes_at` (formatted UTC string) and `closes_at_ts` are updated, ensuring deterministic persistence and reading from term meta.
-2. **Access Email QA Action Added in 0.3.3**: Added `run_access_email_test()` to temporarily enable `send_access_email = yes`, trigger single canonical `EmailAccessGranted::trigger()`, assert return token creation in `wp_statement_access_tokens`, and restore original DropConfig in `finally`.
-3. **Terminal Lifecycle Revalidation in 0.3.3**: Added `run_terminal_lifecycle_test()` to verify `TEST — Terminal Jacket` (`TEST-TJ01-ARC`) cannot be purchased in `SOLD_OUT`, advance to `ARCHIVED`, confirm unpurchasability regardless of stock, and assert illegal reversal to `LIVE` is rejected.
+**Harness Diagnostics in 0.3.2 & Fixes in 0.3.3 (Verified Live):**
+1. **Expiry Test Normalization in 0.3.3**: Verified `RUNTIME_PASS` on Atomic: Both `closes_at` (formatted UTC string) and `closes_at_ts` are updated, ensuring deterministic persistence and reading from term meta.
+2. **Reminder Scheduler in 0.3.3**: Verified `RUNTIME_PASS` on Atomic: Scheduled action auto-cancels upon cart placement.
+3. **Access Email QA Action in 0.3.3**: Added `run_access_email_test()` to temporarily enable `send_access_email = yes`, trigger single canonical `EmailAccessGranted::trigger()`, assert return token creation, and restore config.
+4. **Terminal Lifecycle Revalidation in 0.3.3**: Added `run_terminal_lifecycle_test()` to advance `TEST — Terminal Jacket` (`TEST-TJ01-ARC`) to `ARCHIVED`, confirm unpurchasability regardless of stock, and assert illegal reversal to `LIVE` is rejected.
 
 **Authoritative Release Candidates & Verification:**
 - Package: `dist/statement-integration-fixtures-0.3.3.zip` (27,311 bytes, SHA-256: `97fbb481613fc619434e87b5d81fb3815ab7b690bd2d1e80e94dbf547ec70850`).
 - Package: `dist/statement-collector-theme-0.13.0-rc.4.zip` (44,858 bytes, SHA-256: `d3053c00d3674666cfd870b8557cfde90e70d47be2a6c0af25a0183c31d3e1bf`).
 - Package: `dist/statement-collector-core-0.13.0-rc.9.zip` (66,782 bytes, SHA-256: `6e1ab1ea2571c757852c299631834f4aa5f59040e7afe021e18cb0d803e4c3d4`).
-- 82 PHP files linted clean, 130 Node subtests across 17 suites pass (100% clean), 19 fixture bootstrap assertions pass, 9 QA contract assertions pass.
+- 82 PHP files linted clean, 129 Node subtests across 17 suites pass (100% clean), 19 fixture bootstrap assertions pass, 9 QA contract assertions pass.
 
 ## M14 — Storefront Hardening & Luxury Polish
 
@@ -302,7 +305,15 @@ Status: started (2026-08-16)
 - [x] Transactional & Access Email Readiness: Created `docs/email-launch-readiness.md` detailing complete 9-email transactional matrix, deliverability guidelines, and unsubscribe separation.
 - [x] Legal & Content Gap Inventory: Created `docs/legal-content-gap-inventory.md` classifying required statutory Australian Consumer Law policies and editorial content requirements.
 - [x] Production Plugin Stack Audit: Created `docs/production-plugin-audit.md` classifying all plugins on Atomic into Keep, Remove After Migration (Elementor, Fixtures), and Review.
-- [x] Production Product Import Plan: Created `docs/production-product-import-plan.md` defining schema, variations, AUD pricing, inventory, and scarcity rules for Drop 001.
+- [x] Production Product Import Plan: Created `docs/production-product-import-plan.md` defining input-driven schema, variations, AUD pricing, inventory, and scarcity rules for Drop 001.
+- [x] Drop 001 Production Intake Spec: Created `docs/drop-001-production-input.md` fillable template for operator commercial and piece specifications.
+- [x] Drop 001 Media Asset Map: Created `docs/drop-001-media-map.md` mapping role-based 4:5 portrait media assets.
+- [x] Legal Content Input Pack: Created `docs/legal-content-input.md` for corporate entity, terms, returns, and privacy policies.
+- [x] Shipping Configuration Input Pack: Created `docs/shipping-configuration-input.md` for Australia Post carrier options and flat rates.
+- [x] Payment Configuration Input Pack: Created `docs/payment-configuration-input.md` for WooPayments Stripe onboarding and descriptors.
+- [x] SEO Production Input Pack: Created `docs/seo-production-input.md` for global metadata, OpenGraph cards, and indexing launch timings.
+- [x] Objective Launch Gate Matrix: Created `docs/launch-gate-matrix.md` detailing 12-gate assessment from Gate A to Gate L.
+- [x] Production Verification Scripts: Created `scripts/verify-production-clean-state.mjs` and `scripts/test-production-readiness.mjs`.
 - [x] Drop 001 Launch Runbook: Created `docs/drop-001-launch-runbook.md` defining operational lifecycle management from Private Access through SOLD OUT and permanent archive.
 - [x] Final Release Runbook: Created `docs/final-release-runbook.md` detailing exact sequential cutover protocol for live production deployment.
 - [x] Authoritative Release Candidate Manifest: Created `docs/final-rc-manifest.md` documenting verified checksums and deployment prerequisites.
