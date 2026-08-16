@@ -177,3 +177,21 @@
   - Core Candidate `0.13.0-rc.9`: `statement-collector-core-0.13.0-rc.9.zip` (66,782 bytes, SHA-256: `6e1ab1ea2571c757852c299631834f4aa5f59040e7afe021e18cb0d803e4c3d4`).
   - Fixtures Tool `0.3.3`: `statement-integration-fixtures-0.3.3.zip` (27,311 bytes, SHA-256: `97fbb481613fc619434e87b5d81fb3815ab7b690bd2d1e80e94dbf547ec70850`).
 - **Test Suite Expansion**: Comprehensive 14-test suite in `tests/m14-theme-hardening.test.mjs` verifying design tokens, fallback nav, dialog a11y, search privacy, homepage LIVE-only bounds, catalog card aspect ratio, archive permanence, PDP lifecycle locks, cart 320px overflow protection, checkout hooks, order provenance presentation, scarcity invariant, and exact four WooCommerce template overrides.
+
+### `M15-EVIDENCE-01`: Live Storefront QA & Production Preparation Runbooks
+
+- **Live Storefront QA Execution**: Audited `/`, `/shop/`, `/product/test-studio-overshirt/`, `/product/test-monogram-jacket/`, `/product/test-terminal-jacket/`, `/drop/test-private-drop-01/`, `/product/test-private-access-jacket/`, `/cart/`, and `/checkout/` on Atomic.
+- **Anonymous Security Boundary Re-verified**:
+  - `Store API /wc/store/v1/products`: Zero private product leakage (`test-private-access-jacket` absent).
+  - `REST API /wp/v2/product`: Zero private product leakage.
+  - `Frontend Search /?s=...`: Zero private product cards in loop.
+  - `Private PDP /product/test-private-access-jacket/`: Verified true HTTP 404.
+  - `Private Drop /drop/test-private-drop-01/`: Minimal access gate rendered without product leakage.
+- **Live PDP Verification**:
+  - Simple PDP (`test-studio-overshirt`): HTTP 200, Add to Bag present.
+  - Variable PDP (`test-monogram-jacket`): HTTP 200, WooCommerce variation form active, Add to Bag present.
+  - Terminal PDP (`test-terminal-jacket`): HTTP 200, Add to Bag absent, Sold Out / Archived indicators active.
+- **Production Launch Runbook Suite**:
+  - Created `docs/production-product-import-plan.md` defining schema, variations, AUD pricing, inventory, and scarcity rules for debut Statement Drop 001.
+  - Created `docs/drop-001-launch-runbook.md` detailing operational management across Private Access, Live transition, Sold Out lock, and permanent archive.
+  - Created `docs/final-release-runbook.md` specifying complete sequential cutover protocol (post-RC backup -> Jetpack scan -> fixture purge & removal -> production configuration -> live card test -> stable release tagging -> public launch).

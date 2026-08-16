@@ -302,5 +302,8 @@ Status: started (2026-08-16)
 - [x] Transactional & Access Email Readiness: Created `docs/email-launch-readiness.md` detailing complete 9-email transactional matrix, deliverability guidelines, and unsubscribe separation.
 - [x] Legal & Content Gap Inventory: Created `docs/legal-content-gap-inventory.md` classifying required statutory Australian Consumer Law policies and editorial content requirements.
 - [x] Production Plugin Stack Audit: Created `docs/production-plugin-audit.md` classifying all plugins on Atomic into Keep, Remove After Migration (Elementor, Fixtures), and Review.
+- [x] Production Product Import Plan: Created `docs/production-product-import-plan.md` defining schema, variations, AUD pricing, inventory, and scarcity rules for Drop 001.
+- [x] Drop 001 Launch Runbook: Created `docs/drop-001-launch-runbook.md` defining operational lifecycle management from Private Access through SOLD OUT and permanent archive.
+- [x] Final Release Runbook: Created `docs/final-release-runbook.md` detailing exact sequential cutover protocol for live production deployment.
 - [x] Authoritative Release Candidate Manifest: Created `docs/final-rc-manifest.md` documenting verified checksums and deployment prerequisites.
-- [ ] Post-Deployment Runtime Execution: Awaiting operator manual upload on Atomic to complete final M13 runtime gates.
+- [ ] Production Cutover Execution: Awaiting operator execution of post-RC backup, Jetpack scan, fixture cleanup, and Drop 001 product import.
