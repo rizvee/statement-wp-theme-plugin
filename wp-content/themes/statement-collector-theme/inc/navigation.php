@@ -56,6 +56,13 @@ function get_shop_url(): string {
 }
 
 /**
+ * Return the Statement Drops index page URL.
+ */
+function get_drops_url(): string {
+	return home_url( '/drops/' );
+}
+
+/**
  * Return the Statement Archive page URL.
  */
 function get_archive_url(): string {
@@ -83,6 +90,7 @@ function render_primary_navigation(): void {
 		<?php else : ?>
 			<ul class="statement-navigation-list">
 				<li><a href="<?php echo esc_url( get_shop_url() ); ?>"><?php esc_html_e( 'SHOP', 'statement-collector-theme' ); ?></a></li>
+				<li><a href="<?php echo esc_url( get_drops_url() ); ?>"><?php esc_html_e( 'DROPS', 'statement-collector-theme' ); ?></a></li>
 				<li><a href="<?php echo esc_url( get_archive_url() ); ?>"><?php esc_html_e( 'ARCHIVE', 'statement-collector-theme' ); ?></a></li>
 			</ul>
 		<?php endif; ?>
@@ -111,7 +119,11 @@ function render_mobile_primary_navigation(): void {
 		<?php else : ?>
 			<ul class="statement-mobile-navigation__list">
 				<li><a href="<?php echo esc_url( get_shop_url() ); ?>"><?php esc_html_e( 'SHOP', 'statement-collector-theme' ); ?></a></li>
+				<li><a href="<?php echo esc_url( get_drops_url() ); ?>"><?php esc_html_e( 'DROPS', 'statement-collector-theme' ); ?></a></li>
 				<li><a href="<?php echo esc_url( get_archive_url() ); ?>"><?php esc_html_e( 'ARCHIVE', 'statement-collector-theme' ); ?></a></li>
+				<?php if ( null !== get_account_url() ) : ?>
+					<li><a href="<?php echo esc_url( get_account_url() ); ?>"><?php esc_html_e( 'ACCOUNT', 'statement-collector-theme' ); ?></a></li>
+				<?php endif; ?>
 			</ul>
 		<?php endif; ?>
 	</nav>
@@ -119,16 +131,17 @@ function render_mobile_primary_navigation(): void {
 }
 
 /**
- * Render the native custom logo or an escaped site-name fallback.
+ * Render site brand mark and title.
  */
 function render_site_brand(): void {
+	$site_name = get_bloginfo( 'name' );
 	if ( function_exists( 'has_custom_logo' ) && has_custom_logo() ) {
 		the_custom_logo();
-		return;
+	} else {
+		?>
+		<a class="statement-brand-link" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+			<span class="statement-brand-title"><?php echo esc_html( $site_name ); ?></span>
+		</a>
+		<?php
 	}
-	?>
-	<a class="statement-brand__fallback" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
-		<?php echo esc_html( get_bloginfo( 'name' ) ); ?>
-	</a>
-	<?php
 }

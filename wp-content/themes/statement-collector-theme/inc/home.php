@@ -49,8 +49,18 @@ function get_home_release_data(): array {
 			continue;
 		}
 
+		$sku  = is_callable( array( $product, 'get_sku' ) ) ? (string) $product->get_sku() : '';
+		$name = is_callable( array( $product, 'get_name' ) ) ? (string) $product->get_name() : '';
+		if ( 0 === strpos( $sku, 'TEST-' ) || 0 === strpos( $name, 'TEST-' ) ) {
+			continue;
+		}
+
 		$drop = PublicApi::get_drop( $product );
 		if ( ! is_object( $drop ) || ! isset( $drop->term_id ) || (int) $drop->term_id < 1 ) {
+			continue;
+		}
+
+		if ( isset( $drop->slug ) && 0 === strpos( (string) $drop->slug, 'test-' ) ) {
 			continue;
 		}
 

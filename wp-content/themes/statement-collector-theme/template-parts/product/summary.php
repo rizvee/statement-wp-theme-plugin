@@ -40,7 +40,10 @@ $is_terminal    = in_array( $state, array( 'SOLD_OUT', 'ARCHIVED' ), true );
 				<span class="statement-badge statement-badge--<?php echo esc_attr( strtolower( $state ) ); ?>"><?php echo esc_html( 'SOLD_OUT' === $state ? __( 'SOLD OUT', 'statement-collector-theme' ) : __( 'ARCHIVED', 'statement-collector-theme' ) ); ?></span>
 			</div>
 		<?php else : ?>
-			<div class="statement-product__purchase"><?php woocommerce_template_single_add_to_cart(); ?></div>
+			<div class="statement-product__purchase">
+				<?php woocommerce_template_single_add_to_cart(); ?>
+				<?php get_template_part( 'template-parts/product/size-guide' ); ?>
+			</div>
 		<?php endif; ?>
 	</div>
 </section>

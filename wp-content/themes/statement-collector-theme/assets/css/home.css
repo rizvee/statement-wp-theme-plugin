@@ -216,6 +216,157 @@
 	}
 }
 
+/* SECTION 2.5: EDITORIAL LOOKBOOK GRID */
+.statement-home-lookbook {
+	padding-block: clamp(4rem, 8vw, 10rem);
+	border-block-end: 1px solid var(--wp--preset--color--border-grey);
+}
+
+.statement-home-lookbook__header {
+	margin-block-end: clamp(2rem, 4vw, 4rem);
+	text-align: center;
+}
+
+.statement-home-lookbook__title {
+	margin: 0.5rem 0 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(2rem, 1.5rem + 2.5vw, 3.5rem);
+	font-weight: 400;
+	letter-spacing: -0.01em;
+}
+
+.statement-home-lookbook__grid {
+	display: grid;
+	gap: clamp(1.5rem, 3vw, 3rem);
+	grid-template-columns: 1fr;
+}
+
+@media (min-width: 48rem) {
+	.statement-home-lookbook__grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.statement-home-lookbook__item--offset {
+		margin-block-start: clamp(2rem, 4vw, 5rem);
+	}
+}
+
+@media (min-width: 64rem) {
+	.statement-home-lookbook__grid {
+		grid-template-columns: 1.2fr 0.8fr 0.8fr 1.2fr;
+		align-items: start;
+	}
+}
+
+.statement-home-lookbook__media {
+	position: relative;
+	overflow: hidden;
+	aspect-ratio: 4 / 5;
+	background: var(--wp--preset--color--gallery-ivory);
+}
+
+.statement-home-lookbook__image {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+	transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.statement-home-lookbook__item:hover .statement-home-lookbook__image {
+	transform: scale(1.02);
+}
+
+.statement-home-lookbook__meta {
+	padding-block-start: 0.75rem;
+}
+
+.statement-home-lookbook__label {
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.6875rem;
+	font-weight: 500;
+	letter-spacing: 0.15em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--soft-graphite);
+}
+
+/* SECTION 3.5: THE OBJECT & BRAND ARTIFACTS */
+.statement-home-object {
+	padding-block: clamp(4rem, 8vw, 10rem);
+	background: var(--wp--preset--color--gallery-ivory);
+	border-block-end: 1px solid var(--wp--preset--color--border-grey);
+}
+
+.statement-home-object__header {
+	margin-block-end: clamp(2rem, 4vw, 4rem);
+	text-align: center;
+}
+
+.statement-home-object__title {
+	margin: 0.5rem 0 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(2rem, 1.5rem + 2.5vw, 3.5rem);
+	font-weight: 400;
+	letter-spacing: -0.01em;
+}
+
+.statement-home-object__grid {
+	display: grid;
+	gap: clamp(1.5rem, 3vw, 3rem);
+	grid-template-columns: 1fr;
+}
+
+@media (min-width: 48rem) {
+	.statement-home-object__grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+.statement-home-object__card {
+	display: flex;
+	flex-direction: column;
+}
+
+.statement-home-object__media {
+	position: relative;
+	overflow: hidden;
+	aspect-ratio: 4 / 5;
+	background: var(--wp--preset--color--warm-white);
+}
+
+.statement-home-object__image {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+	transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.statement-home-object__card:hover .statement-home-object__image {
+	transform: scale(1.02);
+}
+
+.statement-home-object__content {
+	padding-block-start: 1rem;
+}
+
+.statement-home-object__label {
+	display: block;
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.15em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--near-black);
+	margin-block-end: 0.375rem;
+}
+
+.statement-home-object__desc {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.8125rem;
+	line-height: 1.5;
+	color: var(--wp--preset--color--soft-graphite);
+}
+
 /* SECTION 4: BRAND PRINCIPLE MANIFESTO */
 .statement-home-principle {
 	padding-block: clamp(6rem, 12vw, 15rem);

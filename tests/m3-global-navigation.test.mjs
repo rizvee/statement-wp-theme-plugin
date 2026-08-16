@@ -125,7 +125,7 @@ test('footer delegates a restrained brand and WordPress-driven menu', () => {
   assert.match(siteFooter, /wp_nav_menu\s*\(/);
   assert.match(siteFooter, /['"]theme_location['"]\s*=>\s*['"]footer['"]/);
   assert.match(siteFooter, /['"]fallback_cb['"]\s*=>\s*false/);
-  assert.match(siteFooter, /Crafted\. Limited\. Never Restocked\./);
+  assert.match(siteFooter, /Crafted\. Not Mass Made\./i);
   assert.doesNotMatch(siteFooter, /mailto:|tel:|newsletter|street address|privacy policy|terms of service/i);
 });
 

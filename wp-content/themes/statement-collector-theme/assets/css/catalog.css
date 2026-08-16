@@ -206,3 +206,166 @@
 	background: var(--wp--preset--color--ink-navy);
 	border-color: var(--wp--preset--color--ink-navy);
 }
+
+/* DROPS INDEX PAGE */
+.statement-drops-page {
+	padding-block: clamp(3rem, 6vw, 7rem) clamp(5rem, 8vw, 9rem);
+}
+
+.statement-drops-page__header {
+	margin-block-end: clamp(3rem, 5vw, 5rem);
+	max-inline-size: 48rem;
+}
+
+.statement-drops-page__title {
+	margin: 0 0 var(--wp--preset--spacing--20);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(2.5rem, 1.8rem + 3.5vw, 5rem);
+	font-weight: 400;
+	line-height: 1;
+	letter-spacing: -0.02em;
+	text-transform: uppercase;
+}
+
+.statement-drops-page__subtitle {
+	margin: 0;
+	color: var(--wp--preset--color--soft-graphite);
+	font-family: var(--wp--preset--font-family--display);
+	font-style: italic;
+	font-size: clamp(1.125rem, 1rem + 0.5vw, 1.5rem);
+}
+
+.statement-drops-current {
+	margin-block-end: clamp(4rem, 8vw, 8rem);
+}
+
+.statement-drops-current__card {
+	display: grid;
+	gap: clamp(2rem, 4vw, 5rem);
+	grid-template-columns: 1fr;
+	align-items: center;
+	padding-block-start: clamp(1.5rem, 3vw, 2.5rem);
+	border-block-start: 1px solid var(--wp--preset--color--border-grey);
+}
+
+@media (min-width: 48rem) {
+	.statement-drops-current__card {
+		grid-template-columns: 1.1fr 0.9fr;
+	}
+}
+
+.statement-drops-current__media {
+	position: relative;
+	overflow: hidden;
+	aspect-ratio: 4 / 5;
+	background: var(--wp--preset--color--gallery-ivory);
+}
+
+.statement-drops-current__image {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+	transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.statement-drops-current__card:hover .statement-drops-current__image {
+	transform: scale(1.02);
+}
+
+.statement-drops-current__content {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+.statement-drops-current__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(2rem, 1.5rem + 2vw, 3.75rem);
+	font-weight: 400;
+	line-height: 1.05;
+	letter-spacing: -0.01em;
+	text-transform: uppercase;
+}
+
+.statement-drops-current__desc {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem);
+	line-height: 1.6;
+	color: var(--wp--preset--color--soft-graphite);
+}
+
+.statement-drops-current__actions {
+	padding-block-start: 0.5rem;
+}
+
+.statement-drops-current__cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.75rem;
+	min-block-size: 3.25rem;
+	padding: 0.875rem 2.25rem;
+	border: 1px solid var(--wp--preset--color--near-black);
+	background: var(--wp--preset--color--near-black);
+	color: var(--wp--preset--color--warm-white);
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.2em;
+	text-decoration: none;
+	text-transform: uppercase;
+	transition: all 250ms ease;
+}
+
+.statement-drops-current__cta:hover {
+	background: var(--wp--preset--color--ink-navy);
+	border-color: var(--wp--preset--color--ink-navy);
+}
+
+.statement-drops-past {
+	border-block-start: 1px solid var(--wp--preset--color--border-grey);
+	padding-block-start: clamp(3rem, 5vw, 5rem);
+}
+
+.statement-drops-past__title {
+	margin: 0.5rem 0 clamp(2rem, 4vw, 3rem);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.75rem);
+	font-weight: 400;
+	text-transform: uppercase;
+}
+
+.statement-drops-past__grid {
+	display: grid;
+	gap: 2rem;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.statement-drops-past__card {
+	padding: 2rem;
+	border: 1px solid var(--wp--preset--color--border-grey);
+	background: var(--wp--preset--color--gallery-ivory);
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.statement-drops-past__card-title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.5rem;
+	font-weight: 400;
+}
+
+.statement-drops-past__card-link {
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--near-black);
+	text-decoration: none;
+	border-block-end: 1px solid currentColor;
+	align-self: flex-start;
+}

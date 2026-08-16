@@ -290,6 +290,146 @@ table.variations {
 	color: var(--wp--preset--color--soft-graphite);
 }
 
+/* SIZE GUIDE & VARIATION STYLING */
+.statement-size-guide-wrapper {
+	margin-block-start: 0.75rem;
+	text-align: right;
+}
+
+.statement-size-guide-trigger {
+	border: none;
+	background: transparent;
+	padding: 0.25rem 0;
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.15em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--soft-graphite);
+	border-block-end: 1px solid currentColor;
+	cursor: pointer;
+	transition: color 200ms ease;
+}
+
+.statement-size-guide-trigger:hover {
+	color: var(--wp--preset--color--near-black);
+}
+
+.statement-size-guide-dialog {
+	position: fixed;
+	inset: 0;
+	margin: auto;
+	max-inline-size: min(36rem, 90vw);
+	border: 1px solid var(--wp--preset--color--border-grey);
+	background: var(--wp--preset--color--warm-white);
+	color: var(--wp--preset--color--near-black);
+	padding: 0;
+	box-shadow: 0 20px 40px color-mix(in srgb, var(--wp--preset--color--near-black) 25%, transparent);
+	z-index: 10000;
+}
+
+.statement-size-guide-dialog::backdrop {
+	background: color-mix(in srgb, var(--wp--preset--color--near-black) 60%, transparent);
+	backdrop-filter: blur(4px);
+}
+
+.statement-size-guide-dialog__inner {
+	padding: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.statement-size-guide-dialog__header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-block-end: 1.5rem;
+	border-block-end: 1px solid var(--wp--preset--color--border-grey);
+	padding-block-end: 1rem;
+}
+
+.statement-size-guide-dialog__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.75rem;
+	font-weight: 400;
+	letter-spacing: -0.01em;
+	text-transform: uppercase;
+}
+
+.statement-size-guide-dialog__close {
+	border: none;
+	background: transparent;
+	font-size: 1.5rem;
+	line-height: 1;
+	cursor: pointer;
+	color: var(--wp--preset--color--soft-graphite);
+	padding: 0.25rem 0.5rem;
+}
+
+.statement-size-guide-dialog__close:hover {
+	color: var(--wp--preset--color--near-black);
+}
+
+.statement-size-guide-dialog__subtitle {
+	margin: 0 0 1.25rem;
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.8125rem;
+	color: var(--wp--preset--color--soft-graphite);
+}
+
+.statement-size-guide-table {
+	inline-size: 100%;
+	border-collapse: collapse;
+	margin-block-end: 1.5rem;
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.875rem;
+}
+
+.statement-size-guide-table th,
+.statement-size-guide-table td {
+	padding: 0.75rem 1rem;
+	text-align: left;
+	border-block-end: 1px solid var(--wp--preset--color--border-grey);
+}
+
+.statement-size-guide-table th {
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.15em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--soft-graphite);
+	background: var(--wp--preset--color--gallery-ivory);
+}
+
+.statement-size-guide-dialog__note {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.75rem;
+	line-height: 1.5;
+	color: var(--wp--preset--color--soft-graphite);
+	font-style: italic;
+}
+
+/* TABLE VARIATIONS REFINEMENT */
+table.variations select {
+	inline-size: 100%;
+	min-block-size: 3.25rem;
+	padding: 0.75rem 1rem;
+	border: 1px solid var(--wp--preset--color--border-grey);
+	border-radius: 0;
+	background: var(--wp--preset--color--warm-white);
+	color: var(--wp--preset--color--near-black);
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.875rem;
+	font-weight: 500;
+	letter-spacing: 0.05em;
+	cursor: pointer;
+}
+
+table.variations select:focus {
+	outline: none;
+	border-color: var(--wp--preset--color--near-black);
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.statement-product__image img {
 		transition: none !important;

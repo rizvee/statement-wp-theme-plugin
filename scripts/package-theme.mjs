@@ -4,8 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.13.0-rc.5';
-
+const defaultVersion = '0.13.0-rc.6';
 
 export const approvedThemeFiles = [
   'style.css',
@@ -14,6 +13,7 @@ export const approvedThemeFiles = [
   'header.php',
   'footer.php',
   'front-page.php',
+  'page-drops.php',
   'page-archive.php',
   'theme.json',
   'assets/css/base.css',
@@ -27,6 +27,24 @@ export const approvedThemeFiles = [
   'assets/css/cart.css',
   'assets/css/checkout.css',
   'assets/js/navigation.js',
+  'assets/images/statement-monogram-jacket-front.jpg',
+  'assets/images/statement-monogram-jacket-back.jpg',
+  'assets/images/statement-monogram-jacket-flatlay-concrete.jpg',
+  'assets/images/statement-monogram-jacket-collar-detail.jpg',
+  'assets/images/statement-monogram-jacket-flatlay-slate.jpg',
+  'assets/images/statement-panelled-hood-jacket-front.jpg',
+  'assets/images/statement-panelled-hood-jacket-back.jpg',
+  'assets/images/statement-panelled-hood-jacket-cathedral-front.jpg',
+  'assets/images/statement-panelled-hood-jacket-embroidery-detail.jpg',
+  'assets/images/statement-panelled-hood-jacket-night-34.jpg',
+  'assets/images/statement-brand-leather-patch.jpg',
+  'assets/images/statement-brand-leather-badge.jpg',
+  'assets/images/statement-brand-insignia-vector.jpg',
+  'assets/images/statement-brand-insignia-gold.jpg',
+  'assets/images/statement-brand-wordmark.jpg',
+  'assets/images/statement-collector-dust-bag.jpg',
+  'assets/images/statement-collector-patch-palm.jpg',
+  'assets/images/statement-crafted-not-mass-made-poster.jpg',
   'inc/assets.php',
   'inc/navigation.php',
   'inc/home.php',
@@ -43,13 +61,16 @@ export const approvedThemeFiles = [
   'template-parts/home/hero.php',
   'template-parts/home/active-drop.php',
   'template-parts/home/editorial.php',
+  'template-parts/home/lookbook.php',
   'template-parts/home/products.php',
+  'template-parts/home/brand-object.php',
   'template-parts/home/principle.php',
   'template-parts/home/archive-link.php',
   'template-parts/product/card.php',
   'template-parts/product/gallery.php',
   'template-parts/product/summary.php',
   'template-parts/product/details.php',
+  'template-parts/product/size-guide.php',
   'taxonomy-statement_drop.php',
   'woocommerce/content-product.php',
   'woocommerce/content-single-product.php',

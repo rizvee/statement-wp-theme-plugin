@@ -40,6 +40,8 @@ $has_editorial = has_home_editorial_content( $page_id );
 		);
 	}
 
+	get_template_part( 'template-parts/home/lookbook' );
+
 	if ( $has_editorial ) {
 		get_template_part( 'template-parts/home/editorial' );
 	}
@@ -54,6 +56,8 @@ $has_editorial = has_home_editorial_content( $page_id );
 			)
 		);
 	}
+
+	get_template_part( 'template-parts/home/brand-object' );
 
 	get_template_part( 'template-parts/home/principle' );
 

@@ -1,30 +1,27 @@
 # Current Priority — Client Visual Delivery
 
-## CLIENT VISUAL DELIVERY — HIGH PRIORITY (2026-08-16)
+## CLIENT VISUAL DELIVERY — VISUAL SPRINT 02 COMPLETE (2026-08-16)
 
-Status: complete (Theme Candidate 0.13.0-rc.5 ready for manual deployment)
+Status: complete (Theme Candidate 0.13.0-rc.6 + Client Demo Plugin 0.1.0 ready for deployment)
 
-- [x] Public Brand Principle Update: Replaced old "Crafted. Limited. Never Restocked." with "CRAFTED. NOT MASS MADE." (supporting line: "Produced with intention, not volume.") across theme homepage, footer, and templates.
-- [x] Removed Public Never Restocked Language: Audited theme PHP, templates, and styles to ensure zero public mentions of production quantity totals or restock prohibitions.
-- [x] High-Fashion Header Redesign: Implemented balanced 3-column desktop layout (SHOP / ARCHIVE | STATEMENT | SEARCH / ACCOUNT / BAG) with glassmorphic sticky blur and full-screen luxury mobile navigation overlay.
-- [x] Viewport-Height Editorial Homepage: Implemented dynamic release hero, asymmetrical magazine showcase grid (60% feature + offset portraits), active release section, and historical archive teaser.
-- [x] Luxury Collection Shop & Drop Layouts: Upgraded `/shop/` and `/drop/` with 4:5 portrait media cards, high-contrast title/price rows, uppercase edition subtext, and zero generic card borders.
-- [x] Product Detail Page (PDP) Split: Implemented 62% imagery gallery / 38% sticky summary layout with custom size variation selectors and full-width `ADD TO BAG` CTA.
-- [x] Refined Bag (Cart) & 2-Column Checkout: Transformed WooCommerce cart into luxury "YOUR BAG" with 4:5 thumbnails, clean order totals, and responsive checkout.
-- [x] High-Fidelity Typography: Enqueued Google Fonts `Instrument Serif` and `Inter` in `inc/assets.php`.
-- [x] Theme Candidate Version Bump: Promoted theme to `0.13.0-rc.5` in `style.css`, `functions.php`, packaging scripts, and tests.
-- [x] Single-Root Packaged Artifact: `dist/statement-collector-theme-0.13.0-rc.5.zip` (47,970 bytes, SHA-256: `356979011b1e0e061a81b34f40956e0d59b03539f47112cab36ee651fcd7bf7e`).
-- [x] Client Visual Review Checklist: Created `docs/client-visual-review.md`.
+- [x] Real WhatsApp Asset Audit & Optimization: Audited 22 incoming assets into `docs/statement-asset-manifest.md` and prepared 18 curated derivative images.
+- [x] Visual Reference Analysis: Analyzed Maroo Clo and Mertra high-fashion visual patterns in `docs/visual-reference-analysis.md`.
+- [x] Statement Client Demo Plugin v0.1.0: Built idempotent, manifest-driven demo content tool (`tools/statement-client-demo/`) creating Drop 001, 2 variable products (AUD 295 & AUD 275) with S/M/L variations, full media attachments, and safe rollback state.
+- [x] Front-Page Template Protection: Added priority 9999 template_include hook in `inc/setup.php` to permanently secure `/` theme ownership against Elementor canvas hijacking.
+- [x] Homepage Editorial Extensions: Added high-fashion Lookbook magazine grid (`template-parts/home/lookbook.php`) and Brand Object section (`template-parts/home/brand-object.php`).
+- [x] Dedicated Drops Index Page: Created `page-drops.php` rendering `/drops/` with active drop feature card and past drop archives.
+- [x] Accessible Size Guide Modal: Implemented `template-parts/product/size-guide.php` with CM measurements table (Chest, Length, Sleeve) and integrated into PDP summary.
+- [x] Integration Fixture Isolation: Excluded `TEST-` products and `test-` drops from public homepage queries.
+- [x] Brand Principle Standardization: Fully standardized all user-facing branding to "CRAFTED. NOT MASS MADE." (supporting line: "Produced with intention, not volume.").
+- [x] Version Bump & Packaging: Promoted theme to `0.13.0-rc.6`, packaged `statement-collector-theme-0.13.0-rc.6.zip`, `statement-collector-core-0.13.0-rc.9.zip`, `statement-client-demo-0.1.0.zip`, and updated `dist/manifest.json`.
+- [x] Inventory Lifecycle v2 Plan: Authored `docs/inventory-lifecycle-v2-plan.md` documenting transition from strict v1 terminal model to v2 demand-driven model.
+- [x] Missing Assets Production Document: Authored `docs/missing-visual-assets.md` with dimensions and Midjourney prompts.
+- [x] Comprehensive Testing: Added `tests/m15-client-demo.test.mjs`; all 18 test suites pass 100%.
 
 ## HIGH PRIORITY — BUSINESS RULE REVIEW (RECORDED FOR FUTURE RESOLUTION)
 
-- [ ] Business Rule Revision Architecture Decision:
-  - Previous permanent no-restock Core invariant conflicts with latest client direction allowing limited demand-based additional production.
-  - Requires dedicated architecture decision across:
-    - Option A: Replenishment while release remains active.
-    - Option B: True restock after SOLD_OUT.
-    - Option C: Additional production allocation before terminal SOLD_OUT.
-  - Core domain logic left intact during visual sprint.
+- [x] Inventory Lifecycle v2 Transition Plan Documented (`docs/inventory-lifecycle-v2-plan.md`):
+  - Transition path from immutable v1 terminal model to flexible v2 demand-driven inventory model without compromising historical purchase provenance.
 
 # Milestones
 

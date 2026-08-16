@@ -41,3 +41,21 @@ function setup(): void {
 }
 
 add_action( 'after_setup_theme', __NAMESPACE__ . '\\setup' );
+
+/**
+ * Protect Statement theme's ownership of the front page.
+ * Prevents third-party plugins or page builders from hijacking front-page.php.
+ *
+ * @param string $template Current resolved template path.
+ * @return string Filtered template path.
+ */
+function protect_front_page_template( string $template ): string {
+	if ( function_exists( 'is_front_page' ) && is_front_page() ) {
+		$theme_front = locate_template( array( 'front-page.php' ) );
+		if ( $theme_front && is_string( $theme_front ) && '' !== $theme_front ) {
+			return $theme_front;
+		}
+	}
+	return $template;
+}
+add_filter( 'template_include', __NAMESPACE__ . '\\protect_front_page_template', 9999 );
