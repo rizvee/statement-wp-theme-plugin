@@ -242,6 +242,18 @@
 	}
 }
 
+@media (max-width: 24rem) {
+	.statement-cart__items tr.cart_item {
+		grid-template-columns: 4rem minmax(0, 1fr) auto;
+		gap: var(--wp--preset--spacing--10);
+	}
+
+	.statement-cart__items input.qty {
+		inline-size: 3.5rem;
+		min-block-size: 2.5rem;
+	}
+}
+
 @media (min-width: 64rem) {
 	.statement-cart__layout {
 		grid-template-columns: minmax(0, 1.6fr) minmax(18rem, 1fr);

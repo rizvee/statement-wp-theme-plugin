@@ -16,21 +16,23 @@ $cart_url    = get_cart_url();
 		</button>
 	</div>
 
-	<?php if ( has_nav_menu( 'primary' ) ) : ?>
-		<nav class="statement-mobile-navigation" aria-label="<?php esc_attr_e( 'Mobile primary navigation', 'statement-collector-theme' ); ?>">
-			<?php
+	<nav class="statement-mobile-navigation" aria-label="<?php esc_attr_e( 'Mobile primary navigation', 'statement-collector-theme' ); ?>">
+		<?php
+		if ( has_nav_menu( 'primary' ) ) {
 			wp_nav_menu(
 				array(
 					'theme_location' => 'primary',
 					'container'      => false,
-					'menu_class'     => 'statement-mobile-navigation__list',
+					'menu_class'     => 'statement-mobile-menu',
 					'fallback_cb'    => false,
 					'depth'          => 1,
 				)
 			);
-			?>
-		</nav>
-	<?php endif; ?>
+		} else {
+			render_mobile_primary_navigation();
+		}
+		?>
+	</nav>
 
 	<div class="statement-mobile-utilities" role="group" aria-label="<?php esc_attr_e( 'Site utilities', 'statement-collector-theme' ); ?>">
 		<button class="statement-mobile-utility" type="button" data-dialog-open="statement-search-dialog">

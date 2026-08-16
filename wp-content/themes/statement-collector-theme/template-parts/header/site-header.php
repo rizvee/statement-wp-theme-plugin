@@ -9,23 +9,23 @@ $cart_url    = get_cart_url();
 ?>
 <header class="statement-site-header">
 	<div class="statement-site-header__desktop statement-container--wide">
-		<div class="statement-primary-navigation">
-			<?php if ( has_nav_menu( 'primary' ) ) : ?>
-				<nav aria-label="<?php esc_attr_e( 'Primary navigation', 'statement-collector-theme' ); ?>">
-					<?php
-					wp_nav_menu(
-						array(
-							'theme_location' => 'primary',
-							'container'      => false,
-							'menu_class'     => 'statement-navigation-list',
-							'fallback_cb'    => false,
-							'depth'          => 1,
-						)
-					);
-					?>
-				</nav>
-			<?php endif; ?>
-		</div>
+		<nav class="statement-primary-navigation" aria-label="<?php esc_attr_e( 'Primary navigation', 'statement-collector-theme' ); ?>">
+			<?php
+			if ( has_nav_menu( 'primary' ) ) {
+				wp_nav_menu(
+					array(
+						'theme_location' => 'primary',
+						'container'      => false,
+						'menu_class'     => 'statement-menu',
+						'fallback_cb'    => false,
+						'depth'          => 1,
+					)
+				);
+			} else {
+				render_primary_navigation();
+			}
+			?>
+		</nav>
 
 		<div class="statement-brand">
 			<?php render_site_brand(); ?>

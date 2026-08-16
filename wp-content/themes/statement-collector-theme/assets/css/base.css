@@ -83,6 +83,10 @@ a {
 	white-space: normal;
 }
 
+body.statement-dialog-open {
+	overflow: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	html:focus-within {
 		scroll-behavior: auto;

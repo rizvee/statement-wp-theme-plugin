@@ -189,3 +189,113 @@
 		border-inline-start: 1px solid var(--wp--preset--color--border-grey);
 	}
 }
+
+/* -------------------------------------------------------------------------
+ * Order Received / Thank You & Customer Order View
+ * ------------------------------------------------------------------------- */
+
+.woocommerce-order,
+.woocommerce-account .woocommerce-MyAccount-content {
+	padding-block: var(--wp--preset--spacing--50) var(--wp--preset--spacing--70);
+}
+
+.woocommerce-order-received .woocommerce-notice--success {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--heading);
+	margin-block-end: var(--wp--preset--spacing--40);
+	border: 0;
+	padding: 0;
+	background: transparent;
+}
+
+ul.woocommerce-order-overview {
+	list-style: none;
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--30) var(--wp--preset--spacing--50);
+	padding: var(--wp--preset--spacing--30);
+	margin: 0 0 var(--wp--preset--spacing--50);
+	border: 1px solid var(--wp--preset--color--border-grey);
+	background: var(--wp--preset--color--gallery-ivory);
+}
+
+ul.woocommerce-order-overview li {
+	font-size: var(--wp--preset--font-size--small);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+ul.woocommerce-order-overview li strong {
+	display: block;
+	margin-block-start: var(--wp--preset--spacing--10);
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: var(--wp--preset--font-size--body);
+	color: var(--wp--preset--color--near-black);
+}
+
+.woocommerce-order-details__title,
+.woocommerce-customer-details__title {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--heading-small);
+	margin-block: var(--wp--preset--spacing--50) var(--wp--preset--spacing--30);
+}
+
+.woocommerce-order-details .wc-item-meta {
+	list-style: none;
+	padding: 0;
+	margin: var(--wp--preset--spacing--10) 0 0;
+	font-size: var(--wp--preset--font-size--small);
+	color: var(--wp--preset--color--soft-graphite);
+}
+
+.woocommerce-order-details .wc-item-meta li {
+	margin-block-end: var(--wp--preset--spacing--10);
+}
+
+.woocommerce-order-details .wc-item-meta dt,
+.woocommerce-order-details .wc-item-meta dd,
+.woocommerce-order-details .wc-item-meta p {
+	display: inline;
+	margin: 0;
+}
+
+.woocommerce-customer-details address {
+	font-style: normal;
+	line-height: 1.6;
+	padding: var(--wp--preset--spacing--30);
+	border: 1px solid var(--wp--preset--color--border-grey);
+	background: var(--wp--preset--color--warm-white);
+}
+
+/* -------------------------------------------------------------------------
+ * My Account Navigation & Dashboard
+ * ------------------------------------------------------------------------- */
+
+.woocommerce-account .woocommerce-MyAccount-navigation {
+	margin-block-end: var(--wp--preset--spacing--40);
+}
+
+.woocommerce-account .woocommerce-MyAccount-navigation ul {
+	list-style: none;
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--20) var(--wp--preset--spacing--30);
+	padding: 0;
+	margin: 0;
+	border-block-end: 1px solid var(--wp--preset--color--border-grey);
+	padding-block-end: var(--wp--preset--spacing--20);
+}
+
+.woocommerce-account .woocommerce-MyAccount-navigation a {
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: var(--wp--preset--color--soft-graphite);
+}
+
+.woocommerce-account .woocommerce-MyAccount-navigation .is-active a {
+	color: var(--wp--preset--color--near-black);
+	border-block-end: 2px solid var(--wp--preset--color--ink-navy);
+}
