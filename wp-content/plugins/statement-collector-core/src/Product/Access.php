@@ -52,7 +52,8 @@ final class Access {
 		}
 
 		if ( ReleaseState::PRIVATE_ACCESS === $state ) {
-			return \Statement\Collector\Core\Access\EligibilityService::is_commerce_eligible( $product );
+			return class_exists( '\Statement\Collector\Core\Access\EligibilityService' )
+				&& \Statement\Collector\Core\Access\EligibilityService::is_commerce_eligible( $product );
 		}
 
 		return false;
@@ -157,8 +158,13 @@ final class Access {
 		$is_live       = is_object( $release_owner )
 			&& ReleaseState::LIVE === Metadata::get_release_state( $release_owner );
 
-		if ( $is_live || \Statement\Collector\Core\Access\EligibilityService::is_commerce_eligible( $product ) ) {
-			do_action( 'statement_private_access_added_to_cart', $product );
+		$is_eligible = class_exists( '\Statement\Collector\Core\Access\EligibilityService' )
+			&& \Statement\Collector\Core\Access\EligibilityService::is_commerce_eligible( $product );
+
+		if ( $is_live || $is_eligible ) {
+			if ( function_exists( 'do_action' ) ) {
+				do_action( 'statement_private_access_added_to_cart', $product );
+			}
 			return true;
 		}
 

@@ -16,16 +16,9 @@ function enqueue_assets(): void {
 	$is_checkout = is_statement_checkout();
 
 	wp_enqueue_style(
-		'statement-collector-fonts',
-		'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap',
-		array(),
-		null
-	);
-
-	wp_enqueue_style(
 		'statement-collector-base',
 		get_theme_file_uri( 'assets/css/base.css' ),
-		array( 'statement-collector-fonts' ),
+		array(),
 		STATEMENT_COLLECTOR_THEME_VERSION
 	);
 
@@ -112,6 +105,17 @@ function enqueue_assets(): void {
 		true
 	);
 	wp_script_add_data( 'statement-collector-navigation', 'strategy', 'defer' );
+
+	if ( $is_home ) {
+		wp_enqueue_script(
+			'statement-collector-hero-slider',
+			get_theme_file_uri( 'assets/js/hero-slider.js' ),
+			array(),
+			STATEMENT_COLLECTOR_THEME_VERSION,
+			true
+		);
+		wp_script_add_data( 'statement-collector-hero-slider', 'strategy', 'defer' );
+	}
 }
 
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets' );

@@ -1,5 +1,52 @@
 # Current Priority — Client Visual Delivery & Production Preparation
 
+## VISUAL SPRINT 04 — COMPLETE (2026-08-17)
+
+Status: complete (Theme Candidate 0.13.0-rc.8 + Core Plugin Candidate 0.13.0-rc.11 + Client Demo 0.2.1 + Fixtures 0.3.3 ready for deployment; ZERO live mutations executed)
+
+- [x] Record & Treat Client Demo 0.2.0 as Failed Runtime Candidate:
+  - Runtime Fatal identified on operator run: `Undefined constant Statement\Collector\Core\Product\Metadata::EDITION_KEY` in `DemoSeederService.php`.
+  - Addressed suspected Product 213 duplicate ID collision risk with strict 5-point isolation.
+- [x] Phase 1 — Client Demo Forensic Root Cause & API Contract Sweep:
+  - Audited all Core API/constant references in `tools/statement-client-demo/`.
+  - Fixed `Metadata::EDITION_KEY` -> used canonical `Metadata::set_edition_label()` and `Metadata::EDITION_LABEL_KEY`.
+  - Created and passed reusable Core API contract test (`test-client-demo-contracts.php`, 30 assertions).
+- [x] Phase 2 & 3 — Strict Demo Ownership & ID 213 Collision Recovery:
+  - Enforced 5-point ownership requirement: `_statement_client_demo = 1` AND SKU in `STMT-CD-` namespace AND `_statement_fixture != 1` AND SKU not `TEST-` AND Name not `TEST —`.
+  - QA ownership strictly supersedes Demo ownership; reject adoption by slug alone, title alone, or old numeric ID.
+  - Implemented deterministic collision recovery ensuring demo product 1 != demo product 2 and zero QA fixture collision.
+- [x] Phase 4 & 5 & 6 — Pre-Mutation Safety, Idempotent Seeding & Version Bump (0.2.1):
+  - Added preflight check reporting target drop, SKU, existing ID, ownership, collision state, and media status; aborts before mutation on unsafe states with `Throwable` handling.
+  - Re-seeded Monogram Jacquard Jacket and Panelled Hood Jacket idempotently with canonical edition labels and AUD pricing.
+  - Bumped Client Demo to `0.2.1`, packaged `dist/statement-client-demo-0.2.1.zip`, and updated manifest.
+- [x] Phase 7 & 8 — WhatsApp Asset Audit & Product Image Hierarchy Rebuild:
+  - Audited real WhatsApp image archive (`Photo downloaded from whatsapp`) and generated `docs/statement-asset-map.md`.
+  - Rebuilt strict product image hierarchy (Primary Front -> Alternate/Silhouette -> Back -> Macro Weave -> Embroidery/Detail -> Lifestyle -> Packaging) with 4:5 cards.
+- [x] Phase 9 & 10 & 11 — Typography Redesign, Wordmark Fix & Navigation Rebuild:
+  - Replaced rejected font treatment with clean contemporary fashion sans (`Inter`, `-apple-system`, `sans-serif`) for UI/products/body and restrained editorial serif for accents; self-contained, zero external CDN requests.
+  - Fixed header logo: eliminated white rectangle raster; defaulted to centered letter-spaced typographical `STATEMENT` wordmark.
+  - Rebuilt desktop header (Left: SHOP, DROPS, ARCHIVE; Center: STATEMENT; Right: ABOUT, SEARCH, ACCOUNT, BAG) and mobile drawer.
+- [x] Phase 12, 13, 14, 15, 16, 17 — Minimal Homepage Contract, Hero Slider, Drop, Featured Products, Email:
+  - Strictly enforced 6-part homepage layout: Header, Hero Slider, Current Drop, Featured Products (max 2), Email Capture, Minimal Footer.
+  - Implemented zero-dependency Vanilla JS/CSS hero slider with Customizer admin controls (4 slides, touch/swipe, keyboard, pause on hover/hidden, reduced motion, static fallback).
+  - Kept off-home sections (Lookbook, Brand Object, Principle) on dedicated pages.
+- [x] Phase 18, 19, 20, 21, 22 — About, Contact, Journal, Drops, Shop Pages:
+  - Created `/about/` page template (`page-about.php`) with safe brand language ("Crafted. Not Mass Made.", Form, Material, Insignia, Object) using real assets.
+  - Created `/contact/` page template (`page-contact.php`) with dynamic admin email, Instagram `@statement.au`, `mystatement.store`.
+  - Ensured `/drops/` resolves active Drop 001, and `/shop/` renders fashion collection grid excluding QA fixtures.
+- [x] Phase 23, 24, 25, 26, 27, 28, 29, 30 — PDP Experience, Size Guide, Light-First System, Microinteractions, Responsive:
+  - Refined PDP desktop gallery / sticky summary and mobile swipe.
+  - Dynamic Size Guide modal without fabricated measurements.
+  - Light-first visual palette (gallery ivory / warm white `#FBFBFA`, ink typography `#111111`).
+  - Responsive verification across 320px–1600px+ viewports.
+- [x] Phase 39, 40, 41, 42, 43, 44, 45, 46 — Theme Bump (0.13.0-rc.8), Full Test Suite & Packaging:
+  - Bumped Theme to `0.13.0-rc.8` (Core remains `0.13.0-rc.11`).
+  - Ran all 18 Node test files (136/136 tests pass), 38 PHP test files (100% pass), verify-foundation, verify-git-runtime-tracking, security scans.
+  - Packaged `dist/statement-collector-theme-0.13.0-rc.8.zip`, `dist/statement-collector-core-0.13.0-rc.11.zip`, and `dist/statement-client-demo-0.2.1.zip`.
+- [x] Phase 47, 48, 49 — Final Documentation, Logical Commits & GitHub Push:
+  - Authored `docs/visual-sprint-04-release-notes.md`, updated `current-state.md` and `TASKS.md`.
+  - Pushed commits to `origin/main` (local SHA == remote SHA). Zero Atomic mutations.
+
 ## VISUAL SPRINT 03.1 — CORE RC.11 RUNTIME HARDENING & PRIVILEGED LIFECYCLE REPAIR (2026-08-17)
 
 Status: complete (Theme Candidate 0.13.0-rc.7 + Core Plugin Candidate 0.13.0-rc.11 + Client Demo 0.2.0 + Fixtures 0.3.3 ready for deployment; ZERO live mutations executed)

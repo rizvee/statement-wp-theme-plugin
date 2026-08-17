@@ -122,7 +122,8 @@ final class Integrity {
 			return true;
 		}
 
-		return \Statement\Collector\Core\Access\EligibilityService::is_commerce_eligible( $product );
+		return class_exists( '\Statement\Collector\Core\Access\EligibilityService' )
+			&& \Statement\Collector\Core\Access\EligibilityService::is_commerce_eligible( $product );
 	}
 
 	/**

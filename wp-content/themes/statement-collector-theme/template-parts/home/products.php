@@ -2,7 +2,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$products = isset( $args['products'] ) && is_array( $args['products'] ) ? array_slice( $args['products'], 0, 4 ) : array();
+$products = isset( $args['products'] ) && is_array( $args['products'] ) ? array_slice( $args['products'], 0, 2 ) : array();
 $drop     = isset( $args['drop'] ) && is_object( $args['drop'] ) ? $args['drop'] : null;
 
 if ( empty( $products ) ) {

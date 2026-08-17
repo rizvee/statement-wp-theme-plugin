@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.13.0-rc.7';
+const defaultVersion = '0.13.0-rc.8';
 
 export const approvedThemeFiles = [
   'style.css',
@@ -18,6 +18,8 @@ export const approvedThemeFiles = [
   'front-page.php',
   'page-drops.php',
   'page-archive.php',
+  'page-about.php',
+  'page-contact.php',
   'theme.json',
   'assets/css/base.css',
   'assets/css/layout.css',
@@ -30,11 +32,25 @@ export const approvedThemeFiles = [
   'assets/css/cart.css',
   'assets/css/checkout.css',
   'assets/js/navigation.js',
+  'assets/js/hero-slider.js',
   'assets/images/statement-brand-insignia-vector.jpg',
   'assets/images/statement-brand-insignia-gold.jpg',
   'assets/images/statement-brand-wordmark.jpg',
   'assets/images/statement-brand-leather-badge.jpg',
+  'assets/images/statement-brand-leather-patch.jpg',
   'assets/images/statement-crafted-not-mass-made-poster.jpg',
+  'assets/images/statement-collector-dust-bag.jpg',
+  'assets/images/statement-collector-patch-palm.jpg',
+  'assets/images/statement-monogram-jacket-front.jpg',
+  'assets/images/statement-monogram-jacket-back.jpg',
+  'assets/images/statement-monogram-jacket-flatlay-concrete.jpg',
+  'assets/images/statement-monogram-jacket-flatlay-slate.jpg',
+  'assets/images/statement-monogram-jacket-collar-detail.jpg',
+  'assets/images/statement-panelled-hood-jacket-front.jpg',
+  'assets/images/statement-panelled-hood-jacket-back.jpg',
+  'assets/images/statement-panelled-hood-jacket-cathedral-front.jpg',
+  'assets/images/statement-panelled-hood-jacket-embroidery-detail.jpg',
+  'assets/images/statement-panelled-hood-jacket-night-34.jpg',
   'inc/assets.php',
   'inc/navigation.php',
   'inc/home.php',
@@ -43,6 +59,7 @@ export const approvedThemeFiles = [
   'inc/cart.php',
   'inc/checkout.php',
   'inc/setup.php',
+  'inc/customizer.php',
   'inc/woocommerce.php',
   'template-parts/header/site-header.php',
   'template-parts/header/mobile-navigation.php',

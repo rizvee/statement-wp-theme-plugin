@@ -21,15 +21,64 @@ final class DemoSeederService {
 	public const SKU_P2_L = 'STMT-CD-D001-PHJ-L';
 
 	/**
+	 * Run preflight diagnostics to verify ownership integrity and collision safety.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function preflight(): array {
+		$prod1 = self::find_owned_product( self::SKU_P1, 'monogram-jacquard-jacket' );
+		$prod2 = self::find_owned_product( self::SKU_P2, 'panelled-hood-jacket' );
+
+		$prod1_id = is_object( $prod1 ) && method_exists( $prod1, 'get_id' ) ? (int) $prod1->get_id() : 0;
+		$prod2_id = is_object( $prod2 ) && method_exists( $prod2, 'get_id' ) ? (int) $prod2->get_id() : 0;
+
+		$has_duplicate_id = ( $prod1_id > 0 && $prod2_id > 0 && $prod1_id === $prod2_id );
+		$has_fixture_collision = false;
+		$collision_details     = array();
+
+		// Check if either ID collides with known QA fixtures
+		if ( $prod1_id > 0 ) {
+			$is_fixture = (int) get_post_meta( $prod1_id, '_statement_fixture', true ) === 1
+				|| ( method_exists( $prod1, 'get_sku' ) && 0 === strpos( $prod1->get_sku(), 'TEST-' ) )
+				|| ( method_exists( $prod1, 'get_name' ) && 0 === strpos( $prod1->get_name(), 'TEST —' ) );
+			if ( $is_fixture ) {
+				$has_fixture_collision = true;
+				$collision_details[]   = "Product 01 points to QA fixture ID {$prod1_id}";
+			}
+		}
+
+		if ( $prod2_id > 0 ) {
+			$is_fixture = (int) get_post_meta( $prod2_id, '_statement_fixture', true ) === 1
+				|| ( method_exists( $prod2, 'get_sku' ) && 0 === strpos( $prod2->get_sku(), 'TEST-' ) )
+				|| ( method_exists( $prod2, 'get_name' ) && 0 === strpos( $prod2->get_name(), 'TEST —' ) );
+			if ( $is_fixture ) {
+				$has_fixture_collision = true;
+				$collision_details[]   = "Product 02 points to QA fixture ID {$prod2_id}";
+			}
+		}
+
+		$is_safe = ! $has_duplicate_id && ! $has_fixture_collision;
+
+		return array(
+			'safe'                  => $is_safe,
+			'has_duplicate_id'      => $has_duplicate_id,
+			'has_fixture_collision' => $has_fixture_collision,
+			'collision_details'     => $collision_details,
+			'product_01_id'         => $prod1_id,
+			'product_02_id'         => $prod2_id,
+		);
+	}
+
+	/**
 	 * Run dry run analysis without mutating the database.
 	 *
 	 * @return array<string, mixed>
 	 */
 	public static function dry_run(): array {
-		$assets   = AssetRegistry::get_assets();
-		$manifest = ManifestService::get_manifest();
-		$rollback = ManifestService::get_rollback();
-		$hashes   = ManifestService::get_hashes();
+		$assets    = AssetRegistry::get_assets();
+		$manifest  = ManifestService::get_manifest();
+		$rollback  = ManifestService::get_rollback();
+		$preflight = self::preflight();
 
 		$current_front_type  = get_option( 'show_on_front', 'posts' );
 		$current_front_id    = (int) get_option( 'page_on_front', 0 );
@@ -51,6 +100,7 @@ final class DemoSeederService {
 		$home_page    = function_exists( 'get_page_by_path' ) ? get_page_by_path( 'statement-home', OBJECT, array( 'page' ) ) : null;
 		$drops_page   = function_exists( 'get_page_by_path' ) ? get_page_by_path( 'drops', OBJECT, array( 'page' ) ) : null;
 		$about_page   = function_exists( 'get_page_by_path' ) ? get_page_by_path( 'about', OBJECT, array( 'page' ) ) : null;
+		$contact_page = function_exists( 'get_page_by_path' ) ? get_page_by_path( 'contact', OBJECT, array( 'page' ) ) : null;
 		$journal_page = function_exists( 'get_page_by_path' ) ? get_page_by_path( 'journal', OBJECT, array( 'page' ) ) : null;
 
 		$post1 = function_exists( 'get_page_by_path' ) ? get_page_by_path( 'study-and-form-monogram-study', OBJECT, array( 'post' ) ) : null;
@@ -59,6 +109,7 @@ final class DemoSeederService {
 		return array(
 			'mode'            => 'DRY_RUN',
 			'timestamp'       => gmdate( 'Y-m-d H:i:s' ),
+			'preflight'       => $preflight,
 			'assets_total'    => count( $assets ),
 			'assets_plan'     => $existing_media,
 			'drop_plan'       => array(
@@ -86,6 +137,7 @@ final class DemoSeederService {
 				'statement_home' => is_object( $home_page ) ? "Existing (ID: {$home_page->ID})" : 'Ready to create',
 				'drops'          => is_object( $drops_page ) ? "Existing (ID: {$drops_page->ID})" : 'Ready to create',
 				'about'          => is_object( $about_page ) ? "Existing (ID: {$about_page->ID})" : 'Ready to create',
+				'contact'        => is_object( $contact_page ) ? "Existing (ID: {$contact_page->ID})" : 'Ready to create',
 				'journal'        => is_object( $journal_page ) ? "Existing (ID: {$journal_page->ID})" : 'Ready to create',
 			),
 			'journal_posts'   => array(
@@ -107,7 +159,7 @@ final class DemoSeederService {
 	}
 
 	/**
-	 * Seed or update the client demo content idempotently.
+	 * Seed or update the client demo content idempotently with strict safety boundaries.
 	 *
 	 * @return array<string, mixed>
 	 */
@@ -121,76 +173,188 @@ final class DemoSeederService {
 			'pages'      => array(),
 			'posts'      => array(),
 			'front_page' => array(),
+			'slider'     => array(),
 			'errors'     => array(),
+			'success'    => true,
 		);
 
-		// 1. Import Media
-		$imported_media = self::import_assets( $report );
+		try {
+			// Preflight check
+			$preflight = self::preflight();
+			if ( ! $preflight['safe'] ) {
+				// Attempt automated repair of contaminated manifest or QA markers before failing
+				self::repair_client_demo();
+				$recheck = self::preflight();
+				if ( ! $recheck['safe'] ) {
+					$report['success']  = false;
+					$report['errors'][] = 'Preflight safety check failed: ' . implode( '; ', $recheck['collision_details'] );
+					return $report;
+				}
+			}
 
-		// 2. Seed Drop
-		$drop_id = self::seed_drop( $report );
-		$report['drop_id'] = $drop_id;
+			// 1. Import Media
+			$imported_media = self::import_assets( $report );
 
-		// 3. Seed Products
-		self::seed_products( $drop_id, $imported_media, $report );
+			// 2. Seed Drop
+			$drop_id = self::seed_drop( $report );
+			$report['drop_id'] = $drop_id;
 
-		// 4. Seed Pages
-		$pages = self::seed_pages( $imported_media, $report );
+			// 3. Seed Products
+			self::seed_products( $drop_id, $imported_media, $report );
 
-		// 5. Seed Journal Posts
-		self::seed_journal_posts( $imported_media, $report );
+			// 4. Seed Pages (Home, Drops, About, Contact, Journal)
+			$pages = self::seed_pages( $imported_media, $report );
 
-		// 6. Switch Front Page safely
-		if ( isset( $pages['statement_home'] ) && $pages['statement_home'] > 0 ) {
-			self::switch_front_page( $pages['statement_home'], $report );
+			// 5. Seed Journal Posts
+			self::seed_journal_posts( $imported_media, $report );
+
+			// 6. Seed Slider Theme Mods
+			self::seed_slider_theme_mods( $imported_media, $report );
+
+			// 7. Switch Front Page safely
+			if ( isset( $pages['statement_home'] ) && $pages['statement_home'] > 0 ) {
+				self::switch_front_page( $pages['statement_home'], $report );
+			}
+
+			// 8. Save Manifest v2
+			$manifest_data = array(
+				'manifest_version' => '2.0',
+				'seeded_at'        => gmdate( 'Y-m-d H:i:s' ),
+				'drop_id'          => $drop_id,
+				'products'         => $report['products'],
+				'pages'            => $pages,
+				'posts'            => $report['posts'],
+				'media_count'      => count( $imported_media ),
+			);
+			ManifestService::save_manifest( $manifest_data );
+
+		} catch ( \Throwable $t ) {
+			$report['success']  = false;
+			$report['errors'][] = 'Seeding error: ' . $t->getMessage();
 		}
-
-		// 7. Save Manifest v2
-		$manifest_data = array(
-			'manifest_version' => '2.0',
-			'seeded_at'        => gmdate( 'Y-m-d H:i:s' ),
-			'drop_id'          => $drop_id,
-			'products'         => $report['products'],
-			'pages'            => $pages,
-			'posts'            => $report['posts'],
-			'media_count'      => count( $imported_media ),
-		);
-		ManifestService::save_manifest( $manifest_data );
 
 		return $report;
 	}
 
 	/**
-	 * Repair client demo: audits manifest, detects unowned IDs, and fixes references.
+	 * Repair client demo: audits manifest, detects unowned IDs, and fixes references safely.
 	 *
 	 * @return array<string, mixed>
 	 */
 	public static function repair_client_demo(): array {
-		$manifest = ManifestService::get_manifest();
 		$repairs  = array(
 			'mode'      => 'REPAIR_EXECUTE',
 			'timestamp' => gmdate( 'Y-m-d H:i:s' ),
 			'detached'  => array(),
 			'repaired'  => array(),
+			'success'   => true,
 		);
 
-		// Check product 01
-		$prod1 = self::find_owned_product( self::SKU_P1, 'monogram-jacquard-jacket' );
-		if ( ! is_object( $prod1 ) ) {
-			$repairs['detached'][] = 'Product 01 unowned or collision detected; re-seeding owned product.';
-		}
+		try {
+			global $wpdb;
 
-		// Check product 02
-		$prod2 = self::find_owned_product( self::SKU_P2, 'panelled-hood-jacket' );
-		if ( ! is_object( $prod2 ) ) {
-			$repairs['detached'][] = 'Product 02 unowned or collision detected; re-seeding owned product.';
-		}
+			// Cleanse accidental demo marker from QA fixtures
+			if ( isset( $wpdb ) && is_object( $wpdb ) ) {
+				// Find any post carrying _statement_fixture = 1 that also has _statement_client_demo = 1
+				$contaminated = $wpdb->get_col(
+					"SELECT p1.post_id FROM {$wpdb->postmeta} p1
+					 INNER JOIN {$wpdb->postmeta} p2 ON p1.post_id = p2.post_id
+					 WHERE p1.meta_key = '_statement_fixture' AND p1.meta_value = '1'
+					 AND p2.meta_key = '_statement_client_demo' AND p2.meta_value = '1'"
+				);
 
-		// Run seed/update to ensure clean state
-		$seed_report = self::seed_or_update();
-		$repairs['seed_report'] = $seed_report;
+				if ( is_array( $contaminated ) && ! empty( $contaminated ) ) {
+					foreach ( $contaminated as $cont_id ) {
+						delete_post_meta( (int) $cont_id, '_statement_client_demo' );
+						$repairs['detached'][] = "Detached accidental _statement_client_demo marker from QA fixture ID {$cont_id}.";
+					}
+				}
+			}
+
+			// Cleanse manifest if it held contaminated product IDs
+			$manifest = ManifestService::get_manifest();
+			if ( ! empty( $manifest['products'] ) ) {
+				$p1_id = (int) ( $manifest['products']['product_01'] ?? 0 );
+				$p2_id = (int) ( $manifest['products']['product_02'] ?? 0 );
+
+				if ( $p1_id > 0 && $p2_id > 0 && $p1_id === $p2_id ) {
+					unset( $manifest['products']['product_01'], $manifest['products']['product_02'] );
+					ManifestService::save_manifest( $manifest );
+					$repairs['repaired'][] = "Cleansed duplicate product ID {$p1_id} from manifest.";
+				}
+			}
+
+			// Run seed/update to ensure clean state
+			$seed_report = self::seed_or_update();
+			$repairs['seed_report'] = $seed_report;
+
+		} catch ( \Throwable $t ) {
+			$repairs['success']  = false;
+			$repairs['errors'][] = 'Repair error: ' . $t->getMessage();
+		}
 
 		return $repairs;
+	}
+
+	/**
+	 * Find strictly owned demo product by SKU.
+	 *
+	 * Safety Invariant:
+	 * 1. Must carry _statement_client_demo = 1
+	 * 2. SKU must begin with STMT-CD-
+	 * 3. Must NOT carry _statement_fixture = 1
+	 * 4. SKU must NOT begin with TEST-
+	 * 5. Title must NOT begin with TEST —
+	 *
+	 * Slug match ALONE, Title match ALONE, or Numeric ID ALONE never authorize adoption.
+	 *
+	 * @param string $sku Product SKU.
+	 * @param string $slug Product slug (ignored for adoption authorization).
+	 * @return object|null
+	 */
+	public static function find_owned_product( string $sku, string $slug ): ?object {
+		if ( ! function_exists( 'wc_get_products' ) ) {
+			return null;
+		}
+
+		$prods = wc_get_products(
+			array(
+				'sku'    => $sku,
+				'limit'  => 1,
+				'return' => 'objects',
+			)
+		);
+
+		if ( is_array( $prods ) && ! empty( $prods ) && is_object( $prods[0] ) ) {
+			$prod = $prods[0];
+			$pid  = method_exists( $prod, 'get_id' ) ? (int) $prod->get_id() : 0;
+			if ( $pid < 1 ) {
+				return null;
+			}
+
+			// 1. Explicitly reject QA fixtures
+			if ( (int) get_post_meta( $pid, '_statement_fixture', true ) === 1 ) {
+				return null;
+			}
+			$prod_sku = method_exists( $prod, 'get_sku' ) ? (string) $prod->get_sku() : '';
+			if ( 0 === strpos( $prod_sku, 'TEST-' ) ) {
+				return null;
+			}
+			$title = method_exists( $prod, 'get_name' ) ? (string) $prod->get_name() : '';
+			if ( 0 === strpos( $title, 'TEST —' ) ) {
+				return null;
+			}
+
+			// 2. Enforce strict Client Demo ownership marker and deterministic SKU namespace
+			$is_marked = (int) get_post_meta( $pid, '_statement_client_demo', true ) === 1;
+			$has_ns    = 0 === strpos( $prod_sku, 'STMT-CD-' );
+
+			if ( $is_marked && $has_ns ) {
+				return $prod;
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -203,11 +367,19 @@ final class DemoSeederService {
 		$assets = AssetRegistry::get_assets();
 		$result = array();
 
-		require_once ABSPATH . 'wp-admin/includes/image.php';
-		require_once ABSPATH . 'wp-admin/includes/file.php';
-		require_once ABSPATH . 'wp-admin/includes/media.php';
+		if ( defined( 'ABSPATH' ) ) {
+			if ( file_exists( ABSPATH . 'wp-admin/includes/image.php' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/image.php';
+			}
+			if ( file_exists( ABSPATH . 'wp-admin/includes/file.php' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+			}
+			if ( file_exists( ABSPATH . 'wp-admin/includes/media.php' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/media.php';
+			}
+		}
 
-		$upload_dir = wp_upload_dir();
+		$upload_dir = function_exists( 'wp_upload_dir' ) ? wp_upload_dir() : array( 'path' => '', 'url' => '' );
 
 		foreach ( $assets as $key => $asset ) {
 			$existing_id = self::find_attachment_by_key( $key );
@@ -220,7 +392,8 @@ final class DemoSeederService {
 				continue;
 			}
 
-			$source_file = STATEMENT_CLIENT_DEMO_DIR . '/assets/images/' . $asset['file'];
+			$demo_dir    = defined( 'STATEMENT_CLIENT_DEMO_DIR' ) ? STATEMENT_CLIENT_DEMO_DIR : dirname( __DIR__ );
+			$source_file = $demo_dir . '/assets/images/' . $asset['file'];
 			if ( ! file_exists( $source_file ) ) {
 				$report['errors'][] = "Source asset not found: {$asset['file']}";
 				continue;
@@ -228,29 +401,34 @@ final class DemoSeederService {
 
 			$filename  = basename( $source_file );
 			$dest_file = $upload_dir['path'] . '/' . $filename;
-			copy( $source_file, $dest_file );
+			if ( ! empty( $upload_dir['path'] ) && file_exists( $upload_dir['path'] ) ) {
+				copy( $source_file, $dest_file );
+			}
 
-			$filetype = wp_check_filetype( $filename, null );
+			$filetype = function_exists( 'wp_check_filetype' ) ? wp_check_filetype( $filename, null ) : array( 'type' => 'image/jpeg' );
 			$attachment = array(
-				'guid'           => $upload_dir['url'] . '/' . $filename,
+				'guid'           => ( $upload_dir['url'] ?? '' ) . '/' . $filename,
 				'post_mime_type' => $filetype['type'],
 				'post_title'     => $asset['title'],
 				'post_content'   => '',
 				'post_status'    => 'inherit',
 			);
 
-			$attach_id = wp_insert_attachment( $attachment, $dest_file );
-			if ( ! is_wp_error( $attach_id ) && $attach_id > 0 ) {
-				$attach_data = wp_generate_attachment_metadata( $attach_id, $dest_file );
-				wp_update_attachment_metadata( $attach_id, $attach_data );
+			$attach_id = function_exists( 'wp_insert_attachment' ) ? wp_insert_attachment( $attachment, $dest_file ) : 0;
+			$is_error  = function_exists( 'is_wp_error' ) && is_wp_error( $attach_id );
+			if ( ! $is_error && $attach_id > 0 ) {
+				if ( function_exists( 'wp_generate_attachment_metadata' ) && function_exists( 'wp_update_attachment_metadata' ) ) {
+					$attach_data = wp_generate_attachment_metadata( $attach_id, $dest_file );
+					wp_update_attachment_metadata( $attach_id, $attach_data );
+				}
 
 				update_post_meta( $attach_id, '_statement_demo_asset_key', $key );
 				update_post_meta( $attach_id, '_statement_client_demo', 1 );
 				update_post_meta( $attach_id, '_wp_attachment_image_alt', $asset['alt'] );
 
-				$result[ $key ] = $attach_id;
+				$result[ $key ] = (int) $attach_id;
 				$report['media'][ $key ] = array(
-					'id'     => $attach_id,
+					'id'     => (int) $attach_id,
 					'status' => 'imported',
 				);
 			}
@@ -275,19 +453,21 @@ final class DemoSeederService {
 			return (int) $term->term_id;
 		}
 
-		$created = wp_insert_term(
-			$term_name,
-			Taxonomy::KEY,
-			array(
-				'slug'        => $slug,
-				'description' => 'A study in repeating surface, restrained geometry, and structural wool.',
-			)
-		);
+		if ( function_exists( 'wp_insert_term' ) ) {
+			$created = wp_insert_term(
+				$term_name,
+				Taxonomy::KEY,
+				array(
+					'slug'        => $slug,
+					'description' => 'A study in repeating surface, restrained geometry, and structural wool.',
+				)
+			);
 
-		if ( is_array( $created ) && isset( $created['term_id'] ) ) {
-			$term_id = (int) $created['term_id'];
-			update_term_meta( $term_id, '_statement_client_demo', 1 );
-			return $term_id;
+			if ( is_array( $created ) && isset( $created['term_id'] ) ) {
+				$term_id = (int) $created['term_id'];
+				update_term_meta( $term_id, '_statement_client_demo', 1 );
+				return $term_id;
+			}
 		}
 
 		return 0;
@@ -305,15 +485,15 @@ final class DemoSeederService {
 
 		// Product 01: Monogram Jacquard Jacket
 		$p1_title = 'Monogram Jacquard Jacket';
-		$p1_short = 'Statement monogram outer layer. Drop 001 — Monogram Study.';
-		$p1_desc  = 'A structured outer layer defined by Statement\'s repeating monogram and a controlled silhouette. Graphic at the surface, restrained in form.';
+		$p1_short = 'Structured jacquard outer layer built around the Statement monogram.';
+		$p1_desc  = 'A structured jacquard outer layer built around the Statement monogram. Cut with a relaxed profile and finished with restrained branding.';
 		$p1_feat  = $media['monogram_front'] ?? 0;
 		$p1_gall  = array_filter(
 			array(
 				$media['monogram_back'] ?? 0,
-				$media['monogram_flatlay_slate'] ?? 0,
-				$media['monogram_collar_detail'] ?? 0,
-				$media['monogram_flatlay_concrete'] ?? 0,
+				$media['monogram_concrete'] ?? 0,
+				$media['monogram_collar'] ?? 0,
+				$media['monogram_slate'] ?? 0,
 			)
 		);
 
@@ -342,8 +522,8 @@ final class DemoSeederService {
 
 		// Product 02: Panelled Hood Jacket
 		$p2_title = 'Panelled Hood Jacket';
-		$p2_short = 'A light-bodied hooded layer framed by patterned sleeve panels.';
-		$p2_desc  = 'Contrasting panels frame the silhouette while the Statement insignia holds the centre with minimal interruption.';
+		$p2_short = 'A hooded layer balancing a clean body with patterned sleeve panels.';
+		$p2_desc  = 'A hooded layer balancing a clean body with patterned sleeve panels. Statement insignia finishes the piece without dominating the form.';
 		$p2_feat  = $media['hood_front'] ?? 0;
 		$p2_gall  = array_filter(
 			array(
@@ -381,53 +561,7 @@ final class DemoSeederService {
 	}
 
 	/**
-	 * Find strictly owned demo product by SKU or slug with _statement_client_demo marker.
-	 */
-	public static function find_owned_product( string $sku, string $slug ): ?object {
-		if ( ! function_exists( 'wc_get_products' ) ) {
-			return null;
-		}
-
-		// Search by SKU first
-		$prods = wc_get_products(
-			array(
-				'sku'    => $sku,
-				'limit'  => 1,
-				'return' => 'objects',
-			)
-		);
-
-		if ( is_array( $prods ) && ! empty( $prods ) && is_object( $prods[0] ) ) {
-			$prod = $prods[0];
-			if ( (int) get_post_meta( $prod->get_id(), '_statement_client_demo', true ) === 1 ) {
-				return $prod;
-			}
-		}
-
-		// Search by slug
-		$prods_slug = wc_get_products(
-			array(
-				'slug'   => $slug,
-				'limit'  => 1,
-				'return' => 'objects',
-			)
-		);
-
-		if ( is_array( $prods_slug ) && ! empty( $prods_slug ) && is_object( $prods_slug[0] ) ) {
-			$prod = $prods_slug[0];
-			// Safety: Reject QA fixtures
-			$title = $prod->get_name();
-			if ( 0 === strpos( $title, 'TEST —' ) || (int) get_post_meta( $prod->get_id(), '_statement_fixture', true ) === 1 ) {
-				return null;
-			}
-			return $prod;
-		}
-
-		return null;
-	}
-
-	/**
-	 * Create or update product safely preserving admin modifications.
+	 * Create or update product safely preserving admin modifications and canonical Core contracts.
 	 *
 	 * @param array<string, mixed> $spec Product spec.
 	 * @param array<string, string> $hashes Hashes reference.
@@ -438,12 +572,12 @@ final class DemoSeederService {
 		$existing = self::find_owned_product( $spec['sku'], $spec['slug'] );
 		$product  = is_object( $existing ) ? $existing : new \WC_Product_Variable();
 
-		$is_new = ! is_object( $existing ) || $existing->get_id() < 1;
+		$is_new = ! is_object( $existing ) || ! method_exists( $existing, 'get_id' ) || $existing->get_id() < 1;
 
 		$content_key  = 'prod_' . $spec['slug'];
 		$content_hash = md5( $spec['title'] . '|' . $spec['short_desc'] . '|' . $spec['desc'] );
 
-		$should_update_content = $is_new || ! isset( $hashes[ $content_key ] ) || $hashes[ $content_key ] === md5( $product->get_name() . '|' . $product->get_short_description() . '|' . $product->get_description() );
+		$should_update_content = $is_new || ! isset( $hashes[ $content_key ] ) || $hashes[ $content_key ] === md5( (string) $product->get_name() . '|' . (string) $product->get_short_description() . '|' . (string) $product->get_description() );
 
 		if ( $should_update_content ) {
 			$product->set_name( $spec['title'] );
@@ -475,19 +609,23 @@ final class DemoSeederService {
 		$attribute->set_variation( true );
 		$product->set_attributes( array( $attribute ) );
 
-		$product_id = $product->save();
+		$product_id = (int) $product->save();
 
-		// Metadata
+		// Metadata & Canonical Core Contract
 		update_post_meta( $product_id, '_statement_client_demo', 1 );
 		update_post_meta( $product_id, '_statement_demo_price', 1 );
 		update_post_meta( $product_id, '_statement_demo_stock', 1 );
 		update_post_meta( $product_id, '_statement_demo_measurements', 1 );
-		update_post_meta( $product_id, Metadata::EDITION_KEY, $spec['edition'] );
-		Metadata::set_release_state( $product, ReleaseState::LIVE );
+
+		// Set canonical edition label via Core Metadata API
+		if ( class_exists( Metadata::class ) ) {
+			Metadata::set_edition_label( $product, $spec['edition'] );
+			Metadata::set_release_state( $product, ReleaseState::LIVE );
+		}
 		$product->save();
 
 		// Taxonomy Drop
-		if ( $spec['drop_id'] > 0 ) {
+		if ( $spec['drop_id'] > 0 && function_exists( 'wp_set_object_terms' ) ) {
 			wp_set_object_terms( $product_id, array( $spec['drop_id'] ), Taxonomy::KEY, false );
 		}
 
@@ -520,7 +658,7 @@ final class DemoSeederService {
 		$variation->set_stock_status( 'instock' );
 		$variation->set_status( 'publish' );
 
-		$saved_id = $variation->save();
+		$saved_id = (int) $variation->save();
 
 		update_post_meta( $saved_id, '_statement_client_demo', 1 );
 		update_post_meta( $saved_id, '_statement_demo_stock', 1 );
@@ -556,13 +694,22 @@ final class DemoSeederService {
 		);
 
 		// About Page
-		$about_content = "<p class=\"statement-lead\">Statement approaches clothing through considered releases, distinct graphics and a focus on the object itself.</p>\n<p>Each release is developed as an isolated study in form, fabric, and surface geometry.</p>";
+		$about_content = "<p class=\"statement-lead\">Statement approaches clothing as objects of identity rather than volume-driven basics.</p>\n<p>Each release is developed as an isolated study in form, fabric, and surface geometry.</p>";
 		$pages['about'] = self::create_or_update_page(
 			'about',
-			'About Statement',
+			'About',
 			$about_content,
-			'default',
-			$media['brand_patch_palm'] ?? 0
+			'page-about.php',
+			$media['patch_palm'] ?? 0
+		);
+
+		// Contact Page
+		$pages['contact'] = self::create_or_update_page(
+			'contact',
+			'Contact',
+			'<p class=\"statement-lead\">For product, order, press or general enquiries.</p>',
+			'page-contact.php',
+			$media['wordmark'] ?? 0
 		);
 
 		// Journal Index Page
@@ -571,7 +718,7 @@ final class DemoSeederService {
 			'Journal',
 			'',
 			'default',
-			$media['wordmark'] ?? 0
+			$media['insignia_vector'] ?? 0
 		);
 
 		$report['pages'] = $pages;
@@ -588,12 +735,12 @@ final class DemoSeederService {
 		$posts = array();
 
 		// Post 01: STUDY & FORM
-		$p1_content = "<p class=\"statement-lead\">A photographic record of Drop 001 — Monogram Study. Built around repeating surface, structural wool, and contrasting sleeve paneling.</p>";
+		$p1_content = "<p class=\"statement-lead\">Monogram Study — Drop 001 exploring repeat surface pattern, structured wool weights, and sharp silhouette lines.</p>";
 		$post1_id = self::create_or_update_post(
 			'study-and-form-monogram-study',
-			'STUDY & FORM',
+			'STUDY & FORM — MONOGRAM STUDY',
 			$p1_content,
-			$media['monogram_flatlay_slate'] ?? 0
+			$media['monogram_concrete'] ?? 0
 		);
 		$posts['study_and_form'] = $post1_id;
 
@@ -611,11 +758,79 @@ final class DemoSeederService {
 	}
 
 	/**
+	 * Seed default Hero Slider Theme Mods if not already customized by store operator.
+	 *
+	 * @param array<string, int>   $media Media dictionary.
+	 * @param array<string, mixed> $report Report array reference.
+	 */
+	private static function seed_slider_theme_mods( array $media, array &$report ): void {
+		if ( ! function_exists( 'get_theme_mod' ) || ! function_exists( 'set_theme_mod' ) ) {
+			return;
+		}
+
+		$slider_defaults = array(
+			1 => array(
+				'image'   => $media['hood_front'] ?? 0,
+				'eyebrow' => 'DROP 001',
+				'heading' => 'MONOGRAM STUDY',
+				'link'    => '/drops/',
+				'cta'     => 'EXPLORE RELEASE',
+				'focal'   => 'center 25%',
+			),
+			2 => array(
+				'image'   => $media['monogram_front'] ?? 0,
+				'eyebrow' => 'PIECE 01',
+				'heading' => 'MONOGRAM JACQUARD',
+				'link'    => '/shop/',
+				'cta'     => 'VIEW PIECE',
+				'focal'   => 'center 25%',
+			),
+			3 => array(
+				'image'   => $media['hood_cathedral'] ?? 0,
+				'eyebrow' => 'PIECE 02',
+				'heading' => 'PANELLED HOOD',
+				'link'    => '/shop/',
+				'cta'     => 'VIEW PIECE',
+				'focal'   => 'center 25%',
+			),
+			4 => array(
+				'image'   => $media['dust_bag'] ?? 0,
+				'eyebrow' => 'EDITION PROVENANCE',
+				'heading' => 'CRAFTED. NOT MASS MADE.',
+				'link'    => '/about/',
+				'cta'     => 'READ ABOUT',
+				'focal'   => 'center 45%',
+			),
+		);
+
+		$seeded_count = 0;
+		foreach ( $slider_defaults as $index => $defaults ) {
+			$mod_key = "statement_hero_slide_{$index}_heading";
+			$existing_heading = get_theme_mod( $mod_key, '' );
+			if ( empty( $existing_heading ) ) {
+				if ( $defaults['image'] > 0 ) {
+					set_theme_mod( "statement_hero_slide_{$index}_image", $defaults['image'] );
+				}
+				set_theme_mod( "statement_hero_slide_{$index}_eyebrow", $defaults['eyebrow'] );
+				set_theme_mod( "statement_hero_slide_{$index}_heading", $defaults['heading'] );
+				set_theme_mod( "statement_hero_slide_{$index}_link", $defaults['link'] );
+				set_theme_mod( "statement_hero_slide_{$index}_cta", $defaults['cta'] );
+				set_theme_mod( "statement_hero_slide_{$index}_focal", $defaults['focal'] );
+				$seeded_count++;
+			}
+		}
+
+		$report['slider'] = array(
+			'seeded_slides' => $seeded_count,
+		);
+	}
+
+	/**
 	 * Create or update standard page.
 	 */
 	private static function create_or_update_page( string $slug, string $title, string $content, string $template = 'default', int $feat_id = 0 ): int {
 		$page    = function_exists( 'get_page_by_path' ) ? get_page_by_path( $slug, OBJECT, array( 'page' ) ) : null;
-		$page_id = is_object( $page ) ? (int) $page->ID : 0;
+		$page_id = is_object( $page ) && isset( $page->ID ) ? (int) $page->ID : 0;
 
 		$data = array(
 			'post_title'     => $title,
@@ -626,14 +841,14 @@ final class DemoSeederService {
 			'comment_status' => 'closed',
 		);
 
-		if ( $page_id > 0 ) {
+		if ( $page_id > 0 && function_exists( 'wp_update_post' ) ) {
 			$data['ID'] = $page_id;
 			wp_update_post( $data );
-		} else {
+		} elseif ( function_exists( 'wp_insert_post' ) ) {
 			$page_id = wp_insert_post( $data );
 		}
 
-		if ( $feat_id > 0 ) {
+		if ( $feat_id > 0 && function_exists( 'set_post_thumbnail' ) ) {
 			set_post_thumbnail( $page_id, $feat_id );
 		}
 
@@ -648,7 +863,7 @@ final class DemoSeederService {
 	 */
 	private static function create_or_update_post( string $slug, string $title, string $content, int $feat_id = 0 ): int {
 		$post    = function_exists( 'get_page_by_path' ) ? get_page_by_path( $slug, OBJECT, array( 'post' ) ) : null;
-		$post_id = is_object( $post ) ? (int) $post->ID : 0;
+		$post_id = is_object( $post ) && isset( $post->ID ) ? (int) $post->ID : 0;
 
 		$data = array(
 			'post_title'     => $title,
@@ -659,14 +874,14 @@ final class DemoSeederService {
 			'comment_status' => 'closed',
 		);
 
-		if ( $post_id > 0 ) {
+		if ( $post_id > 0 && function_exists( 'wp_update_post' ) ) {
 			$data['ID'] = $post_id;
 			wp_update_post( $data );
-		} else {
+		} elseif ( function_exists( 'wp_insert_post' ) ) {
 			$post_id = wp_insert_post( $data );
 		}
 
-		if ( $feat_id > 0 ) {
+		if ( $feat_id > 0 && function_exists( 'set_post_thumbnail' ) ) {
 			set_post_thumbnail( $post_id, $feat_id );
 		}
 

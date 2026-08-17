@@ -6,15 +6,15 @@ import test from 'node:test';
 const root = resolve(import.meta.dirname, '..');
 const themeDir = resolve(root, 'wp-content', 'themes', 'statement-collector-theme');
 
-test('M14 Storefront Hardening: Theme Version & Constant Invariants (0.13.0-rc.7)', () => {
+test('M14 Storefront Hardening: Theme Version & Constant Invariants (0.13.0-rc.8)', () => {
   const styleCss = readFileSync(resolve(themeDir, 'style.css'), 'utf8');
   const functionsPhp = readFileSync(resolve(themeDir, 'functions.php'), 'utf8');
 
-  assert.match(styleCss, /Version:\s*0\.13\.0-rc\.7/i, 'style.css must specify Version: 0.13.0-rc.7');
+  assert.match(styleCss, /Version:\s*0\.13\.0-rc\.8/i, 'style.css must specify Version: 0.13.0-rc.8');
   assert.match(
     functionsPhp,
-    /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.7['"]\s*\);/,
-    'functions.php must define STATEMENT_COLLECTOR_THEME_VERSION 0.13.0-rc.7'
+    /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.8['"]\s*\);/,
+    'functions.php must define STATEMENT_COLLECTOR_THEME_VERSION 0.13.0-rc.8'
   );
 });
 
@@ -66,9 +66,9 @@ test('M14 Storefront Hardening: Editorial Fallback Navigation', () => {
   assert.ok(siteHeader.includes('render_primary_navigation();'), 'site-header.php must call render_primary_navigation()');
   assert.ok(mobileNav.includes('render_mobile_primary_navigation();'), 'mobile-navigation.php must call render_mobile_primary_navigation()');
 
-  // Verify no dead links to uncreated pages
-  assert.ok(!navPhp.includes('/journal/'), 'Navigation must not link to uncreated /journal/');
-  assert.ok(!navPhp.includes('/about/'), 'Navigation must not link to uncreated /about/');
+  // Verify About page exists
+  assert.ok(existsSync(resolve(themeDir, 'page-about.php')), 'Theme must define page-about.php');
+  assert.ok(existsSync(resolve(themeDir, 'page-contact.php')), 'Theme must define page-contact.php');
 });
 
 test('M14 Storefront Hardening: Navigation Accessibility & Dialog Management JS', () => {

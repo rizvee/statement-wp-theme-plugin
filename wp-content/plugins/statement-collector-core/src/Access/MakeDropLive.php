@@ -147,8 +147,13 @@ final class MakeDropLive {
 		} catch ( \Throwable $e ) {
 			// Roll back any products transitioned before failure
 			foreach ( $transitioned_products as $p ) {
-				Metadata::set_release_state( $p, ReleaseState::PRIVATE_ACCESS );
-				$p->save();
+				if ( is_object( $p ) && method_exists( $p, 'update_meta_data' ) ) {
+					$p->update_meta_data( Metadata::RELEASE_STATE_KEY, ReleaseState::PRIVATE_ACCESS );
+					$p->save();
+				}
+			}
+			if ( isset( $product ) && is_object( $product ) && method_exists( $product, 'update_meta_data' ) ) {
+				$product->update_meta_data( Metadata::RELEASE_STATE_KEY, ReleaseState::PRIVATE_ACCESS );
 			}
 
 			return array(

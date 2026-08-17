@@ -52,9 +52,12 @@ final class EligibilityService {
 			}
 
 			// Resolve drop assigned to product
-			$product_id = is_numeric( $product_id_or_object ) ? (int) $product_id_or_object : $owner->get_id();
+			$product_id = is_numeric( $product_id_or_object ) ? (int) $product_id_or_object : ( method_exists( $owner, 'get_id' ) ? (int) $owner->get_id() : 0 );
+			if ( $product_id <= 0 || ! function_exists( 'wp_get_object_terms' ) ) {
+				return false;
+			}
 			$terms = wp_get_object_terms( $product_id, 'statement_drop' );
-			if ( empty( $terms ) || is_wp_error( $terms ) ) {
+			if ( empty( $terms ) || ( function_exists( 'is_wp_error' ) && is_wp_error( $terms ) ) ) {
 				return false;
 			}
 

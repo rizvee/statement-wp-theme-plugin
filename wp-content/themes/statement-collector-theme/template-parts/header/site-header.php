@@ -32,6 +32,7 @@ $cart_url    = get_cart_url();
 		</div>
 
 		<div class="statement-header-utilities" role="group" aria-label="<?php esc_attr_e( 'Site utilities', 'statement-collector-theme' ); ?>">
+			<a class="statement-header-action" href="<?php echo esc_url( get_about_url() ); ?>"><?php esc_html_e( 'About', 'statement-collector-theme' ); ?></a>
 			<button class="statement-header-action" type="button" data-dialog-open="statement-search-dialog">
 				<?php esc_html_e( 'Search', 'statement-collector-theme' ); ?>
 			</button>

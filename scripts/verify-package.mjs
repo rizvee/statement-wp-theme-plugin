@@ -91,8 +91,42 @@ export function verifyPackage(zipPath, targetExpectedVersion = null) {
     const packageRootName = topEntries[0].name;
     const packageRoot = join(extractDir, packageRootName);
 
-    if ('statement-collector-theme' !== packageRootName && 'statement-collector-core' !== packageRootName) {
+    if ('statement-collector-theme' !== packageRootName && 'statement-collector-core' !== packageRootName && 'statement-client-demo' !== packageRootName) {
       errors.push(`Invalid package root directory name: ${packageRootName}`);
+    }
+
+    if ('statement-client-demo' === packageRootName) {
+      const requiredDemo = ['statement-client-demo.php', 'src/AdminPage.php', 'src/DemoSeederService.php', 'src/ManifestService.php', 'src/AssetRegistry.php'];
+      for (const req of requiredDemo) {
+        if (!existsSync(join(packageRoot, req))) {
+          errors.push(`Packaged client demo missing required file: ${req}`);
+        }
+      }
+
+      const demoMainPath = join(packageRoot, 'statement-client-demo.php');
+      if (existsSync(demoMainPath)) {
+        const mainText = readFileSync(demoMainPath, 'utf8');
+        const hMatch = mainText.match(/^[ \t\/*#]*Version:\s*(.+)$/m);
+        if (hMatch) headerVersion = hMatch[1].trim();
+        else errors.push(`Packaged client demo statement-client-demo.php missing Version header.`);
+
+        const cMatch = mainText.match(/define\(\s*['"]STATEMENT_CLIENT_DEMO_VERSION['"]\s*,\s*['"]([^'"]+)['"]\s*\);/);
+        if (cMatch) constantVersion = cMatch[1];
+        else errors.push(`Packaged client demo statement-client-demo.php missing STATEMENT_CLIENT_DEMO_VERSION constant.`);
+      }
+
+      if (headerVersion !== constantVersion) {
+        errors.push(`Packaged client demo version mismatch between statement-client-demo.php header ("${headerVersion}") and STATEMENT_CLIENT_DEMO_VERSION ("${constantVersion}").`);
+      }
+
+      if (expectedVersion) {
+        if (headerVersion !== expectedVersion) {
+          errors.push(`Packaged client demo statement-client-demo.php Version mismatch. Found "${headerVersion}", expected "${expectedVersion}".`);
+        }
+        if (constantVersion !== expectedVersion) {
+          errors.push(`Packaged client demo STATEMENT_CLIENT_DEMO_VERSION constant mismatch. Found "${constantVersion}", expected "${expectedVersion}".`);
+        }
+      }
     }
 
     if ('statement-collector-theme' === packageRootName) {

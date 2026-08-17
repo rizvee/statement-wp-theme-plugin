@@ -47,8 +47,13 @@ require $root . '/wp-content/themes/statement-collector-theme/inc/product.php';
 statement_assert_same( true, class_exists( 'Statement\Collector\Core\Product\Access' ), 'Access class must load without WooCommerce.' );
 statement_assert_same( 1, count( $statement_actions['plugins_loaded'] ?? array() ), 'Core plugin bootstrap must remain registered once.' );
 
-statement_run_hook( 'plugins_loaded' );
-statement_assert_same( 0, count( $statement_actions['template_redirect'] ?? array() ), 'Direct-product gate must not boot while WooCommerce is absent.' );
+$product_access_callbacks = array_filter(
+	$statement_actions['template_redirect'] ?? array(),
+	static function ( $reg ) {
+		return is_array( $reg['callback'] ?? null ) && 'Statement\Collector\Core\Product\Access' === ( $reg['callback'][0] ?? null );
+	}
+);
+statement_assert_same( 0, count( $product_access_callbacks ), 'Direct-product gate must not boot while WooCommerce is absent.' );
 statement_assert_same( 0, count( $statement_filters['woocommerce_add_to_cart_validation'] ?? array() ), 'Cart guard must not boot while WooCommerce is absent.' );
 statement_assert_same( false, \Statement\Collector\Theme\is_statement_product(), 'Theme product context must degrade safely without WooCommerce.' );
 statement_assert_same( false, class_exists( 'WC_Product', false ), 'Absence safety must not instantiate or require WC_Product.' );

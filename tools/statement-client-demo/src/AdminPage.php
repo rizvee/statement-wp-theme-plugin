@@ -89,21 +89,32 @@ final class AdminPage {
 			: DemoSeederService::dry_run();
 		?>
 		<div class="wrap statement-client-demo-admin" style="max-width: 1100px;">
-			<h1><?php esc_html_e( 'Statement — Client Demo Seeder & Importer (v0.2.0)', 'statement-client-demo' ); ?></h1>
+			<h1><?php esc_html_e( 'Statement — Client Demo Seeder & Importer (v0.2.1)', 'statement-client-demo' ); ?></h1>
 			<p class="description">
 				<?php esc_html_e( 'Manage real Statement brand media, Drop 001, variable products (S/M/L), and light-first editorial pages with strict ownership safety.', 'statement-client-demo' ); ?>
 			</p>
 
 			<?php if ( isset( $_GET['seeded'] ) && is_array( $last_res ) ) : ?>
-				<div class="notice notice-success is-dismissible">
-					<p><strong><?php esc_html_e( 'Client Demo Content Successfully Seeded & Updated!', 'statement-client-demo' ); ?></strong></p>
-					<ul>
-						<li><?php printf( esc_html__( 'Media Items Imported / Reused: %d', 'statement-client-demo' ), count( $last_res['media'] ?? array() ) ); ?></li>
-						<li><?php printf( esc_html__( 'Drop ID: %d', 'statement-client-demo' ), (int) ( $last_res['drop_id'] ?? 0 ) ); ?></li>
-						<li><?php printf( esc_html__( 'Products Seeded: %d', 'statement-client-demo' ), count( $last_res['products'] ?? array() ) ); ?></li>
-						<li><?php printf( esc_html__( 'Front Page Set to: Statement Home (ID: %d)', 'statement-client-demo' ), (int) ( $last_res['pages']['statement_home'] ?? 0 ) ); ?></li>
-					</ul>
-				</div>
+				<?php if ( empty( $last_res['errors'] ) && ( $last_res['success'] ?? true ) ) : ?>
+					<div class="notice notice-success is-dismissible">
+						<p><strong><?php esc_html_e( 'Client Demo Content Successfully Seeded & Updated!', 'statement-client-demo' ); ?></strong></p>
+						<ul>
+							<li><?php printf( esc_html__( 'Media Items Imported / Reused: %d', 'statement-client-demo' ), count( $last_res['media'] ?? array() ) ); ?></li>
+							<li><?php printf( esc_html__( 'Drop ID: %d', 'statement-client-demo' ), (int) ( $last_res['drop_id'] ?? 0 ) ); ?></li>
+							<li><?php printf( esc_html__( 'Products Seeded: %d', 'statement-client-demo' ), count( $last_res['products'] ?? array() ) ); ?></li>
+							<li><?php printf( esc_html__( 'Front Page Set to: Statement Home (ID: %d)', 'statement-client-demo' ), (int) ( $last_res['pages']['statement_home'] ?? 0 ) ); ?></li>
+						</ul>
+					</div>
+				<?php else : ?>
+					<div class="notice notice-error is-dismissible">
+						<p><strong><?php esc_html_e( 'Notice during Seeding Operation:', 'statement-client-demo' ); ?></strong></p>
+						<ul>
+							<?php foreach ( (array) ( $last_res['errors'] ?? array() ) as $err ) : ?>
+								<li><?php echo esc_html( $err ); ?></li>
+							<?php endforeach; ?>
+						</ul>
+					</div>
+				<?php endif; ?>
 			<?php elseif ( isset( $_GET['repaired'] ) && is_array( $last_res ) ) : ?>
 				<div class="notice notice-success is-dismissible">
 					<p><strong><?php esc_html_e( 'Client Demo Ownership Repaired Successfully!', 'statement-client-demo' ); ?></strong></p>
@@ -115,6 +126,13 @@ final class AdminPage {
 							<?php endforeach; ?>
 						</ul>
 					<?php endif; ?>
+				</div>
+			<?php endif; ?>
+
+			<?php if ( ! empty( $dry_run_data['preflight']['has_duplicate_id'] ) || ! empty( $dry_run_data['preflight']['has_fixture_collision'] ) ) : ?>
+				<div class="notice notice-warning">
+					<p><strong><?php esc_html_e( 'Warning: Collision or Corrupted Manifest Detected', 'statement-client-demo' ); ?></strong></p>
+					<p><?php esc_html_e( 'Click "Repair Client Demo Ownership" to automatically decouple unowned or duplicate entities without altering QA test fixtures.', 'statement-client-demo' ); ?></p>
 				</div>
 			<?php endif; ?>
 
@@ -148,7 +166,7 @@ final class AdminPage {
 								</tr>
 								<tr>
 									<td><strong><?php esc_html_e( 'Pages', 'statement-client-demo' ); ?></strong></td>
-									<td>Home, Drops, About, Journal</td>
+									<td>Home, Drops, About, Contact, Journal</td>
 									<td><?php esc_html_e( 'Configured & Verified', 'statement-client-demo' ); ?></td>
 								</tr>
 								<tr>

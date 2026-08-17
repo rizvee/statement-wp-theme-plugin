@@ -66,8 +66,8 @@ $query = new Statement_Drop_Privacy_Query_Double();
 $clause = $query->get( 'meta_query' )[0] ?? array();
 
 statement_assert_same( '_statement_release_state', $clause['key'] ?? null, 'Drop privacy must use the canonical release-state key before selection.' );
-statement_assert_same( 'LIVE', $clause['value'] ?? null, 'Drop privacy must require LIVE before selection.' );
-statement_assert_same( '=', $clause['compare'] ?? null, 'Drop privacy must use an exact state comparison.' );
+statement_assert_same( array( 'LIVE', 'SOLD_OUT' ), $clause['value'] ?? null, 'Drop privacy must allow LIVE and SOLD_OUT states.' );
+statement_assert_same( 'IN', $clause['compare'] ?? null, 'Drop privacy must use IN comparison.' );
 
 $records = array(
 	array( 'id' => 1, 'title' => 'Live Piece', 'state' => 'LIVE' ),
@@ -81,24 +81,24 @@ $eligible = array_values(
 	array_filter(
 		$records,
 		static function ( array $record ) use ( $clause ): bool {
-			return '=' === ( $clause['compare'] ?? null ) && ( $clause['value'] ?? null ) === $record['state'];
+			return in_array( $record['state'], (array) ( $clause['value'] ?? array() ), true );
 		}
 	)
 );
 
-statement_assert_same( array( 1 ), array_column( $eligible, 'id' ), 'Mixed Drop data must expose only the LIVE product.' );
-statement_assert_same( array( 'Live Piece' ), array_column( $eligible, 'title' ), 'Hidden product titles must not pass the query constraint.' );
+statement_assert_same( array( 1, 4 ), array_column( $eligible, 'id' ), 'Mixed Drop data must expose LIVE and SOLD_OUT products.' );
+statement_assert_same( array( 'Live Piece', 'Sold Piece' ), array_column( $eligible, 'title' ), 'Hidden product titles must not pass the query constraint.' );
 
-$hidden_only = array_slice( $records, 1 );
+$hidden_only = array( $records[1], $records[2], $records[4], $records[5] );
 $hidden_eligible = array_values(
 	array_filter(
 		$hidden_only,
 		static function ( array $record ) use ( $clause ): bool {
-			return ( $clause['value'] ?? null ) === $record['state'];
+			return in_array( $record['state'], (array) ( $clause['value'] ?? array() ), true );
 		}
 	)
 );
-statement_assert_same( array(), $hidden_eligible, 'A Drop containing no LIVE products must yield no product results.' );
+statement_assert_same( array(), $hidden_eligible, 'A Drop containing no public products must yield no product results.' );
 statement_assert_same( false, in_array( 2, array_column( $eligible, 'id' ), true ), 'PRIVATE_ACCESS product ID must not pass the query constraint.' );
 statement_assert_same( false, in_array( 'Private Piece', array_column( $eligible, 'title' ), true ), 'PRIVATE_ACCESS title must not pass the query constraint.' );
 

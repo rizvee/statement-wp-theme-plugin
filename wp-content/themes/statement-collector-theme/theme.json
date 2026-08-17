@@ -40,22 +40,22 @@
       "fontFamilies": [
         {
           "slug": "display",
-          "name": "Display / Editorial",
+          "name": "Display / Editorial Accent",
           "fontFamily": "\"Instrument Serif\", \"Iowan Old Style\", \"Times New Roman\", serif"
         },
         {
           "slug": "ui",
-          "name": "UI / Body",
+          "name": "Contemporary Sans / Primary UI",
           "fontFamily": "Inter, \"Helvetica Neue\", Arial, sans-serif"
         }
       ],
       "fontSizes": [
-        { "slug": "small", "name": "Small", "size": "clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem)" },
-        { "slug": "body", "name": "Body", "size": "clamp(1rem, 0.96rem + 0.18vw, 1.125rem)" },
-        { "slug": "lead", "name": "Lead", "size": "clamp(1.125rem, 1.02rem + 0.45vw, 1.375rem)" },
-        { "slug": "heading-small", "name": "Heading Small", "size": "clamp(1.375rem, 1.15rem + 0.85vw, 1.875rem)" },
-        { "slug": "heading", "name": "Heading", "size": "clamp(1.875rem, 1.4rem + 1.8vw, 3rem)" },
-        { "slug": "display", "name": "Display", "size": "clamp(2.5rem, 1.65rem + 3.2vw, 4.5rem)" }
+        { "slug": "small", "name": "Small", "size": "clamp(0.75rem, 0.72rem + 0.1vw, 0.8125rem)" },
+        { "slug": "body", "name": "Body", "size": "clamp(0.9375rem, 0.9rem + 0.15vw, 1.0625rem)" },
+        { "slug": "lead", "name": "Lead", "size": "clamp(1.0625rem, 1rem + 0.35vw, 1.25rem)" },
+        { "slug": "heading-small", "name": "Heading Small", "size": "clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem)" },
+        { "slug": "heading", "name": "Heading", "size": "clamp(1.75rem, 1.35rem + 1.5vw, 2.75rem)" },
+        { "slug": "display", "name": "Display", "size": "clamp(2.5rem, 1.75rem + 3vw, 4.5rem)" }
       ]
     }
   }

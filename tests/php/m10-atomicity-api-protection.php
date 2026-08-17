@@ -37,10 +37,10 @@ function statement_assert_same( $expected, $actual, string $message ): void {
 $public_args = Visibility::filter_public_rest_query( array( 'post_type' => 'product' ) );
 statement_assert_same( true, is_array( $public_args['meta_query'] ?? null ), 'REST query filter must append meta_query array.' );
 statement_assert_same( Metadata::RELEASE_STATE_KEY, $public_args['meta_query'][0]['key'], 'REST query filter must query release state key.' );
-statement_assert_same( ReleaseState::LIVE, $public_args['meta_query'][0]['value'], 'REST query filter must restrict to LIVE state for public requests.' );
+statement_assert_same( array( ReleaseState::LIVE, ReleaseState::SOLD_OUT ), $public_args['meta_query'][0]['value'], 'REST query filter must restrict to LIVE and SOLD_OUT states for public requests.' );
 
 $store_api_args = Visibility::filter_public_store_api_query( array( 'post_type' => 'product' ) );
-statement_assert_same( ReleaseState::LIVE, $store_api_args['meta_query'][0]['value'], 'Store API query filter must restrict to LIVE state for public requests.' );
+statement_assert_same( array( ReleaseState::LIVE, ReleaseState::SOLD_OUT ), $store_api_args['meta_query'][0]['value'], 'Store API query filter must restrict to LIVE and SOLD_OUT states for public requests.' );
 
 // 2. MakeDropLive Atomicity & Rollback Verification
 class MockProductForAtomicity {
@@ -98,7 +98,7 @@ if ( ! function_exists( 'wc_get_product' ) ) {
 }
 
 // Execute MakeDropLive with injected failure on Product 102
-$result = MakeDropLive::execute( 50, time() );
+$result = MakeDropLive::execute_transition( 50, time() );
 
 statement_assert_same( false, $result['ok'], 'MakeDropLive execute must return ok=false when product save fails midway.' );
 statement_assert_same( 0, $result['transitioned_count'], 'Transitioned count must be 0 when atomic rollback occurs.' );

@@ -27,11 +27,19 @@ h3,
 h4,
 h5,
 h6 {
+	font-family: var(--wp--preset--font-family--ui);
+	font-weight: 500;
+	line-height: 1.15;
+	letter-spacing: -0.02em;
+	color: var(--wp--preset--color--near-black);
+	margin-block-start: 0;
+}
+
+.statement-editorial-serif {
 	font-family: var(--wp--preset--font-family--display);
 	font-weight: 400;
-	line-height: 1.1;
+	font-style: italic;
 	letter-spacing: -0.01em;
-	color: var(--wp--preset--color--near-black);
 }
 
 img,

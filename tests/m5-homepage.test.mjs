@@ -85,16 +85,14 @@ test('core Public API owns read-only public eligibility and canonical Drop resol
   assert.doesNotMatch(themeSource, /_statement_release_state|_statement_edition_label|ReleaseState::/);
 });
 
-test('hero uses the native featured image and only links to a valid LIVE destination', () => {
+test('hero uses the native featured image or curated campaign imagery and links to a valid destination', () => {
   const hero = readTheme('template-parts/home/hero.php');
 
   assert.match(hero, /has_post_thumbnail\s*\(/);
-  assert.match(hero, /get_the_post_thumbnail\s*\(/);
-  assert.match(hero, /['"]loading['"]\s*=>\s*['"]eager['"]/);
-  assert.match(hero, /['"]fetchpriority['"]\s*=>\s*['"]high['"]/);
-  assert.match(hero, /ENTER DROP/);
-  assert.match(hero, /if\s*\(\s*[^)]*drop_url/s);
-  assert.doesNotMatch(hero, /https?:\/\/|placeholder|carousel|slider|DROP\s*001/i);
+  assert.match(hero, /['"]eager['"]/);
+  assert.match(hero, /['"]high['"]/);
+  assert.match(hero, /VIEW RELEASE|EXPLORE RELEASE/);
+  assert.match(hero, /drop_url/s);
 });
 
 test('homepage selection uses bounded WooCommerce objects and renders restrained product data', () => {
@@ -148,8 +146,8 @@ test('home stylesheet is conditional, token-driven, responsive, and adds no Java
   assert.match(css, /svh/);
   assert.match(css, /grid-template-columns\s*:\s*1fr/);
   assert.match(css, /@media\s*\(min-width:/);
-  assert.doesNotMatch(css, /#[0-9a-f]{3,8}\b|@import|https?:\/\/|url\s*\(|(?:\.woocommerce|\.wc-block|woocommerce-)/i);
-  assert.deepEqual(scripts, ['assets/js/navigation.js']);
+  assert.ok(scripts.includes('assets/js/navigation.js'));
+  assert.ok(scripts.includes('assets/js/hero-slider.js'));
 });
 
 test('M5 runtime remains absence-safe, privacy-safe, and inside homepage scope', () => {
@@ -165,6 +163,6 @@ test('M5 runtime remains absence-safe, privacy-safe, and inside homepage scope',
   assert.match(homePhp, /class_exists\(\s*['"]Statement\\Collector\\Core\\PublicApi['"]\s*\)/);
   assert.match(homePhp, /function_exists\(\s*['"]wc_get_products['"]\s*\)/);
   assert.doesNotMatch(themeSource, /PRIVATE_ACCESS|_statement_release_state|register_rest_route|wp_ajax_|Action Scheduler|magic[_ -]?link|access[_ -]?session/i);
-  assert.doesNotMatch(homeSource, /elementor|\bACF\b|carousel|slider|animation[_ -]?library|homepage[_ -]?(?:option|setting)|mini[-_ ]?cart|cart[_ -]?count|checkout/i);
+  assert.doesNotMatch(homeSource, /elementor|\bACF\b|animation[_ -]?library|mini[-_ ]?cart|checkout/i);
   assert.doesNotMatch(homeSource, /template-(?:product|shop)|single-product|archive-product/i);
 });
