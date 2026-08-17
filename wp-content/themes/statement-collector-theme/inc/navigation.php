@@ -140,7 +140,7 @@ function render_site_brand(): void {
 	} else {
 		?>
 		<a class="statement-brand-link" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
-			<span class="statement-brand-title"><?php echo esc_html( $site_name ); ?></span>
+			<span class="statement-brand-wordmark"><?php echo esc_html( '' !== trim( $site_name ) ? $site_name : __( 'STATEMENT', 'statement-collector-theme' ) ); ?></span>
 		</a>
 		<?php
 	}

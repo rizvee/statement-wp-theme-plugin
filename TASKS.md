@@ -1,4 +1,19 @@
-# Current Priority — Client Visual Delivery
+# Current Priority — Client Visual Delivery & Production Preparation
+
+## CLIENT VISUAL DELIVERY — VISUAL SPRINT 03 / OVERNIGHT MEGA BUILD COMPLETE (2026-08-17)
+
+Status: complete (Theme Candidate 0.13.0-rc.7 + Core Plugin 0.13.0-rc.10 + Client Demo 0.2.0 ready for Atomic deployment)
+
+- [x] Homepage Release Contract Enforced: Strict 6-part layout locked (Header -> Current Offer/Hero -> Active Drop -> Featured 2 Pieces -> Email Capture -> Minimal Footer). Off-home content (Lookbook, Brand Object, Principle) migrated to dedicated journal templates.
+- [x] Typographical Brand Wordmark: Replaced cramped logo markup with elegant, letter-spaced `STATEMENT` typography in both desktop and mobile headers.
+- [x] Responsive Focal Positioning & Sizing: Replaced hardcoded hero crops with responsive focal alignment (`object-position: center top / 76svh`), eliminated mobile horizontal scrollbars, and enforced 320px responsive container boundaries.
+- [x] Public Catalog Isolation: Excluded QA fixtures (`TEST-` products and `test-` drops) from all public storefront queries (`Visibility::filter_public_catalog_posts_clauses`) while preserving direct lookup capabilities.
+- [x] Drops Page Resolution: Repaired `/drops/` (`page-drops.php`) with robust `PublicApi::get_current_drop()` queries and past drop history presentation.
+- [x] Production Email Signup Engine (Mode A / B / C): Built `SignupService.php` with POST+303 PRG, CSRF nonces, IP rate limiting, SecretVault encryption, and automated Private Access session grant.
+- [x] Admin Inventory Lifecycle v2 Controls: Implemented `LifecycleV2Admin.php` allowing privileged overrides (Reopen SOLD_OUT, Reopen ARCHIVED, Set PRIVATE_ACCESS) with mandatory confirmation notes and structured audit logs.
+- [x] Client Demo Ownership & Deterministic SKUs: Built `statement-client-demo` v0.2.0 with strict `_statement_client_demo = 1` ownership checking, deterministic SKUs (`STMT-CD-D001-MJ`, `STMT-CD-D001-PHJ`), collision repair against Product 213, and admin UI.
+- [x] Theme Asset Optimization: Removed duplicate product media from Theme package to reduce ZIP to ~548KB while delegating high-res demo product media injection to Client Demo tool.
+- [x] Full Verification & Testing: 136/136 test suites passing (100% green), 97 PHP files linted cleanly, packaging verifier passing with zero errors.
 
 ## CLIENT VISUAL DELIVERY — VISUAL SPRINT 02 COMPLETE (2026-08-16)
 

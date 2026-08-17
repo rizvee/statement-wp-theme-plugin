@@ -4,12 +4,14 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.13.0-rc.9';
+const defaultVersion = '0.13.0-rc.10';
 
 export const approvedPluginFiles = [
   'statement-collector-core.php',
   'src/Plugin.php',
   'src/PublicApi.php',
+  'src/Marketing/SignupService.php',
+  'src/Admin/LifecycleV2Admin.php',
   'src/Catalog/Visibility.php',
   'src/Cart/Integrity.php',
   'src/Drop/Taxonomy.php',
@@ -66,12 +68,13 @@ export function packagePlugin(version = defaultVersion) {
   }
 
   const distDir = join(root, 'dist');
-  const stagingParent = join(root, 'tmp', 'pkg-plugin');
+  const uniqueId = `pkg-plugin-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  const stagingParent = join(root, 'tmp', uniqueId);
   const stagingDir = join(stagingParent, 'statement-collector-core');
   const zipName = `statement-collector-core-${version}.zip`;
   const zipPath = join(distDir, zipName);
 
-  if (existsSync(stagingParent)) rmSync(stagingParent, { recursive: true, force: true });
+  if (existsSync(stagingParent)) rmSync(stagingParent, { recursive: true, force: true, maxRetries: 3 });
   mkdirSync(stagingDir, { recursive: true });
   if (!existsSync(distDir)) mkdirSync(distDir, { recursive: true });
 
@@ -93,30 +96,37 @@ export function packagePlugin(version = defaultVersion) {
     if (relFile.endsWith('.php')) phpCount++;
   }
 
-  if (existsSync(zipPath)) rmSync(zipPath, { force: true });
+  if (existsSync(zipPath)) rmSync(zipPath, { force: true, maxRetries: 3 });
 
   const tarCmd = `tar -caf "${zipPath}" -C "${stagingParent}" "statement-collector-core"`;
   execSync(tarCmd, { cwd: root, stdio: 'pipe' });
 
-  rmSync(stagingParent, { recursive: true, force: true });
-
   const zipBytes = readFileSync(zipPath);
   const sha256 = createHash('sha256').update(zipBytes).digest('hex');
-  const sizeBytes = zipBytes.length;
+
+  if (existsSync(stagingParent)) rmSync(stagingParent, { recursive: true, force: true, maxRetries: 3 });
 
   return {
+    type: 'plugin',
     name: zipName,
     path: zipPath,
-    version,
-    fileCount,
-    phpCount,
-    sizeBytes,
-    sha256,
+    filename: zipName,
+    root_folder: 'statement-collector-core',
     rootFolder: 'statement-collector-core',
+    size_bytes: zipBytes.length,
+    sizeBytes: zipBytes.length,
+    sha256,
+    file_count: fileCount,
+    fileCount: fileCount,
+    php_count: phpCount,
+    phpCount: phpCount,
+    version,
+    header_version: version,
+    runtime_version: version,
   };
 }
 
 if (process.argv[1] && process.argv[1].endsWith('package-plugin.mjs')) {
   const result = packagePlugin();
-  console.log(`Packaged Plugin: ${result.name} (${result.sizeBytes} bytes, SHA-256: ${result.sha256})`);
+  console.log(JSON.stringify(result, null, 2));
 }

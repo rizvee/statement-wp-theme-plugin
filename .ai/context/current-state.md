@@ -1,6 +1,6 @@
 # Current State
 
-Updated: 2026-08-16
+Updated: 2026-08-17
 
 ## Repository
 
@@ -27,24 +27,25 @@ Updated: 2026-08-16
 - M13 Phase 5B2 verified rc.8 runtime stopped at the anonymous boundary: Drop, Store API, WP REST/search, and PDP protected facts passed, but Jetpack stats leaked the private request slug via `arch_err`. Local Core `0.13.0-rc.9` scrubs WordPress request state and `REQUEST_URI` before footer integrations. QA identity and all grant/session/cache/cart/checkout paths remain untouched.
 - M13 Phase 5B2 Fixture 0.3.3 Upgrades & Live Execution: Upgraded fixtures to 0.3.3 on Atomic (`https://mystatement.store/`). Verified `RUN EXPIRY TEST` with `RUNTIME_PASS` (earlier close shortened effective authorization, later close preserved immutable grant, original config restored). Verified `RUN REMINDER TEST` with `RUNTIME_PASS` (action scheduled cleanly and auto-cancelled on Add to Bag).
 - M14 Storefront Hardening (COMPLETE): Upgraded theme presentation to `0.13.0-rc.4` across `style.css`, `functions.php`, packaging scripts, and tests. Verified live on Atomic. Implemented editorial fallback navigation, dialog backdrop click and body scroll locking, WooCommerce notice standardization, status badges, cart 320px responsive overflow protection, Order Received / My Account provenance presentation, and comprehensive verification suite (`tests/m14-theme-hardening.test.mjs`).
-- Visual Sprint 01 & 02 (COMPLETE): Theme upgraded to `0.13.0-rc.6`. Audited real brand assets from WhatsApp photo archive (18 curated derivative images integrated). Built Statement Client Demo Plugin v0.1.0 (`tools/statement-client-demo/`) for idempotent, manifest-driven demo content seeding with rollback preservation. Overhauled homepage with luxury Lookbook magazine grid and Brand Object ("The Object") packaging section. Added dedicated `/drops/` directory (`page-drops.php`), accessible Size Guide dialog on PDP with CM measurements table, and high-priority front-page template ownership guards (P0 Elementor isolation). Standardized all customer-facing branding to **"CRAFTED. NOT MASS MADE."**
+- Visual Sprint 01 & 02 (COMPLETE): Theme upgraded to `0.13.0-rc.6`. Audited real brand assets from WhatsApp photo archive. Built Statement Client Demo Plugin v0.1.0 (`tools/statement-client-demo/`) for idempotent, manifest-driven demo content seeding with rollback preservation. Overhauled homepage with luxury Lookbook magazine grid and Brand Object ("The Object") packaging section. Added dedicated `/drops/` directory (`page-drops.php`), accessible Size Guide dialog on PDP with CM measurements table, and high-priority front-page template ownership guards (P0 Elementor isolation). Standardized all customer-facing branding to **"CRAFTED. NOT MASS MADE."**
+- Visual Sprint 03 / Overnight Mega Build (COMPLETE): Theme promoted to `0.13.0-rc.7`, Core promoted to `0.13.0-rc.10`, Client Demo promoted to `0.2.0`. Strictly locked homepage release contract (6-part layout: Header, Hero, Active Drop, Featured 2 Pieces, Email Capture, Minimal Footer). Migrated off-home editorial sections (Lookbook, Brand Object, Principle) to dedicated Journal template (`single.php` / `page.php`). Implemented Typographical Brand Wordmark `STATEMENT`, responsive focal positioning (76svh hero), public catalog query isolation against QA fixtures (`Visibility::filter_public_catalog_posts_clauses`), repaired `/drops/` index, built production Mode A/B/C Email Signup Engine with SecretVault encryption (`SignupService.php`), implemented privileged Inventory Lifecycle v2 Admin overrides (`LifecycleV2Admin.php`) with structured audit logs, enforced strict Client Demo deterministic ownership (`_statement_client_demo = 1` and `STMT-CD-D001-*` SKUs) with collision repair, and slimmed theme ZIP to ~548KB.
 
 ## Local environment
 
 - Available: Git 2.45.1, Node.js 22.17.0, npm 11.15.0, ripgrep 15.1.0, bsdtar 3.5.2 (`tar.exe`).
 - Local lint runtime: PHP 8.3.33 CLI, x64 NTS, under ignored `.local-tools/php/`.
 - `scripts/php-lint.mjs` resolves `PHP_BIN`, then project-local PHP on Windows, then PHP on `PATH`.
-- PHP syntax verification passes for all 91 first-party runtime and demo PHP files.
+- PHP syntax verification passes for all 97 first-party runtime and demo PHP files.
 
 ## Deployment state
 
-`https://mystatement.store/` is hosted on WordPress.com Atomic. Core `0.13.0-rc.9` is verified active with Fixtures `0.3.3` active on Atomic, Theme `0.13.0-rc.4` active, Secret Vault initialized (xchacha20-poly1305), and private fixture adopted and recovered (`Product ID: 213`, `Drop ID: 1376`). GitHub repository `https://github.com/rizvee/statement-wp-theme-plugin.git` is synchronized with local `main`.
+`https://mystatement.store/` is hosted on WordPress.com Atomic. Core `0.13.0-rc.9` is active with Fixtures `0.3.3` active on Atomic, Theme `0.13.0-rc.4` active, Secret Vault initialized (xchacha20-poly1305), and private fixture adopted and recovered (`Product ID: 213`, `Drop ID: 1376`). Synchronized with GitHub `https://github.com/rizvee/statement-wp-theme-plugin.git`.
 
-- **Theme Candidate**: `statement-collector-theme-0.13.0-rc.6.zip` (4,092,615 bytes, SHA-256: `fd94b6c5f6149d2a89e8eeb9e6b11938bb3326dd98780068b5130a9a58dfa203`)
-- **Core Candidate**: `statement-collector-core-0.13.0-rc.9.zip` (66,731 bytes, SHA-256: `45f940b3e885524c567c138237eeb61336ae8262a6714ea154695446d3f40b70`)
-- **Client Demo Candidate**: `statement-client-demo-0.1.0.zip` (4,049,277 bytes, SHA-256: `f044694c191fc0284a34f963555c3507f2921f010e1605c982eb9c00567f3efe`)
+- **Theme Candidate**: `statement-collector-theme-0.13.0-rc.7.zip` (548,949 bytes, SHA-256: `687e51a2b31b87e5f407ea0982d10d593984590711055a3fccc563b0a14c7b09`)
+- **Core Candidate**: `statement-collector-core-0.13.0-rc.10.zip` (72,593 bytes, SHA-256: `2aaa184bf3d1d00707eaeecc32cb79daf202e8ca550e99424a47e70bc920ea45`)
+- **Client Demo Candidate**: `statement-client-demo-0.2.0.zip` (4,050,773 bytes, SHA-256: `60eb50fbd1b7c6b5d20f1de366c54a89e0974a2d6d198f822cd7758f621a11b5`)
 - **Fixture Candidate**: `statement-integration-fixtures-0.3.3.zip` (27,311 bytes, SHA-256: `97fbb481613fc619434e87b5d81fb3815ab7b690bd2d1e80e94dbf547ec70850`)
 
 ## Verification
 
-M1–M15 Node structural tests (132 subtests across 18 suites pass 100% clean), PHP lint (91 PHP files), `verify-foundation.mjs`, `verify-git-runtime-tracking.mjs`, QA Contract PHP tests (9 assertions), Fixture Bootstrap & QA Gateway Behavior PHP tests (19 assertions), PrivateAccessGate contract tests (14 assertions), DropConfig & Fixture Recovery behavior tests (19 assertions), Client Demo seeder tests, theme package verifier (`statement-collector-theme-0.13.0-rc.6.zip`), core plugin package verifier (`statement-collector-core-0.13.0-rc.9.zip`), client demo package verifier (`statement-client-demo-0.1.0.zip`), and master `packageAll` manifest generation pass cleanly.
+M1–M16 Node structural tests (136 subtests across 19 suites pass 100% clean), PHP lint (97 PHP files), `verify-foundation.mjs`, `verify-git-runtime-tracking.mjs`, QA Contract PHP tests (9 assertions), Fixture Bootstrap & QA Gateway Behavior PHP tests (19 assertions), PrivateAccessGate contract tests (14 assertions), DropConfig & Fixture Recovery behavior tests (19 assertions), Client Demo seeder tests, theme package verifier (`statement-collector-theme-0.13.0-rc.7.zip`), core plugin package verifier (`statement-collector-core-0.13.0-rc.10.zip`), client demo package verifier (`statement-client-demo-0.2.0.zip`), and master `packageAll` manifest generation pass cleanly.

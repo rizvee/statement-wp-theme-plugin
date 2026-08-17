@@ -25,6 +25,7 @@ final class Visibility {
 
 		self::$booted = true;
 		add_action( 'woocommerce_product_query', array( self::class, 'apply_live_constraint' ), 10, 2 );
+		add_filter( 'posts_clauses', array( self::class, 'filter_public_catalog_posts_clauses' ), 10, 2 );
 		add_filter( 'woocommerce_structured_data_product_offer', array( self::class, 'filter_structured_data_offer' ), 10, 2 );
 		add_filter( 'rest_product_query', array( self::class, 'filter_public_rest_query' ), 10, 2 );
 		add_filter( 'woocommerce_rest_product_object_query', array( self::class, 'filter_public_rest_query' ), 10, 2 );
@@ -32,6 +33,28 @@ final class Visibility {
 		add_filter( 'rest_pre_dispatch', array( self::class, 'prepare_store_api_boundary' ), 9, 3 );
 		add_filter( 'rest_post_dispatch', array( self::class, 'filter_store_api_response' ), 10, 3 );
 		add_filter( 'rest_pre_echo_response', array( self::class, 'filter_store_api_echo_data' ), 10, 3 );
+	}
+
+	/**
+	 * Exclude QA test fixtures from public customer-facing catalog loops.
+	 *
+	 * @param array $clauses Query clauses.
+	 * @param object $query WP_Query instance.
+	 * @return array
+	 */
+	public static function filter_public_catalog_posts_clauses( array $clauses, $query ): array {
+		if ( ! self::is_public_catalog_query( $query ) ) {
+			return $clauses;
+		}
+
+		global $wpdb;
+		if ( ! isset( $wpdb ) || ! is_object( $wpdb ) ) {
+			return $clauses;
+		}
+
+		$clauses['where'] .= " AND {$wpdb->posts}.post_title NOT LIKE 'TEST —%' AND {$wpdb->posts}.post_name NOT LIKE 'test-%' ";
+
+		return $clauses;
 	}
 
 	/**

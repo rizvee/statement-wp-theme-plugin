@@ -4,7 +4,6 @@
 	flex-direction: column;
 	text-decoration: none;
 	color: var(--wp--preset--color--near-black);
-	group: card;
 }
 
 .statement-card__media {

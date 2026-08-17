@@ -53,5 +53,7 @@ final class Plugin {
 		Order\AdminOrderView::boot();
 		Order\CustomerOrderView::boot();
 		Order\EmailIntegration::boot();
+		Marketing\SignupService::boot();
+		Admin\LifecycleV2Admin::boot();
 	}
 }

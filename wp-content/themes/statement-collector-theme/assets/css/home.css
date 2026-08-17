@@ -9,8 +9,8 @@
 .statement-home-hero__inner {
 	display: flex;
 	align-items: flex-end;
-	min-block-size: clamp(34rem, 85svh, 58rem);
-	padding-block: clamp(5rem, 10vw, 9rem) clamp(3rem, 6vw, 6rem);
+	min-block-size: clamp(28rem, 76svh, 50rem);
+	padding-block: clamp(4rem, 8vw, 7rem) clamp(2.5rem, 5vw, 5rem);
 }
 
 .statement-home-hero__media {
@@ -24,10 +24,16 @@
 	inline-size: 100%;
 	block-size: 100%;
 	object-fit: cover;
-	object-position: center 35%;
-	filter: grayscale(15%) contrast(102%);
+	object-position: var(--hero-x-desktop, center) var(--hero-y-desktop, 25%);
+	filter: grayscale(12%) contrast(102%);
 	transform: scale(1.01);
 	transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 768px) {
+	.statement-home-hero__media img {
+		object-position: var(--hero-x-mobile, center) var(--hero-y-mobile, 20%);
+	}
 }
 
 .statement-home-hero:hover .statement-home-hero__media img {
@@ -458,4 +464,120 @@
 		transition: none !important;
 		transform: none !important;
 	}
+}
+
+/* SECTION: EMAIL ACCESS / SIGNUP */
+.statement-home-signup {
+	padding-block: clamp(5rem, 10vw, 8rem);
+	background: var(--wp--preset--color--gallery-ivory);
+	border-block-start: 1px solid var(--wp--preset--color--border-grey);
+	text-align: center;
+}
+
+.statement-home-signup__inner {
+	max-inline-size: 38rem;
+	margin-inline: auto;
+	padding-inline: 1.5rem;
+}
+
+.statement-home-signup__title {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(2rem, 1.5rem + 2.5vw, 3.5rem);
+	font-weight: 400;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	margin: 0 0 0.75rem;
+	color: var(--wp--preset--color--near-black);
+}
+
+.statement-home-signup__subtext {
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 1rem;
+	color: var(--wp--preset--color--soft-graphite);
+	margin: 0 0 2.5rem;
+}
+
+.statement-home-signup__fields {
+	display: flex;
+	gap: 0.5rem;
+	align-items: stretch;
+	inline-size: 100%;
+}
+
+@media (max-width: 600px) {
+	.statement-home-signup__fields {
+		flex-direction: column;
+	}
+}
+
+.statement-home-signup__input {
+	flex: 1;
+	min-block-size: 3.25rem;
+	padding: 0.75rem 1.25rem;
+	background: var(--wp--preset--color--warm-white);
+	border: 1px solid var(--wp--preset--color--border-grey);
+	color: var(--wp--preset--color--near-black);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.8125rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	outline: none;
+	transition: border-color 200ms ease;
+}
+
+.statement-home-signup__input:focus {
+	border-color: var(--wp--preset--color--near-black);
+}
+
+.statement-home-signup__button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-block-size: 3.25rem;
+	padding: 0.75rem 2rem;
+	background: var(--wp--preset--color--near-black);
+	color: var(--wp--preset--color--warm-white);
+	border: 1px solid var(--wp--preset--color--near-black);
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: all 250ms ease;
+}
+
+.statement-home-signup__button:hover {
+	background: var(--wp--preset--color--ink-navy);
+	border-color: var(--wp--preset--color--ink-navy);
+}
+
+.statement-home-signup__consent {
+	font-size: 0.75rem;
+	color: var(--wp--preset--color--soft-graphite);
+	margin-top: 1rem;
+	line-height: 1.4;
+	opacity: 0.8;
+}
+
+.statement-home-signup__notice {
+	padding: 1rem 1.5rem;
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	letter-spacing: 0.15em;
+	text-transform: uppercase;
+	border: 1px solid var(--wp--preset--color--border-grey);
+	margin-bottom: 1.5rem;
+}
+
+.statement-home-signup__notice--success {
+	background: var(--wp--preset--color--warm-white);
+	color: var(--wp--preset--color--near-black);
+}
+
+.statement-home-signup__notice--error {
+	background: rgba(197, 48, 48, 0.08);
+	color: rgb(197, 48, 48);
+	border-color: rgba(197, 48, 48, 0.3);
 }

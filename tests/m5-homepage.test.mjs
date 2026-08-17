@@ -58,7 +58,7 @@ test('front-page composition delegates each editorial section to focused templat
   assert.match(frontPage, /get_header\s*\(/);
   assert.match(frontPage, /<main\s+id=["']primary["']/i);
   assert.match(frontPage, /get_footer\s*\(/);
-  for (const part of ['hero', 'active-drop', 'editorial', 'products', 'principle', 'archive-link']) {
+  for (const part of ['hero', 'active-drop', 'products', 'email-capture']) {
     assert.match(frontPage, new RegExp(`get_template_part\\(\\s*['"]template-parts/home/${part}['"]`));
   }
   assert.doesNotMatch(frontPage, /<section\b/i, 'section markup belongs in template parts');

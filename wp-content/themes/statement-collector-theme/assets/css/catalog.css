@@ -28,7 +28,7 @@
 .statement-collection-grid {
 	display: grid;
 	grid-template-columns: 1fr;
-	gap: clamp(3rem, 5vw, 5.5rem) clamp(1.5rem, 3vw, 3.5rem);
+	gap: clamp(2.5rem, 5vw, 5rem) clamp(1.5rem, 3vw, 3.5rem);
 }
 
 @media (min-width: 40rem) {

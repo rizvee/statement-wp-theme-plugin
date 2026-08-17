@@ -11,11 +11,9 @@ if ( $has_page ) {
 	the_post();
 }
 
-$page_id       = $has_page ? (int) get_the_ID() : 0;
-$release_data  = get_home_release_data();
-$drop_url      = get_home_drop_url( $release_data['drop'] );
-$archive_url   = get_home_archive_url();
-$has_editorial = has_home_editorial_content( $page_id );
+$page_id      = $has_page ? (int) get_the_ID() : 0;
+$release_data = get_home_release_data();
+$drop_url     = get_home_drop_url( $release_data['drop'] );
 ?>
 <main id="primary" class="statement-home">
 	<?php
@@ -40,12 +38,6 @@ $has_editorial = has_home_editorial_content( $page_id );
 		);
 	}
 
-	get_template_part( 'template-parts/home/lookbook' );
-
-	if ( $has_editorial ) {
-		get_template_part( 'template-parts/home/editorial' );
-	}
-
 	if ( ! empty( $release_data['products'] ) ) {
 		get_template_part(
 			'template-parts/home/products',
@@ -57,17 +49,7 @@ $has_editorial = has_home_editorial_content( $page_id );
 		);
 	}
 
-	get_template_part( 'template-parts/home/brand-object' );
-
-	get_template_part( 'template-parts/home/principle' );
-
-	if ( null !== $archive_url ) {
-		get_template_part(
-			'template-parts/home/archive-link',
-			null,
-			array( 'archive_url' => $archive_url )
-		);
-	}
+	get_template_part( 'template-parts/home/email-capture' );
 	?>
 </main>
 <?php

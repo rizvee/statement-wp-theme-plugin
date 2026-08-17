@@ -12,30 +12,15 @@ defined( 'ABSPATH' ) || exit;
 
 get_header();
 
-$current_drop = null;
+$current_drop = class_exists( PublicApi::class ) ? PublicApi::get_current_drop() : null;
 $past_drops   = array();
 
-if ( class_exists( 'Statement\Collector\Core\PublicApi' ) && taxonomy_exists( 'statement_drop' ) ) {
-	$terms = get_terms(
-		array(
-			'taxonomy'   => 'statement_drop',
-			'hide_empty' => false,
-		)
-	);
-
-	if ( is_array( $terms ) ) {
-		foreach ( $terms as $term ) {
-			if ( ! is_object( $term ) ) {
-				continue;
-			}
-			$state = PublicApi::get_drop_state( $term );
-			if ( 'live' === $state || 'preview' === $state ) {
-				if ( null === $current_drop ) {
-					$current_drop = $term;
-				}
-			} elseif ( 'archived' === $state ) {
-				$past_drops[] = $term;
-			}
+if ( class_exists( PublicApi::class ) ) {
+	$raw_past = PublicApi::get_past_drops();
+	foreach ( $raw_past as $pterm ) {
+		// Filter out any QA test terms
+		if ( is_object( $pterm ) && isset( $pterm->name ) && 0 !== strpos( $pterm->name, 'TEST —' ) ) {
+			$past_drops[] = $pterm;
 		}
 	}
 }
@@ -44,17 +29,17 @@ $drop_url = is_object( $current_drop ) ? get_term_link( $current_drop ) : home_u
 ?>
 <main id="primary" class="statement-drops-page statement-container--wide">
 	<header class="statement-drops-page__header">
-		<span class="statement-eyebrow"><?php esc_html_e( 'Releases', 'statement-collector-theme' ); ?></span>
+		<span class="statement-eyebrow"><?php esc_html_e( 'RELEASES', 'statement-collector-theme' ); ?></span>
 		<h1 class="statement-drops-page__title"><?php esc_html_e( 'DROPS', 'statement-collector-theme' ); ?></h1>
 		<p class="statement-drops-page__subtitle"><?php esc_html_e( 'Considered releases, defined by form and surface.', 'statement-collector-theme' ); ?></p>
 	</header>
 
 	<section class="statement-drops-current" aria-labelledby="statement-current-drop-heading">
-		<span class="statement-eyebrow"><?php esc_html_e( 'Current Release', 'statement-collector-theme' ); ?></span>
+		<span class="statement-eyebrow"><?php esc_html_e( 'CURRENT RELEASE', 'statement-collector-theme' ); ?></span>
 
 		<div class="statement-drops-current__card">
 			<div class="statement-drops-current__media">
-				<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/statement-panelled-hood-jacket-front.jpg' ); ?>"
+				<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/statement-brand-wordmark.jpg' ); ?>"
 					 alt="<?php esc_attr_e( 'Drop 001 — Monogram Study Campaign', 'statement-collector-theme' ); ?>"
 					 class="statement-drops-current__image"
 					 loading="eager"
@@ -80,7 +65,7 @@ $drop_url = is_object( $current_drop ) ? get_term_link( $current_drop ) : home_u
 
 	<?php if ( ! empty( $past_drops ) ) : ?>
 		<section class="statement-drops-past" aria-labelledby="statement-past-drops-heading">
-			<span class="statement-eyebrow"><?php esc_html_e( 'Past Releases', 'statement-collector-theme' ); ?></span>
+			<span class="statement-eyebrow"><?php esc_html_e( 'PAST RELEASES', 'statement-collector-theme' ); ?></span>
 			<h2 id="statement-past-drops-heading" class="statement-drops-past__title"><?php esc_html_e( 'PAST DROPS', 'statement-collector-theme' ); ?></h2>
 
 			<div class="statement-drops-past__grid">

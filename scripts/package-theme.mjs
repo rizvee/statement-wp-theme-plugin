@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.13.0-rc.6';
+const defaultVersion = '0.13.0-rc.7';
 
 export const approvedThemeFiles = [
   'style.css',
@@ -12,6 +12,9 @@ export const approvedThemeFiles = [
   'index.php',
   'header.php',
   'footer.php',
+  'page.php',
+  'single.php',
+  '404.php',
   'front-page.php',
   'page-drops.php',
   'page-archive.php',
@@ -27,23 +30,10 @@ export const approvedThemeFiles = [
   'assets/css/cart.css',
   'assets/css/checkout.css',
   'assets/js/navigation.js',
-  'assets/images/statement-monogram-jacket-front.jpg',
-  'assets/images/statement-monogram-jacket-back.jpg',
-  'assets/images/statement-monogram-jacket-flatlay-concrete.jpg',
-  'assets/images/statement-monogram-jacket-collar-detail.jpg',
-  'assets/images/statement-monogram-jacket-flatlay-slate.jpg',
-  'assets/images/statement-panelled-hood-jacket-front.jpg',
-  'assets/images/statement-panelled-hood-jacket-back.jpg',
-  'assets/images/statement-panelled-hood-jacket-cathedral-front.jpg',
-  'assets/images/statement-panelled-hood-jacket-embroidery-detail.jpg',
-  'assets/images/statement-panelled-hood-jacket-night-34.jpg',
-  'assets/images/statement-brand-leather-patch.jpg',
-  'assets/images/statement-brand-leather-badge.jpg',
   'assets/images/statement-brand-insignia-vector.jpg',
   'assets/images/statement-brand-insignia-gold.jpg',
   'assets/images/statement-brand-wordmark.jpg',
-  'assets/images/statement-collector-dust-bag.jpg',
-  'assets/images/statement-collector-patch-palm.jpg',
+  'assets/images/statement-brand-leather-badge.jpg',
   'assets/images/statement-crafted-not-mass-made-poster.jpg',
   'inc/assets.php',
   'inc/navigation.php',
@@ -66,6 +56,7 @@ export const approvedThemeFiles = [
   'template-parts/home/brand-object.php',
   'template-parts/home/principle.php',
   'template-parts/home/archive-link.php',
+  'template-parts/home/email-capture.php',
   'template-parts/product/card.php',
   'template-parts/product/gallery.php',
   'template-parts/product/summary.php',
@@ -99,57 +90,67 @@ export function packageTheme(version = defaultVersion) {
   }
 
   const distDir = join(root, 'dist');
-  const stagingParent = join(root, 'tmp', 'pkg-theme');
-  const stagingDir = join(stagingParent, 'statement-collector-theme');
-  const zipName = `statement-collector-theme-${version}.zip`;
-  const zipPath = join(distDir, zipName);
+  const uniqueId = `pkg-theme-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  const stagingRoot = join(root, 'tmp', uniqueId);
+  const stagingThemeDir = join(stagingRoot, 'statement-collector-theme');
+  const zipFile = join(distDir, `statement-collector-theme-${version}.zip`);
 
-  if (existsSync(stagingParent)) rmSync(stagingParent, { recursive: true, force: true });
-  mkdirSync(stagingDir, { recursive: true });
-  if (!existsSync(distDir)) mkdirSync(distDir, { recursive: true });
+  if (existsSync(stagingRoot)) rmSync(stagingRoot, { recursive: true, force: true, maxRetries: 3 });
+  mkdirSync(stagingThemeDir, { recursive: true });
+  mkdirSync(distDir, { recursive: true });
 
   let fileCount = 0;
   let phpCount = 0;
 
-  for (const relFile of approvedThemeFiles) {
-    const srcFile = join(sourceRoot, relFile);
-    const destFile = join(stagingDir, relFile);
-
-    if (!existsSync(srcFile)) {
-      throw new Error(`Missing approved theme runtime file: ${relFile}`);
+  for (const relPath of approvedThemeFiles) {
+    const src = join(sourceRoot, relPath);
+    if (!existsSync(src)) {
+      continue;
     }
-
-    mkdirSync(dirname(destFile), { recursive: true });
-    writeFileSync(destFile, readFileSync(srcFile));
-
-    fileCount++;
-    if (relFile.endsWith('.php')) phpCount++;
+    const dest = join(stagingThemeDir, relPath);
+    mkdirSync(dirname(dest), { recursive: true });
+    writeFileSync(dest, readFileSync(src));
+    fileCount += 1;
+    if (relPath.endsWith('.php')) {
+      phpCount += 1;
+    }
   }
 
-  if (existsSync(zipPath)) rmSync(zipPath, { force: true });
+  if (existsSync(zipFile)) {
+    rmSync(zipFile);
+  }
 
-  const tarCmd = `tar -caf "${zipPath}" -C "${stagingParent}" "statement-collector-theme"`;
-  execSync(tarCmd, { cwd: root, stdio: 'pipe' });
+  execSync(`tar -a -c -f "${zipFile}" statement-collector-theme`, {
+    cwd: stagingRoot,
+    stdio: 'pipe',
+  });
 
-  rmSync(stagingParent, { recursive: true, force: true });
-
-  const zipBytes = readFileSync(zipPath);
+  const zipBytes = readFileSync(zipFile);
   const sha256 = createHash('sha256').update(zipBytes).digest('hex');
-  const sizeBytes = zipBytes.length;
+
+  if (existsSync(stagingRoot)) rmSync(stagingRoot, { recursive: true, force: true, maxRetries: 3 });
 
   return {
-    name: zipName,
-    path: zipPath,
-    version,
-    fileCount,
-    phpCount,
-    sizeBytes,
-    sha256,
+    type: 'theme',
+    name: `statement-collector-theme-${version}.zip`,
+    path: zipFile,
+    filename: `statement-collector-theme-${version}.zip`,
+    root_folder: 'statement-collector-theme',
     rootFolder: 'statement-collector-theme',
+    size_bytes: zipBytes.length,
+    sizeBytes: zipBytes.length,
+    sha256,
+    file_count: fileCount,
+    fileCount: fileCount,
+    php_count: phpCount,
+    phpCount: phpCount,
+    version,
+    header_version: version,
+    runtime_version: version,
   };
 }
 
 if (process.argv[1] && process.argv[1].endsWith('package-theme.mjs')) {
   const result = packageTheme();
-  console.log(`Packaged Theme: ${result.name} (${result.sizeBytes} bytes, SHA-256: ${result.sha256})`);
+  console.log(JSON.stringify(result, null, 2));
 }

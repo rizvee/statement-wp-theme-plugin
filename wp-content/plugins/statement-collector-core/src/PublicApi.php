@@ -208,4 +208,139 @@ final class PublicApi {
 
 		return $past_drops;
 	}
+
+	/**
+	 * Return the currently active Statement Drop (LIVE or PRIVATE_ACCESS).
+	 *
+	 * @return object|null
+	 */
+	public static function get_current_drop() {
+		if ( ! function_exists( 'get_terms' ) ) {
+			return null;
+		}
+
+		$terms = get_terms(
+			array(
+				'taxonomy'   => Taxonomy::KEY,
+				'hide_empty' => false,
+				'orderby'    => 'term_id',
+				'order'      => 'DESC',
+			)
+		);
+
+		if ( ! is_array( $terms ) || empty( $terms ) ) {
+			return null;
+		}
+
+		// First preference: Drop with LIVE products
+		foreach ( $terms as $term ) {
+			if ( is_object( $term ) && isset( $term->term_id ) ) {
+				$state = self::get_drop_state( $term );
+				if ( ReleaseState::LIVE === $state ) {
+					return $term;
+				}
+			}
+		}
+
+		// Second preference: Drop with PRIVATE_ACCESS products
+		foreach ( $terms as $term ) {
+			if ( is_object( $term ) && isset( $term->term_id ) ) {
+				$state = self::get_drop_state( $term );
+				if ( ReleaseState::PRIVATE_ACCESS === $state ) {
+					return $term;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Read the canonical release state of a Drop based on its products or configuration.
+	 *
+	 * @param object|int $term Drop term object or ID.
+	 * @return string
+	 */
+	public static function get_drop_state( $term ): string {
+		$term_id = is_object( $term ) && isset( $term->term_id ) ? (int) $term->term_id : (int) $term;
+		if ( $term_id < 1 || ! function_exists( 'get_posts' ) ) {
+			return ReleaseState::UPCOMING;
+		}
+
+		$product_ids = get_posts(
+			array(
+				'post_type'      => 'product',
+				'posts_per_page' => -1,
+				'post_status'    => 'publish',
+				'fields'         => 'ids',
+				'tax_query'      => array(
+					array(
+						'taxonomy' => Taxonomy::KEY,
+						'field'    => 'term_id',
+						'terms'    => $term_id,
+					),
+				),
+			)
+		);
+
+		if ( empty( $product_ids ) || ! is_array( $product_ids ) ) {
+			return ReleaseState::UPCOMING;
+		}
+
+		$states = array();
+		foreach ( $product_ids as $pid ) {
+			$product = function_exists( 'wc_get_product' ) ? wc_get_product( $pid ) : null;
+			$state   = Metadata::get_release_state( $product );
+			$states[] = $state;
+		}
+
+		if ( in_array( ReleaseState::LIVE, $states, true ) ) {
+			return ReleaseState::LIVE;
+		}
+		if ( in_array( ReleaseState::PRIVATE_ACCESS, $states, true ) ) {
+			return ReleaseState::PRIVATE_ACCESS;
+		}
+		if ( in_array( ReleaseState::SOLD_OUT, $states, true ) ) {
+			return ReleaseState::SOLD_OUT;
+		}
+		if ( in_array( ReleaseState::ARCHIVED, $states, true ) ) {
+			return ReleaseState::ARCHIVED;
+		}
+
+		return ReleaseState::UPCOMING;
+	}
+
+	/**
+	 * Retrieve publicly live products belonging to a specific Drop.
+	 *
+	 * @param int $drop_id Drop term ID.
+	 * @param int $limit Max products to return.
+	 * @return array
+	 */
+	public static function get_live_products_for_drop( int $drop_id, int $limit = 12 ): array {
+		if ( $drop_id < 1 || ! function_exists( 'wc_get_products' ) ) {
+			return array();
+		}
+
+		return wc_get_products(
+			array(
+				'limit'      => $limit,
+				'status'     => 'publish',
+				'tax_query'  => array(
+					array(
+						'taxonomy' => Taxonomy::KEY,
+						'field'    => 'term_id',
+						'terms'    => $drop_id,
+					),
+				),
+				'meta_query' => array(
+					array(
+						'key'     => Metadata::RELEASE_STATE_KEY,
+						'value'   => ReleaseState::LIVE,
+						'compare' => '=',
+					),
+				),
+			)
+		);
+	}
 }

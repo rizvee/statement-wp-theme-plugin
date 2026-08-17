@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.1.0';
+const defaultVersion = '0.2.0';
 
 export const approvedDemoFiles = [
   'statement-client-demo.php',
@@ -45,12 +45,13 @@ export function packageClientDemo(version = defaultVersion) {
   }
 
   const distDir = join(root, 'dist');
-  const stagingParent = join(root, 'tmp', 'pkg-client-demo');
+  const uniqueId = `pkg-client-demo-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  const stagingParent = join(root, 'tmp', uniqueId);
   const stagingDir = join(stagingParent, 'statement-client-demo');
   const zipName = `statement-client-demo-${version}.zip`;
   const zipPath = join(distDir, zipName);
 
-  if (existsSync(stagingParent)) rmSync(stagingParent, { recursive: true, force: true });
+  if (existsSync(stagingParent)) rmSync(stagingParent, { recursive: true, force: true, maxRetries: 3 });
   mkdirSync(stagingDir, { recursive: true });
   if (!existsSync(distDir)) mkdirSync(distDir, { recursive: true });
 
@@ -72,12 +73,12 @@ export function packageClientDemo(version = defaultVersion) {
     if (relFile.endsWith('.php')) phpCount++;
   }
 
-  if (existsSync(zipPath)) rmSync(zipPath, { force: true });
+  if (existsSync(zipPath)) rmSync(zipPath, { force: true, maxRetries: 3 });
 
   const tarCmd = `tar -caf "${zipPath}" -C "${stagingParent}" "statement-client-demo"`;
   execSync(tarCmd, { cwd: root, stdio: 'pipe' });
 
-  rmSync(stagingParent, { recursive: true, force: true });
+  if (existsSync(stagingParent)) rmSync(stagingParent, { recursive: true, force: true, maxRetries: 3 });
 
   const zipBytes = readFileSync(zipPath);
   const sha256 = createHash('sha256').update(zipBytes).digest('hex');

@@ -7,9 +7,9 @@ import { packageClientDemo } from './package-client-demo.mjs';
 import { verifyPackage } from './verify-package.mjs';
 
 const root = resolve(import.meta.dirname, '..');
-const themeVersion = '0.13.0-rc.6';
-const pluginVersion = '0.13.0-rc.9';
-const demoVersion = '0.1.0';
+const themeVersion = '0.13.0-rc.7';
+const pluginVersion = '0.13.0-rc.10';
+const demoVersion = '0.2.0';
 
 export function packageAll(options = {}) {
   const silent = options.silent ?? false;
