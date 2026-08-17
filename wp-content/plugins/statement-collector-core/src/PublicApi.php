@@ -336,8 +336,12 @@ final class PublicApi {
 
 		$states = array();
 		foreach ( $product_ids as $pid ) {
-			$product = function_exists( 'wc_get_product' ) ? wc_get_product( $pid ) : null;
-			$state   = Metadata::get_release_state( $product );
+			if ( class_exists( '\Statement\Collector\Core\Catalog\Visibility' ) && \Statement\Collector\Core\Catalog\Visibility::is_fixture_product( $pid ) ) {
+				continue;
+			}
+
+			$product  = function_exists( 'wc_get_product' ) ? wc_get_product( $pid ) : null;
+			$state    = Metadata::get_release_state( $product );
 			$states[] = $state;
 		}
 

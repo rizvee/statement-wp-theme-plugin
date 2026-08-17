@@ -2,13 +2,15 @@
 /*
 Plugin Name: Statement Collector Core
 Description: Durable domain foundation for Statement Collector's Piece.
-Version: 0.13.0-rc.12
+Version: 0.13.0-rc.13
 Text Domain: statement-collector-core
 */
 
+namespace Statement\Collector\Core;
+
 defined( 'ABSPATH' ) || exit;
 
-define( 'STATEMENT_COLLECTOR_CORE_VERSION', '0.13.0-rc.12' );
+define( 'STATEMENT_COLLECTOR_CORE_VERSION', '0.13.0-rc.13' );
 define( 'STATEMENT_COLLECTOR_CORE_FILE', __FILE__ );
 
 require_once __DIR__ . '/src/Release/ReleaseState.php';
@@ -52,6 +54,22 @@ require_once __DIR__ . '/src/Order/AdminOrderView.php';
 require_once __DIR__ . '/src/Order/CustomerOrderView.php';
 require_once __DIR__ . '/src/Order/EmailIntegration.php';
 require_once __DIR__ . '/src/Plugin.php';
+
+// Declare High-Performance Order Storage (HPOS) Compatibility on behalf of Core plugin
+if ( function_exists( 'add_action' ) ) {
+	add_action(
+		'before_woocommerce_init',
+		static function (): void {
+			if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+				\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+					'custom_order_tables',
+					STATEMENT_COLLECTOR_CORE_FILE,
+					true
+				);
+			}
+		}
+	);
+}
 
 if ( function_exists( 'register_activation_hook' ) ) {
 	register_activation_hook( STATEMENT_COLLECTOR_CORE_FILE, array( \Statement\Collector\Core\Access\Schema::class, 'install' ) );

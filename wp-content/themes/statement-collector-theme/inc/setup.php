@@ -76,17 +76,28 @@ function setup(): void {
 add_action( 'after_setup_theme', __NAMESPACE__ . '\\setup' );
 
 /**
- * Protect Statement theme's ownership of the front page.
- * Prevents third-party plugins or page builders from hijacking front-page.php.
+ * Route front page template based on the configured front page renderer.
+ *
+ * Modes:
+ * - 'statement': Curated Statement Collector Piece editorial homepage (default).
+ * - 'content': Standard static page content renderer, enabling Elementor / Gutenberg builder workflows.
  *
  * @param string $template Current resolved template path.
  * @return string Filtered template path.
  */
 function protect_front_page_template( string $template ): string {
 	if ( function_exists( 'is_front_page' ) && is_front_page() ) {
-		$theme_front = locate_template( array( 'front-page.php' ) );
-		if ( $theme_front && is_string( $theme_front ) && '' !== $theme_front ) {
-			return $theme_front;
+		$renderer = (string) get_theme_mod( 'statement_front_page_renderer', 'statement' );
+		if ( 'content' === $renderer ) {
+			$page_template = locate_template( array( 'page.php', 'index.php' ) );
+			if ( $page_template && is_string( $page_template ) && '' !== $page_template ) {
+				return $page_template;
+			}
+		} else {
+			$theme_front = locate_template( array( 'front-page.php' ) );
+			if ( $theme_front && is_string( $theme_front ) && '' !== $theme_front ) {
+				return $theme_front;
+			}
 		}
 	}
 	return $template;

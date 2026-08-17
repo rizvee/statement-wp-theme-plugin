@@ -43,21 +43,29 @@ Updated: 2026-08-18
   9. *Visual QA Refinements*: Replaced off-brand lavender Add-to-Bag buttons with pure Ink (`#111111`), refined mobile drawer navigation typography from giant serif to fashion-scale sans, restyled WooCommerce notices and breadcrumbs, polished 2-column mobile catalog grid density, and redesigned Journal index into an editorial card grid.
   10. *Verification & Release Packaging*: All 138 Node integration tests (M1–M18), all 40 PHP tests, `verify-foundation.mjs`, and `verify-git-runtime-tracking.mjs` pass 100% green. Promoted Theme to `0.13.0-rc.9`, Client Demo to `0.2.2`, Core to `0.13.0-rc.12`.
 
+- Visual Sprint 05.1 Acceptance Hardening & Sprint 06 Production Convergence (COMPLETE):
+  1. *Product 213 & Ownership Classifier*: Implemented deterministic `OwnershipClassifier::classify()` returning `QA_FIXTURE`, `CLIENT_DEMO`, `PRODUCTION`, `CONFLICT`, or `UNKNOWN`. Guaranteed that `_statement_fixture = 1` or `TEST-*` identifiers always override `_statement_client_demo = 1`. In conflict: public presentation is blocked, demo adoption is blocked, and auto-mutation is blocked. Added "Ownership Diagnostics" table and safe repair action in Client Demo admin page (`tools/statement-client-demo/src/AdminPage.php`). Promoted Client Demo to `0.2.3`.
+  2. *Public Fixture Isolation*: Hardened `PublicApi::get_drop_state()` so QA fixtures are excluded from Drop lifecycle evaluation.
+  3. *HPOS Compatibility Ownership*: Declared `custom_order_tables` compatibility exclusively in Core plugin (`statement-collector-core.php`) on `before_woocommerce_init` via `FeaturesUtil::declare_compatibility()`. Removed theme-side HPOS declaration from `inc/compatibility/woocommerce.php`. Streamlined `inc/setup.php` and WooCommerce presentation support boot timing. Promoted Core to `0.13.0-rc.13`.
+  4. *Elementor & Page Builder Safe Templates*: Added Customizer control `statement_front_page_renderer` (`statement` default vs `content`), allowing standard static front page editing and page building. Implemented `template-canvas.php` and `template-full-width.php`. Added `statement_theme_register_elementor_locations` filter and helper methods to `inc/compatibility/elementor.php`. Promoted Theme to `0.13.0-rc.10`.
+  5. *Security & Extensibility Hardening*: Verified strict nonces, `manage_options` / `edit_post` capability checks, and allow-list sanitization in `inc/admin/options-export.php` and `inc/page-meta.php`.
+  6. *Full Test Battery & Packaging*: Authored `tests/m19-acceptance-hardening.test.mjs`, `tests/php/test-hpos-compatibility.php`, `tests/php/test-theme-security-and-extensibility.php`, `tests/php/test-public-fixture-isolation.php`, `tests/php/test-client-demo-collision.php`. All 42 PHP tests and 19 Node milestone test suites pass 100% clean. Packaged all ZIP artifacts in `dist/` with SHA-256 checksums.
+
 ## Local environment
 
 - Available: Git 2.45.1, Node.js 22.17.0, npm 11.15.0, ripgrep 15.1.0, bsdtar 3.5.2 (`tar.exe`).
 - Local lint runtime: PHP 8.3.33 CLI, x64 NTS, under ignored `.local-tools/php/`.
 - `scripts/php-lint.mjs` resolves `PHP_BIN`, then project-local PHP on Windows, then PHP on `PATH`.
-- PHP syntax verification passes for all 116 first-party runtime, theme, child theme, and demo PHP files.
+- PHP syntax verification passes for all 119 first-party runtime, theme, child theme, and demo PHP files.
 
 ## Deployment state
 
-`https://mystatement.store/` is hosted on WordPress.com Atomic. Core `0.13.0-rc.9` is active with Fixtures `0.3.3` active on Atomic, Theme `0.13.0-rc.4` active, Secret Vault initialized (xchacha20-poly1305), and private fixture adopted and recovered (`Product ID: 213`, `Drop ID: 1376`). Synchronized with GitHub `https://github.com/rizvee/statement-wp-theme-plugin.git`. ZERO live mutations executed during Sprint 05.
+`https://mystatement.store/` is hosted on WordPress.com Atomic. Core `0.13.0-rc.9` is active with Fixtures `0.3.3` active on Atomic, Theme `0.13.0-rc.4` active, Secret Vault initialized (xchacha20-poly1305), and private fixture adopted and recovered (`Product ID: 213`, `Drop ID: 1376`). Synchronized with GitHub `https://github.com/rizvee/statement-wp-theme-plugin.git`. ZERO live mutations executed from workspace.
 
-- **Theme Candidate**: `statement-collector-theme-0.13.0-rc.9.zip` (4,127,268 bytes, SHA-256: `b8538b62479f66bdd354ef81bf528112013d9662ff0a7c7e44e540a307035fe8`)
-- **Core Candidate**: `statement-collector-core-0.13.0-rc.12.zip` (77,960 bytes, SHA-256: `eca4187a22523ff1a6cead9811892dd6d88fbb1d289b528f93cd3d77ced0c562`)
-- **Client Demo Candidate**: `statement-client-demo-0.2.2.zip` (4,053,007 bytes, SHA-256: `c3bb867f88a9d4b2914451fcc6868e29f247b1f3c2ae530a1811ebcf14b087ca`)
-- **Child Theme Candidate**: `statement-collector-child-0.1.0.zip` (1,444 bytes, SHA-256: `a5c06bcd04fab5d994c740dbf4f71872c6639167b500de97a2e46af892dcf47d`)
+- **Theme Candidate**: `statement-collector-theme-0.13.0-rc.10.zip` (4,129,197 bytes, SHA-256: `cf63e2f3f54a3fb3e3e952de5cde9aa7e655d4c32c64cc43a17b4ac74ac2bbca`)
+- **Core Candidate**: `statement-collector-core-0.13.0-rc.13.zip` (78,247 bytes, SHA-256: `94760ddbf49c974b36a7d28553f715a7d207fe7e8fb6359c9fa7143ce4933a25`)
+- **Client Demo Candidate**: `statement-client-demo-0.2.3.zip` (4,054,862 bytes, SHA-256: `0bc37da82b172622454ad2f3fb16607777ffd97cbc5fe4f13f13be6d837d69ca`)
+- **Child Theme Candidate**: `statement-collector-child-0.1.0.zip` (1,444 bytes, SHA-256: `8fd5d2323d51b37e16ef868a498635baf44a70abce0a45d7924ed710e06c978e`)
 - **Fixture Candidate**: `statement-integration-fixtures-0.3.3.zip` (27,311 bytes, SHA-256: `97fbb481613fc619434e87b5d81fb3815ab7b690bd2d1e80e94dbf547ec70850`)
 
 ## Verification

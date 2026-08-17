@@ -6,6 +6,8 @@ defined( 'ABSPATH' ) || exit;
 
 get_header();
 
+\Statement\Collector\Theme\Hooks::before_main();
+
 $has_page = have_posts();
 if ( $has_page ) {
 	the_post();
@@ -49,8 +51,12 @@ $drop_url     = get_home_drop_url( $release_data['drop'] );
 		);
 	}
 
-	get_template_part( 'template-parts/home/email-capture' );
+	if ( (bool) get_theme_mod( 'statement_enable_email_capture', true ) ) {
+		get_template_part( 'template-parts/home/email-capture' );
+	}
 	?>
 </main>
 <?php
+\Statement\Collector\Theme\Hooks::after_main();
+
 get_footer();

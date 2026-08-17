@@ -36,6 +36,10 @@ final class OptionsExport {
 			'statement_header_height',
 			'statement_shop_columns',
 			'statement_show_breadcrumbs',
+			'statement_front_page_renderer',
+			'statement_enable_hero_slider',
+			'statement_enable_email_capture',
+			'statement_hero_slider_autoplay',
 
 			// Hero Slider Mods
 			'statement_hero_slide_1_image',
@@ -147,8 +151,11 @@ final class OptionsExport {
 			} elseif ( false !== strpos( $key, 'width' ) || false !== strpos( $key, 'height' ) || false !== strpos( $key, 'columns' ) || false !== strpos( $key, 'image' ) ) {
 				set_theme_mod( $key, absint( $value ) );
 				$count++;
-			} elseif ( false !== strpos( $key, 'breadcrumbs' ) ) {
+			} elseif ( false !== strpos( $key, 'breadcrumbs' ) || false !== strpos( $key, 'enable_' ) || false !== strpos( $key, 'autoplay' ) ) {
 				set_theme_mod( $key, (bool) $value );
+				$count++;
+			} elseif ( 'statement_front_page_renderer' === $key ) {
+				set_theme_mod( $key, in_array( $value, array( 'statement', 'content' ), true ) ? (string) $value : 'statement' );
 				$count++;
 			} else {
 				set_theme_mod( $key, trim( sanitize_text_field( (string) $value ) ) );

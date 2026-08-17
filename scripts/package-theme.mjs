@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.13.0-rc.9';
+const defaultVersion = '0.13.0-rc.10';
 
 export const approvedThemeFiles = [
   'style.css',
@@ -16,6 +16,8 @@ export const approvedThemeFiles = [
   'single.php',
   '404.php',
   'front-page.php',
+  'template-canvas.php',
+  'template-full-width.php',
   'page-drops.php',
   'page-archive.php',
   'page-about.php',

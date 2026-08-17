@@ -29,6 +29,15 @@ final class Elementor {
 			return;
 		}
 
+		/**
+		 * Allow child themes or extensions to disable Elementor theme locations.
+		 *
+		 * @param bool $enable True to register Elementor locations.
+		 */
+		if ( ! apply_filters( 'statement_theme_register_elementor_locations', true ) ) {
+			return;
+		}
+
 		$manager->register_location(
 			'header',
 			array(
@@ -82,6 +91,32 @@ final class Elementor {
 	 */
 	public static function do_footer(): bool {
 		if ( function_exists( 'elementor_theme_do_location' ) && elementor_theme_do_location( 'footer' ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Render single post/page location or fallback.
+	 *
+	 * @return bool True if location was rendered by Elementor.
+	 */
+	public static function do_single(): bool {
+		if ( function_exists( 'elementor_theme_do_location' ) && elementor_theme_do_location( 'single' ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Render archive location or fallback.
+	 *
+	 * @return bool True if location was rendered by Elementor.
+	 */
+	public static function do_archive(): bool {
+		if ( function_exists( 'elementor_theme_do_location' ) && elementor_theme_do_location( 'archive' ) ) {
 			return true;
 		}
 

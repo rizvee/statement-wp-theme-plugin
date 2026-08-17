@@ -28,10 +28,13 @@ test("M18: Plugin compatibility adapters and standards", () => {
 		assert.ok(fs.existsSync(path.join(compatPath, mod)), `Missing compatibility adapter: ${mod}`);
 	}
 
-	// 2. HPOS declaration in woocommerce.php
+	// 2. HPOS declaration in Core & WooCommerce support in Theme
+	const coreCode = fs.readFileSync(path.join(root, "wp-content/plugins/statement-collector-core/statement-collector-core.php"), "utf8");
+	assert.ok(coreCode.includes("custom_order_tables"), "Core declares HPOS custom_order_tables compatibility");
+	assert.ok(coreCode.includes("declare_compatibility"), "Core declares FeaturesUtil compatibility");
+
 	const wooCode = fs.readFileSync(path.join(compatPath, "woocommerce.php"), "utf8");
-	assert.ok(wooCode.includes("custom_order_tables"), "WooCommerce HPOS custom_order_tables compatibility declared");
-	assert.ok(wooCode.includes("declare_compatibility"), "WooCommerce FeaturesUtil compatibility declared");
+	assert.ok(wooCode.includes("'woocommerce'"), "Theme declares WooCommerce core theme support");
 
 	// 3. Elementor Theme Location registration in elementor.php
 	const elemCode = fs.readFileSync(path.join(compatPath, "elementor.php"), "utf8");

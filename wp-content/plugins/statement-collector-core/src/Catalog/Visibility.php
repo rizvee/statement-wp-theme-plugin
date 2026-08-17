@@ -64,18 +64,12 @@ final class Visibility {
 			return false;
 		}
 
-		// Explicit Client Demo protection: Client Demo entities are never fixtures
-		$is_client_demo = function_exists( 'get_post_meta' ) && '1' === (string) get_post_meta( $post_id, '_statement_client_demo', true );
-		if ( $is_client_demo ) {
-			return false;
-		}
-
-		// 1. Explicit fixture meta
+		// 1. Explicit QA fixture ownership ALWAYS wins: _statement_fixture = 1
 		if ( function_exists( 'get_post_meta' ) && '1' === (string) get_post_meta( $post_id, '_statement_fixture', true ) ) {
 			return true;
 		}
 
-		// 2. SKU matching TEST-
+		// 2. SKU matching TEST-*
 		$sku = is_object( $product ) && method_exists( $product, 'get_sku' )
 			? (string) $product->get_sku()
 			: ( function_exists( 'get_post_meta' ) ? (string) get_post_meta( $post_id, '_sku', true ) : '' );
@@ -93,13 +87,23 @@ final class Visibility {
 			return true;
 		}
 
-		// 4. Slug starting with test- (unless client demo)
+		// 4. Slug starting with test- (unless verified clean client demo with STMT-CD-* SKU)
 		$slug = is_object( $product ) && method_exists( $product, 'get_slug' )
 			? (string) $product->get_slug()
 			: ( function_exists( 'get_post_field' ) ? (string) get_post_field( 'post_name', $post_id ) : '' );
 
-		if ( '' !== $slug && 0 === stripos( $slug, 'test-' ) && false === stripos( $slug, 'demo' ) ) {
-			return true;
+		$is_client_demo = function_exists( 'get_post_meta' ) && '1' === (string) get_post_meta( $post_id, '_statement_client_demo', true );
+		$is_demo_sku    = '' !== $sku && 0 === stripos( $sku, 'STMT-CD-' );
+
+		if ( '' !== $slug && 0 === stripos( $slug, 'test-' ) ) {
+			if ( ! ( $is_client_demo && $is_demo_sku ) ) {
+				return true;
+			}
+		}
+
+		// 5. If all fixture indicators are absent, verified client demo is not a fixture
+		if ( $is_client_demo && $is_demo_sku ) {
+			return false;
 		}
 
 		return false;
@@ -129,7 +133,7 @@ final class Visibility {
 			SELECT post_id FROM {$postmeta_table}
 			WHERE (meta_key = '_statement_fixture' AND meta_value = '1')
 			   OR (meta_key = '_sku' AND meta_value LIKE 'TEST-%')
-		) AND {$posts_table}.post_title NOT LIKE 'TEST —%' AND {$posts_table}.post_title NOT LIKE 'TEST -%' AND ({$posts_table}.post_name NOT LIKE 'test-%' OR {$posts_table}.ID IN (
+		) AND {$posts_table}.post_title NOT LIKE 'TEST —%' AND {$posts_table}.post_title NOT LIKE 'TEST -%' AND {$posts_table}.post_title NOT LIKE 'TEST:%' AND ({$posts_table}.post_name NOT LIKE 'test-%' OR {$posts_table}.ID IN (
 			SELECT post_id FROM {$postmeta_table}
 			WHERE meta_key = '_statement_client_demo' AND meta_value = '1'
 		)) ";

@@ -1,8 +1,9 @@
 <?php
 /**
- * WooCommerce Theme Compatibility Adapter & HPOS Declaration.
+ * WooCommerce Theme Compatibility Adapter.
  *
  * Configures WooCommerce core theme support, image sizes, and hook integrations.
+ * Note: High-Performance Order Storage is declared and owned by Statement Collector Core plugin.
  *
  * @package Statement_Collector_Theme
  */
@@ -13,22 +14,11 @@ defined( 'ABSPATH' ) || exit;
 
 final class WooCommerce {
 	/**
-	 * Boot WooCommerce compatibility.
+	 * Boot WooCommerce theme presentation compatibility.
 	 */
 	public static function boot(): void {
-		add_action( 'after_setup_theme', array( self::class, 'setup_woocommerce_support' ) );
-		add_action( 'before_woocommerce_init', array( self::class, 'declare_hpos_compatibility' ) );
+		self::setup_woocommerce_support();
 		add_filter( 'woocommerce_enqueue_styles', array( self::class, 'filter_woocommerce_styles' ) );
-	}
-
-	/**
-	 * Declare High-Performance Order Storage (HPOS) and theme supports.
-	 */
-	public static function declare_hpos_compatibility(): void {
-		if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
-			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', STATEMENT_COLLECTOR_THEME_FILE, true );
-			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', STATEMENT_COLLECTOR_THEME_FILE, true );
-		}
 	}
 
 	/**
@@ -63,6 +53,15 @@ final class WooCommerce {
 	 * @return array
 	 */
 	public static function filter_woocommerce_styles( array $styles ): array {
+		if ( isset( $styles['woocommerce-general'] ) ) {
+			unset( $styles['woocommerce-general'] );
+		}
+		if ( isset( $styles['woocommerce-layout'] ) ) {
+			unset( $styles['woocommerce-layout'] );
+		}
+		if ( isset( $styles['woocommerce-smallscreen'] ) ) {
+			unset( $styles['woocommerce-smallscreen'] );
+		}
 		return $styles;
 	}
 }

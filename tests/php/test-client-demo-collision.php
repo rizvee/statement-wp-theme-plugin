@@ -11,10 +11,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once $root . '/wp-content/plugins/statement-collector-core/src/Release/ReleaseState.php';
 require_once $root . '/wp-content/plugins/statement-collector-core/src/Product/Metadata.php';
 require_once $root . '/wp-content/plugins/statement-collector-core/src/Drop/Taxonomy.php';
+require_once $root . '/tools/statement-client-demo/src/OwnershipClassifier.php';
 require_once $root . '/tools/statement-client-demo/src/ManifestService.php';
 require_once $root . '/tools/statement-client-demo/src/AssetRegistry.php';
 require_once $root . '/tools/statement-client-demo/src/DemoSeederService.php';
 
+use Statement\ClientDemo\OwnershipClassifier;
 use Statement\ClientDemo\DemoSeederService;
 use Statement\Collector\Core\Product\Metadata;
 use Statement\Collector\Core\Release\ReleaseState;
@@ -205,5 +207,35 @@ stmt_assert( null === $found_coexistent, 'find_owned_product strictly rejects pr
 unset( $mock_post_meta[301]['_statement_fixture'] );
 $found_restored = DemoSeederService::find_owned_product( DemoSeederService::SKU_P1, 'monogram-jacquard-jacket' );
 stmt_assert( null !== $found_restored && 301 === $found_restored->get_id(), 'find_owned_product recovers once fixture marker is absent' );
+
+// 9. OwnershipClassifier Verification
+$c_qa = OwnershipClassifier::classify( 213 );
+stmt_assert_same( OwnershipClassifier::STATUS_QA_FIXTURE, $c_qa['status'], 'QA Product 213 is classified as STATUS_QA_FIXTURE' );
+
+$c_demo = OwnershipClassifier::classify( 301 );
+stmt_assert_same( OwnershipClassifier::STATUS_CLIENT_DEMO, $c_demo['status'], 'Demo Product 301 is classified as STATUS_CLIENT_DEMO' );
+
+// 10. Conflict Classification
+$mock_post_meta[301]['_statement_fixture'] = '1';
+$c_conflict = OwnershipClassifier::classify( 301 );
+stmt_assert_same( OwnershipClassifier::STATUS_CONFLICT, $c_conflict['status'], 'Mixed Product 301 is classified as STATUS_CONFLICT' );
+unset( $mock_post_meta[301]['_statement_fixture'] );
+
+// 11. Production Organic Product Classification (No fixture, no demo markers)
+$prod_product_id = 401;
+$prod_product    = new MockDemoProduct(
+	$prod_product_id,
+	'Organic Store Jacket',
+	'organic-store-jacket',
+	'STMT-D001-01',
+	array()
+);
+$mock_products_db[ $prod_product_id ] = $prod_product;
+$mock_post_meta[ $prod_product_id ]   = array(
+	'_sku' => 'STMT-D001-01',
+);
+
+$c_prod = OwnershipClassifier::classify( 401 );
+stmt_assert_same( OwnershipClassifier::STATUS_PRODUCTION, $c_prod['status'], 'Organic Product 401 is classified as STATUS_PRODUCTION' );
 
 echo "PASS: All {$statement_assertions} Statement Client Demo Collision Prevention assertions passed cleanly.\n";

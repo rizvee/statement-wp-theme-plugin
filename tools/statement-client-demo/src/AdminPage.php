@@ -183,6 +183,48 @@ final class AdminPage {
 						</table>
 					</div>
 
+					<div class="card" style="padding: 16px; margin-bottom: 20px;">
+						<h2><?php esc_html_e( 'Ownership Diagnostics', 'statement-client-demo' ); ?></h2>
+						<p class="description"><?php esc_html_e( 'Deterministic classification across client demo products, QA fixtures, and Product 213:', 'statement-client-demo' ); ?></p>
+						<table class="widefat striped" style="margin-top: 10px;">
+							<thead>
+								<tr>
+									<th><?php esc_html_e( 'Target', 'statement-client-demo' ); ?></th>
+									<th><?php esc_html_e( 'Product ID', 'statement-client-demo' ); ?></th>
+									<th><?php esc_html_e( 'SKU', 'statement-client-demo' ); ?></th>
+									<th><?php esc_html_e( 'Classification', 'statement-client-demo' ); ?></th>
+									<th><?php esc_html_e( 'Status / Details', 'statement-client-demo' ); ?></th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php
+								$diag_targets = array(
+									'Monogram Jacquard' => $dry_run_data['product_01_plan']['id'] ?? 0,
+									'Panelled Hood'     => $dry_run_data['product_02_plan']['id'] ?? 0,
+									'Product 213 (QA)'  => 213,
+								);
+
+								foreach ( $diag_targets as $label => $t_id ) :
+									$classification = ( $t_id > 0 ) ? OwnershipClassifier::classify( (int) $t_id ) : array( 'status' => 'NOT_FOUND', 'reason' => 'Product not seeded yet', 'sku' => '' );
+									$status_color = 'green';
+									if ( OwnershipClassifier::STATUS_CONFLICT === $classification['status'] ) {
+										$status_color = 'red';
+									} elseif ( OwnershipClassifier::STATUS_QA_FIXTURE === $classification['status'] ) {
+										$status_color = '#d63638';
+									}
+								?>
+								<tr>
+									<td><strong><?php echo esc_html( $label ); ?></strong></td>
+									<td><?php echo (int) $t_id > 0 ? (int) $t_id : '<em>N/A</em>'; ?></td>
+									<td><code><?php echo esc_html( $classification['sku'] ?? 'N/A' ); ?></code></td>
+									<td><strong style="color: <?php echo esc_attr( $status_color ); ?>;"><?php echo esc_html( $classification['status'] ); ?></strong></td>
+									<td><?php echo esc_html( $classification['reason'] ); ?></td>
+								</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+
 					<div class="card" style="padding: 16px;">
 						<h2><?php esc_html_e( 'Execute Demo Management Actions', 'statement-client-demo' ); ?></h2>
 						<p><?php esc_html_e( 'Choose an action below to update or repair client demo entities idempotently:', 'statement-client-demo' ); ?></p>

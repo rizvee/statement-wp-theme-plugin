@@ -1,30 +1,46 @@
-# Current Priority — Client Visual Delivery & Production Preparation
+# Current Priority — Production Convergence & Release Candidates
 
-## VISUAL SPRINT 05 — IN PROGRESS (2026-08-18)
+## SPRINT 05.1 ACCEPTANCE HARDENING & SPRINT 06 PRODUCTION CONVERGENCE — COMPLETE (2026-08-18)
 
-Status: in_progress (Theme Framework + Plugin Compatibility + Design Perfection + Setup Experience + Woo Hardening + QA Isolation + Responsive Polish + Child-Theme Support + Full Release Prep)
+Status: complete (Theme Candidate 0.13.0-rc.10 + Core Plugin Candidate 0.13.0-rc.13 + Client Demo 0.2.3 + Child Theme 0.1.0 ready for manual deployment; ZERO live mutations executed)
 
-- [ ] Phase 0: Baseline state & clean git checkout
-- [ ] Phase 1: Research premium theme architecture (`docs/premium-theme-architecture-study.md`)
-- [ ] Phase 2: Critical Public QA Leak Fix in Core PublicApi & Catalog Visibility (`0.13.0-rc.12` candidate)
-- [ ] Phase 3: Product 213 deterministic ownership verification & test
-- [ ] Phase 4: Theme architecture modular refactor (`inc/setup.php`, `assets.php`, `hooks.php`, `compatibility/`, `admin/`)
-- [ ] Phase 5: Public extension API (`statement_theme_*` hooks/filters) & `docs/theme-hooks-reference.md`
-- [ ] Phase 6: Child theme starter package (`tools/statement-collector-child/`) & `docs/child-theme-customization-guide.md`
-- [ ] Phase 7 & 8: Authoritative Design Tokens & Global Customizer Design Options System
-- [ ] Phase 9: Design Settings Export / Import JSON with schema & nonce validation
-- [ ] Phase 10: Lightweight Page-Level Design Meta Overrides (layout, header, footer, title)
-- [ ] Phase 11: Elementor Theme Location compatibility (`header`, `footer`, `single`, `archive`) & page templates
-- [ ] Phase 12: Gutenberg / Block Editor supports, theme.json palette, and editorial block patterns
-- [ ] Phase 13, 14, 15: WooCommerce 11.0.1 template audit, Woo Blocks styling, and HPOS audit
-- [ ] Phase 16, 17, 18, 19, 20: SEO, Forms, Cache layers, CSS & JS scoping/namespacing audit
-- [ ] Phase 21 & 22: Statement Admin Setup / Health Screen (`Appearance -> Statement`) with safe setup actions
-- [ ] Phase 23-42: Visual Perfection across all 14 screenshot issues (Mobile shop titles, card density, drop typography, desktop spacing, PDP gallery & summary, Add-to-Bag black CTA, Woo notices, breadcrumbs, shop title, journal editorial cards, archive historical presentation, mobile drawer typography, footer refinement, checkout polish)
-- [ ] Phase 43-50: Responsive Matrix (320px–1920px), Tablet QA, Admin Bar fix, Accessibility, Performance & Image optimization
-- [ ] Phase 51-55: Admin control, Core/Theme boundary, `docs/plugin-compatibility-matrix.md`, `docs/theme-customization-guide.md`, `docs/theme-setup-guide.md`
-- [ ] Phase 56-60: Visual preview inspection, zero public test content leak automated tests
-- [ ] Phase 61-68: Version bumps (Theme `0.13.0-rc.9`, Core `0.13.0-rc.12`, Demo `0.2.2`, Child `0.1.0`), testing, packaging, multi-step commits & push
-- [ ] Phase 69: Atomic mutation verification (strictly zero live mutations)
+- [x] Critical QA Fixture Precedence: Hardened `Visibility::is_fixture_product()` so `_statement_fixture = '1'`, `TEST-*` SKUs, and `TEST —` titles strictly override `_statement_client_demo = 1`.
+- [x] Public Fixture Isolation: Excluded QA fixtures from `PublicApi::get_drop_state()` so drop lifecycle resolution is never contaminated by test products.
+- [x] Product 213 Deterministic Ownership Classifier: Implemented `OwnershipClassifier::classify()` returning `QA_FIXTURE`, `CLIENT_DEMO`, `PRODUCTION`, `CONFLICT`, or `UNKNOWN`. Added "Ownership Diagnostics" table and safe repair action in `tools/statement-client-demo/src/AdminPage.php`.
+- [x] Core HPOS Compatibility Declaration: Declared `custom_order_tables` compatibility exclusively in Core plugin (`statement-collector-core.php`) on `before_woocommerce_init` via `FeaturesUtil::declare_compatibility()`. Audited order storage to confirm zero `shop_order` postmeta bypasses.
+- [x] Remove Theme HPOS Declaration & Streamline Boot: Removed theme-side HPOS declaration in `inc/compatibility/woocommerce.php`. Streamlined `inc/setup.php` so WooCommerce presentation support initializes directly.
+- [x] Elementor Compatibility & Homepage Render Modes: Replaced hard front page template lock with `statement_front_page_renderer` Customizer switch (`statement` default vs `content` for page builders). Added `statement_theme_register_elementor_locations` filter and helper methods in `inc/compatibility/elementor.php`.
+- [x] Page Builder Safe Templates: Created `template-canvas.php` and `template-full-width.php`.
+- [x] Options Import & Meta Security: Audited `inc/admin/options-export.php` and `inc/page-meta.php` for strict nonces, capability checks, and allow-list sanitization.
+- [x] Full Verification Suite: Authored `tests/m19-acceptance-hardening.test.mjs`, `tests/php/test-hpos-compatibility.php`, `tests/php/test-theme-security-and-extensibility.php`. All 42 PHP tests and 19 Node milestone test suites pass 100% clean.
+- [x] Production Candidate Packaging: Packaged Theme `0.13.0-rc.10`, Core `0.13.0-rc.13`, Demo `0.2.3`, and Child `0.1.0` with SHA-256 manifest in `dist/`.
+- [x] Documentation & Runbooks: Authored `docs/sprint-05-acceptance-audit.md` and `docs/sprint-06-deployment-runbook.md`.
+
+## VISUAL SPRINT 05 — EXTENSIBILITY & PREMIUM FINISH MEGA SPRINT — COMPLETE (2026-08-18)
+
+Status: complete (Theme Framework + Plugin Compatibility + Design Perfection + Setup Experience + Woo Hardening + QA Isolation + Responsive Polish + Child-Theme Support + Full Release Prep)
+
+- [x] Phase 0: Baseline state & clean git checkout
+- [x] Phase 1: Research premium theme architecture (`docs/premium-theme-architecture-study.md`)
+- [x] Phase 2: Critical Public QA Leak Fix in Core PublicApi & Catalog Visibility (`0.13.0-rc.12` candidate)
+- [x] Phase 3: Product 213 deterministic ownership verification & test
+- [x] Phase 4: Theme architecture modular refactor (`inc/setup.php`, `assets.php`, `hooks.php`, `compatibility/`, `admin/`)
+- [x] Phase 5: Public extension API (`statement_theme_*` hooks/filters) & `docs/theme-hooks-reference.md`
+- [x] Phase 6: Child theme starter package (`tools/statement-collector-child/`) & `docs/child-theme-customization-guide.md`
+- [x] Phase 7 & 8: Authoritative Design Tokens & Global Customizer Design Options System
+- [x] Phase 9: Design Settings Export / Import JSON with schema & nonce validation
+- [x] Phase 10: Lightweight Page-Level Design Meta Overrides (layout, header, footer, title)
+- [x] Phase 11: Elementor Theme Location compatibility (`header`, `footer`, `single`, `archive`) & page templates
+- [x] Phase 12: Gutenberg / Block Editor supports, theme.json palette, and editorial block patterns
+- [x] Phase 13, 14, 15: WooCommerce 11.0.1 template audit, Woo Blocks styling, and HPOS audit
+- [x] Phase 16, 17, 18, 19, 20: SEO, Forms, Cache layers, CSS & JS scoping/namespacing audit
+- [x] Phase 21 & 22: Statement Admin Setup / Health Screen (`Appearance -> Statement`) with safe setup actions
+- [x] Phase 23-42: Visual Perfection across all 14 screenshot issues (Mobile shop titles, card density, drop typography, desktop spacing, PDP gallery & summary, Add-to-Bag black CTA, Woo notices, breadcrumbs, shop title, journal editorial cards, archive historical presentation, mobile drawer typography, footer refinement, checkout polish)
+- [x] Phase 43-50: Responsive Matrix (320px–1920px), Tablet QA, Admin Bar fix, Accessibility, Performance & Image optimization
+- [x] Phase 51-55: Admin control, Core/Theme boundary, `docs/plugin-compatibility-matrix.md`, `docs/theme-customization-guide.md`, `docs/theme-setup-guide.md`
+- [x] Phase 56-60: Visual preview inspection, zero public test content leak automated tests
+- [x] Phase 61-68: Version bumps (Theme `0.13.0-rc.10`, Core `0.13.0-rc.13`, Demo `0.2.3`, Child `0.1.0`), testing, packaging, multi-step commits & push
+- [x] Phase 69: Atomic mutation verification (strictly zero live mutations)
 
 ## VISUAL SPRINT 04 — COMPLETE (2026-08-17)
 
@@ -493,4 +509,31 @@ Status: complete (2026-08-18)
     - `statement-collector-core-0.13.0-rc.12.zip` (SHA-256: `eca4187a22523ff1a6cead9811892dd6d88fbb1d289b528f93cd3d77ced0c562`)
     - `statement-client-demo-0.2.2.zip` (SHA-256: `c3bb867f88a9d4b2914451fcc6868e29f247b1f3c2ae530a1811ebcf14b087ca`)
     - `statement-collector-child-0.1.0.zip` (SHA-256: `a5c06bcd04fab5d994c740dbf4f71872c6639167b500de97a2e46af892dcf47d`)
+
+## Sprint 05.1 — Acceptance Hardening & Integrity Sweep
+
+Status: in-progress (2026-08-18)
+
+- [ ] Critical QA Ownership Precedence Fix (`Visibility::is_fixture_product`): Ensure explicit `_statement_fixture = 1`, `TEST-*` SKU, and `TEST —` titles ALWAYS win before `_statement_client_demo = 1`. Mixed ownership MUST classify as QA fixture.
+- [ ] Product 213 Forensic Ownership Classifier & Safe Repair: Formal classifier (`QA_FIXTURE`, `CLIENT_DEMO`, `PRODUCTION`, `CONFLICT`, `UNKNOWN`). Conflict blocks public presentation, blocks demo adoption, blocks mutation. Safe repair removes demo marker from fixture and seeds clean demo item.
+- [ ] Public Fixture Isolation Sweep (`PublicApi`): Ensure `get_drop_state()` ignores QA fixtures so a fixture inside a Drop never alters Drop state or public resolution.
+- [ ] Core HPOS Compatibility Ownership (`0.13.0-rc.13`): Audit order CRUD and declare `custom_order_tables` compatibility on `before_woocommerce_init` in Core plugin.
+- [ ] Remove Theme HPOS Declaration: Clean `inc/compatibility/woocommerce.php` so theme only handles presentation and standard theme support.
+- [ ] Theme WooCommerce Boot Timing & Lifecycle: Streamline `inc/setup.php` so theme supports execute deterministically without nested `after_setup_theme` registrations.
+- [ ] Elementor Flexibility & Homepage Render Modes: Replace hard `protect_front_page_template` lock with Customizer switch `statement_front_page_renderer` (`statement` vs `content`). Support Elementor theme locations and add `statement_theme_register_elementor_locations` filter.
+- [ ] Page-Builder Safe Templates: Add `template-canvas.php` and `template-full-width.php`.
+- [ ] Options Import & Page Meta Security: Audit capability checks, nonce guards, and strict allow-list sanitization.
+- [ ] Visual Polish & CSS Hardening: Ink button styling, mobile typography scaling, responsive overflow invariants (320px–1920px).
+- [ ] Client Demo Candidate Bump (`0.2.3`): Add Ownership Diagnostics and safe repair tools in admin.
+- [ ] Full Test Verification Suite: Extend PHP tests and create `tests/m19-acceptance-hardening.test.mjs`.
+
+## Sprint 06 — Production Convergence & Live Readiness
+
+Status: in-progress (2026-08-18)
+
+- [ ] Package Core `0.13.0-rc.13`, Theme `0.13.0-rc.10`, Client Demo `0.2.3`, Child Theme `0.1.0`.
+- [ ] Author `docs/sprint-05-acceptance-audit.md` and `docs/sprint-06-deployment-runbook.md`.
+- [ ] Execute clean logical git commits and push to `origin main`.
+- [ ] Deliver verified single manual deployment batch for Atomic operator execution.
+
 

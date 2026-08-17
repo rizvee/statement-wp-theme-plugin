@@ -265,7 +265,81 @@ function customize_register( \WP_Customize_Manager $wp_customize ): void {
 	);
 
 	// ==========================================
-	// SECTION 4: HOMEPAGE HERO SLIDER
+	// SECTION 4: HOMEPAGE SETTINGS & BUILDER MODE
+	// ==========================================
+	$wp_customize->add_section(
+		'statement_home_section',
+		array(
+			'title'       => __( 'Homepage & Layout Mode', 'statement-collector-theme' ),
+			'description' => __( 'Configure front page layout mode and homepage modules.', 'statement-collector-theme' ),
+			'panel'       => 'statement_theme_panel',
+			'priority'    => 35,
+		)
+	);
+
+	// Front Page Renderer Mode
+	$wp_customize->add_setting(
+		'statement_front_page_renderer',
+		array(
+			'default'           => 'statement',
+			'sanitize_callback' => static function ( $val ) {
+				return in_array( $val, array( 'statement', 'content' ), true ) ? $val : 'statement';
+			},
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'statement_front_page_renderer',
+		array(
+			'label'       => __( 'Front Page Renderer Mode', 'statement-collector-theme' ),
+			'description' => __( 'Choose "Statement Editorial Homepage" for the curated release layout, or "Page Content / Page Builder" to design the front page with Elementor / Gutenberg.', 'statement-collector-theme' ),
+			'section'     => 'statement_home_section',
+			'type'        => 'select',
+			'choices'     => array(
+				'statement' => __( 'Statement Editorial Homepage (Default)', 'statement-collector-theme' ),
+				'content'   => __( 'Page Content / Page Builder (Elementor / Gutenberg)', 'statement-collector-theme' ),
+			),
+		)
+	);
+
+	// Enable Hero Slider
+	$wp_customize->add_setting(
+		'statement_enable_hero_slider',
+		array(
+			'default'           => true,
+			'sanitize_callback' => 'wp_validate_boolean',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'statement_enable_hero_slider',
+		array(
+			'label'   => __( 'Enable Homepage Hero Slider', 'statement-collector-theme' ),
+			'section' => 'statement_home_section',
+			'type'    => 'checkbox',
+		)
+	);
+
+	// Enable Email Capture Section
+	$wp_customize->add_setting(
+		'statement_enable_email_capture',
+		array(
+			'default'           => true,
+			'sanitize_callback' => 'wp_validate_boolean',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'statement_enable_email_capture',
+		array(
+			'label'   => __( 'Enable Homepage Email Capture Form', 'statement-collector-theme' ),
+			'section' => 'statement_home_section',
+			'type'    => 'checkbox',
+		)
+	);
+
+	// ==========================================
+	// SECTION 5: HOMEPAGE HERO SLIDER
 	// ==========================================
 	$wp_customize->add_section(
 		'statement_hero_slider',
