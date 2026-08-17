@@ -3,6 +3,8 @@
 namespace Statement\Collector\Core\Admin;
 
 use Statement\Collector\Core\Product\Metadata;
+use Statement\Collector\Core\PublicApi;
+use Statement\Collector\Core\Release\LifecycleOverrideService;
 use Statement\Collector\Core\Release\ReleaseState;
 
 defined( 'ABSPATH' ) || exit;
@@ -57,9 +59,14 @@ final class LifecycleV2Admin {
 		$product_id = (int) $post->ID;
 		$product    = function_exists( 'wc_get_product' ) ? wc_get_product( $product_id ) : null;
 		$state      = Metadata::get_release_state( $product );
-		$stock_qty  = is_object( $product ) ? (int) $product->get_stock_quantity() : 0;
-		$drop       = \Statement\Collector\Core\PublicApi::get_drop( $product );
+		$stock_qty  = class_exists( LifecycleOverrideService::class )
+			? LifecycleOverrideService::calculate_product_stock( $product )
+			: ( is_object( $product ) ? (int) $product->get_stock_quantity() : 0 );
+		$drop       = class_exists( PublicApi::class ) ? PublicApi::get_drop( $product ) : null;
 		$drop_name  = is_object( $drop ) && isset( $drop->name ) ? $drop->name : __( 'None', 'statement-collector-core' );
+
+		// Resolve context-aware allowed target states
+		$allowed_options = self::get_context_allowed_options( $state );
 
 		?>
 		<div class="statement-lifecycle-box" style="padding: 6px 0;">
@@ -70,7 +77,7 @@ final class LifecycleV2Admin {
 				</span>
 			</p>
 			<p>
-				<strong><?php esc_html_e( 'Stock Quantity:', 'statement-collector-core' ); ?></strong>
+				<strong><?php esc_html_e( 'Available Stock:', 'statement-collector-core' ); ?></strong>
 				<span><?php echo esc_html( (string) $stock_qty ); ?></span>
 			</p>
 			<p>
@@ -79,41 +86,96 @@ final class LifecycleV2Admin {
 			</p>
 			<hr style="margin: 12px 0; border: 0; border-top: 1px solid #ddd;">
 
-			<p><strong><?php esc_html_e( 'Privileged Lifecycle Overrides', 'statement-collector-core' ); ?></strong></p>
+			<p><strong><?php esc_html_e( 'Privileged Lifecycle Override', 'statement-collector-core' ); ?></strong></p>
+
+			<?php if ( ReleaseState::ARCHIVED === $state ) : ?>
+				<div style="background: #fff8e5; border-left: 4px solid #ffb900; padding: 8px; margin-bottom: 10px; font-size: 12px;">
+					<strong><?php esc_html_e( 'Caution:', 'statement-collector-core' ); ?></strong>
+					<?php esc_html_e( 'This piece is ARCHIVED. Reopening is a high-impact historical action requiring available inventory and a mandatory reason.', 'statement-collector-core' ); ?>
+				</div>
+			<?php endif; ?>
+
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="statement_override_lifecycle">
 				<input type="hidden" name="product_id" value="<?php echo esc_attr( (string) $product_id ); ?>">
 				<?php wp_nonce_field( self::NONCE_ACTION, 'statement_lifecycle_nonce' ); ?>
 
 				<p>
-					<label for="statement_target_state"><?php esc_html_e( 'Target State:', 'statement-collector-core' ); ?></label>
-					<select name="target_state" id="statement_target_state" style="width: 100%; margin-top: 4px;">
-						<option value=""><?php esc_html_e( '— Select Override State —', 'statement-collector-core' ); ?></option>
-						<option value="<?php echo esc_attr( ReleaseState::LIVE ); ?>"><?php esc_html_e( 'LIVE (Reopen / Activate)', 'statement-collector-core' ); ?></option>
-						<option value="<?php echo esc_attr( ReleaseState::PRIVATE_ACCESS ); ?>"><?php esc_html_e( 'PRIVATE_ACCESS', 'statement-collector-core' ); ?></option>
-						<option value="<?php echo esc_attr( ReleaseState::SOLD_OUT ); ?>"><?php esc_html_e( 'SOLD_OUT', 'statement-collector-core' ); ?></option>
-						<option value="<?php echo esc_attr( ReleaseState::ARCHIVED ); ?>"><?php esc_html_e( 'ARCHIVED', 'statement-collector-core' ); ?></option>
+					<label for="statement_target_state"><strong><?php esc_html_e( 'Target Action:', 'statement-collector-core' ); ?></strong></label>
+					<select name="target_state" id="statement_target_state" style="width: 100%; margin-top: 4px;" required>
+						<option value=""><?php esc_html_e( '— Select Action —', 'statement-collector-core' ); ?></option>
+						<?php foreach ( $allowed_options as $target_val => $label ) : ?>
+							<option value="<?php echo esc_attr( $target_val ); ?>"><?php echo esc_html( $label ); ?></option>
+						<?php endforeach; ?>
 					</select>
 				</p>
 
 				<p>
-					<label for="statement_override_reason"><?php esc_html_e( 'Reason / Audit Note:', 'statement-collector-core' ); ?></label>
-					<input type="text" name="override_reason" id="statement_override_reason" style="width: 100%; margin-top: 4px;" placeholder="<?php esc_attr_e( 'e.g. Additional batch received', 'statement-collector-core' ); ?>" required>
+					<label for="statement_override_reason"><strong><?php esc_html_e( 'Reason / Audit Note:', 'statement-collector-core' ); ?></strong></label>
+					<input type="text" name="override_reason" id="statement_override_reason" style="width: 100%; margin-top: 4px;" placeholder="<?php esc_attr_e( 'e.g. Added inventory / editorial reopen', 'statement-collector-core' ); ?>" required>
 				</p>
 
 				<p>
-					<label>
+					<label style="font-size: 12px; display: block; margin-top: 8px;">
 						<input type="checkbox" name="confirm_override" value="1" required>
-						<?php esc_html_e( 'Confirm explicit state change', 'statement-collector-core' ); ?>
+						<?php esc_html_e( 'Confirm explicit state override', 'statement-collector-core' ); ?>
 					</label>
 				</p>
 
-				<button type="submit" class="button button-secondary" style="width: 100%;">
-					<?php esc_html_e( 'Apply Lifecycle Override', 'statement-collector-core' ); ?>
+				<button type="submit" class="button button-primary" style="width: 100%; margin-top: 6px;">
+					<?php esc_html_e( 'Apply Override', 'statement-collector-core' ); ?>
 				</button>
 			</form>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Returns context-aware allowed target states.
+	 *
+	 * @param string $current_state Current canonical state.
+	 * @return array<string, string> Keyed by ReleaseState value => UI label.
+	 */
+	public static function get_context_allowed_options( string $current_state ): array {
+		switch ( $current_state ) {
+			case ReleaseState::UPCOMING:
+				return array(
+					ReleaseState::LIVE           => __( 'Make LIVE (Activate Piece)', 'statement-collector-core' ),
+					ReleaseState::PRIVATE_ACCESS => __( 'Set PRIVATE ACCESS (Drop Required)', 'statement-collector-core' ),
+					ReleaseState::SOLD_OUT       => __( 'Mark SOLD OUT', 'statement-collector-core' ),
+					ReleaseState::ARCHIVED       => __( 'Archive Piece', 'statement-collector-core' ),
+				);
+			case ReleaseState::PRIVATE_ACCESS:
+				return array(
+					ReleaseState::LIVE     => __( 'Make LIVE (Public Release)', 'statement-collector-core' ),
+					ReleaseState::SOLD_OUT => __( 'Mark SOLD OUT', 'statement-collector-core' ),
+					ReleaseState::ARCHIVED => __( 'Archive Piece', 'statement-collector-core' ),
+				);
+			case ReleaseState::LIVE:
+				return array(
+					ReleaseState::SOLD_OUT       => __( 'Mark SOLD OUT (Close Sales)', 'statement-collector-core' ),
+					ReleaseState::PRIVATE_ACCESS => __( 'Set PRIVATE ACCESS (Drop Window Required)', 'statement-collector-core' ),
+					ReleaseState::ARCHIVED       => __( 'Archive Piece', 'statement-collector-core' ),
+				);
+			case ReleaseState::SOLD_OUT:
+				return array(
+					ReleaseState::LIVE           => __( 'Reopen Release -> LIVE (Requires Stock > 0)', 'statement-collector-core' ),
+					ReleaseState::ARCHIVED       => __( 'Archive Release -> ARCHIVED', 'statement-collector-core' ),
+					ReleaseState::PRIVATE_ACCESS => __( 'Set PRIVATE ACCESS (Requires Drop + Stock > 0)', 'statement-collector-core' ),
+				);
+			case ReleaseState::ARCHIVED:
+				return array(
+					ReleaseState::LIVE           => __( 'Reopen Archived Release -> LIVE (Requires Stock > 0)', 'statement-collector-core' ),
+					ReleaseState::PRIVATE_ACCESS => __( 'Set PRIVATE ACCESS (Requires Drop + Stock > 0)', 'statement-collector-core' ),
+				);
+			default:
+				return array(
+					ReleaseState::LIVE           => __( 'LIVE', 'statement-collector-core' ),
+					ReleaseState::PRIVATE_ACCESS => __( 'PRIVATE_ACCESS', 'statement-collector-core' ),
+					ReleaseState::SOLD_OUT       => __( 'SOLD_OUT', 'statement-collector-core' ),
+					ReleaseState::ARCHIVED       => __( 'ARCHIVED', 'statement-collector-core' ),
+				);
+		}
 	}
 
 	/**
@@ -135,7 +197,7 @@ final class LifecycleV2Admin {
 		$reason       = isset( $_POST['override_reason'] ) ? sanitize_text_field( wp_unslash( $_POST['override_reason'] ) ) : '';
 		$confirmed    = ! empty( $_POST['confirm_override'] );
 
-		if ( ! in_array( $target_state, array( ReleaseState::LIVE, ReleaseState::PRIVATE_ACCESS, ReleaseState::SOLD_OUT, ReleaseState::ARCHIVED ), true ) ) {
+		if ( ! ReleaseState::is_valid( $target_state ) ) {
 			wp_die( esc_html__( 'Invalid target release state.', 'statement-collector-core' ) );
 		}
 
@@ -148,26 +210,20 @@ final class LifecycleV2Admin {
 			wp_die( esc_html__( 'Product not found.', 'statement-collector-core' ) );
 		}
 
-		$from_state   = Metadata::get_release_state( $product );
-		$stock_before = (int) $product->get_stock_quantity();
-
-		// Mutate product release state
-		Metadata::set_release_state( $product, $target_state );
-		$product->save();
-
-		// Record audit log
-		self::record_audit_event(
-			array(
-				'product_id'   => $product_id,
-				'actor_id'     => get_current_user_id(),
-				'from_state'   => $from_state,
-				'to_state'     => $target_state,
-				'reason'       => $reason,
-				'stock_before' => $stock_before,
-				'stock_after'  => (int) $product->get_stock_quantity(),
-				'timestamp'    => gmdate( 'Y-m-d H:i:s' ),
-			)
+		$result = LifecycleOverrideService::override_state(
+			$product,
+			$target_state,
+			get_current_user_id(),
+			$reason
 		);
+
+		if ( ! ( $result['success'] ?? false ) ) {
+			wp_die(
+				esc_html( $result['error'] ?? __( 'Lifecycle override failed.', 'statement-collector-core' ) ),
+				esc_html__( 'Lifecycle Override Error', 'statement-collector-core' ),
+				array( 'back_link' => true )
+			);
+		}
 
 		$redirect_url = get_edit_post_link( $product_id, 'raw' );
 		wp_safe_redirect( add_query_arg( 'statement_lifecycle_updated', '1', $redirect_url ) );
@@ -184,7 +240,7 @@ final class LifecycleV2Admin {
 		$log   = is_array( $log ) ? $log : array();
 		$log[] = array_merge(
 			array(
-				'event_id'  => wp_generate_uuid4(),
+				'event_id'  => function_exists( 'wp_generate_uuid4' ) ? wp_generate_uuid4() : bin2hex( random_bytes( 16 ) ),
 				'timestamp' => gmdate( 'Y-m-d H:i:s' ),
 			),
 			$event

@@ -94,7 +94,7 @@ final class SessionService {
 		$is_secure = is_ssl();
 
 		if ( PHP_VERSION_ID >= 70300 ) {
-			setcookie(
+			@setcookie(
 				$cookie_name,
 				$raw_token,
 				array(
@@ -106,7 +106,7 @@ final class SessionService {
 				)
 			);
 		} else {
-			setcookie(
+			@setcookie(
 				$cookie_name,
 				$raw_token,
 				$expires_at_ts,
@@ -124,7 +124,7 @@ final class SessionService {
 	public static function clear_session_cookie( int $drop_term_id ): void {
 		$cookie_name = self::get_cookie_name( $drop_term_id );
 		if ( isset( $_COOKIE[ $cookie_name ] ) ) {
-			setcookie( $cookie_name, '', time() - 3600, '/' );
+			@setcookie( $cookie_name, '', time() - 3600, '/' );
 			unset( $_COOKIE[ $cookie_name ] );
 		}
 	}

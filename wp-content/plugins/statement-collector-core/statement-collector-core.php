@@ -2,16 +2,17 @@
 /*
 Plugin Name: Statement Collector Core
 Description: Durable domain foundation for Statement Collector's Piece.
-Version: 0.13.0-rc.10
+Version: 0.13.0-rc.11
 Text Domain: statement-collector-core
 */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'STATEMENT_COLLECTOR_CORE_VERSION', '0.13.0-rc.10' );
+define( 'STATEMENT_COLLECTOR_CORE_VERSION', '0.13.0-rc.11' );
 define( 'STATEMENT_COLLECTOR_CORE_FILE', __FILE__ );
 
 require_once __DIR__ . '/src/Release/ReleaseState.php';
+require_once __DIR__ . '/src/Release/LifecycleOverrideService.php';
 require_once __DIR__ . '/src/Product/Metadata.php';
 require_once __DIR__ . '/src/Drop/Taxonomy.php';
 require_once __DIR__ . '/src/PublicApi.php';

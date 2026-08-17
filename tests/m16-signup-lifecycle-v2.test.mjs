@@ -16,15 +16,25 @@ test('Core Marketing SignupService implements full Mode A/B/C capture with secur
   assert.match(signupPhp, /const\s+ACTION_SUBMIT\s*=\s*['"]statement_signup_submit['"];/);
   assert.match(signupPhp, /wp_verify_nonce/);
   assert.match(signupPhp, /is_email/);
-  assert.match(signupPhp, /RateLimiter::is_rate_limited/);
-  assert.match(signupPhp, /hash_hmac/);
-  assert.match(signupPhp, /GrantService::issue_grant/);
+  assert.match(signupPhp, /RateLimiter::is_allowed/);
+  assert.match(signupPhp, /RateLimiter::record_attempt/);
+  assert.match(signupPhp, /Crypto::hash_email/);
+  assert.match(signupPhp, /Crypto::hash_ip/);
+  assert.match(signupPhp, /Crypto::encrypt_email/);
+  assert.match(signupPhp, /GrantService::get_or_create_public_grant/);
+  assert.match(signupPhp, /ConsentService::record_consent_granted/);
   assert.match(signupPhp, /wp_safe_redirect/);
   assert.match(signupPhp, /303/); // PRG pattern
 });
 
-test('Core Admin LifecycleV2Admin implements admin manual overrides and audit log', () => {
+test('Core LifecycleOverrideService and LifecycleV2Admin implement privileged manual overrides and audit log', () => {
+  const overridePhp = readFileSync(resolve(pluginDir, 'src', 'Release', 'LifecycleOverrideService.php'), 'utf8');
   const lifecyclePhp = readFileSync(resolve(pluginDir, 'src', 'Admin', 'LifecycleV2Admin.php'), 'utf8');
+
+  assert.match(overridePhp, /namespace\s+Statement\\Collector\\Core\\Release;/);
+  assert.match(overridePhp, /final\s+class\s+LifecycleOverrideService/);
+  assert.match(overridePhp, /public\s+static\s+function\s+override_state\s*\(/);
+  assert.match(overridePhp, /calculate_product_stock/);
 
   assert.match(lifecyclePhp, /namespace\s+Statement\\Collector\\Core\\Admin;/);
   assert.match(lifecyclePhp, /final\s+class\s+LifecycleV2Admin/);
@@ -33,7 +43,7 @@ test('Core Admin LifecycleV2Admin implements admin manual overrides and audit lo
   assert.match(lifecyclePhp, /OPTION_AUDIT_LOG\s*=\s*['"]statement_lifecycle_audit_log['"];/);
   assert.match(lifecyclePhp, /handle_lifecycle_override/);
   assert.match(lifecyclePhp, /record_audit_event/);
-  assert.match(lifecyclePhp, /Metadata::set_release_state/);
+  assert.match(lifecyclePhp, /LifecycleOverrideService::override_state/);
   assert.match(lifecyclePhp, /ReleaseState::LIVE/);
   assert.match(lifecyclePhp, /ReleaseState::PRIVATE_ACCESS/);
 });
@@ -43,6 +53,8 @@ test('Catalog Visibility isolates QA fixtures from public queries without breaki
 
   assert.match(visibilityPhp, /posts_clauses/);
   assert.match(visibilityPhp, /filter_public_catalog_posts_clauses/);
+  assert.match(visibilityPhp, /_statement_fixture/);
+  assert.match(visibilityPhp, /TEST-%/);
   assert.match(visibilityPhp, /TEST —/);
   assert.match(visibilityPhp, /test-/);
 });

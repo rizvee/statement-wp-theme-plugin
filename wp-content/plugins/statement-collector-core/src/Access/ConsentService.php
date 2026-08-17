@@ -16,6 +16,15 @@ final class ConsentService {
 
 	/**
 	 * Records a consent_granted event if current state is not already consented to exact text.
+	 *
+	 * @param mixed                $wpdb Database connection.
+	 * @param string               $email_hash Identity HMAC hash of email.
+	 * @param int|null             $drop_term_id Drop term ID if drop-scoped.
+	 * @param int|null             $grant_id Associated grant ID if Mode A.
+	 * @param string               $consent_text Exact legal consent text.
+	 * @param string               $source Source channel identifier.
+	 * @param int                  $now_ts Unix timestamp.
+	 * @param array<string, mixed>|null $encrypted_payload Optional authenticated ciphertext payload.
 	 */
 	public static function record_consent_granted(
 		$wpdb,
@@ -24,7 +33,8 @@ final class ConsentService {
 		?int $grant_id,
 		string $consent_text,
 		string $source,
-		int $now_ts
+		int $now_ts,
+		?array $encrypted_payload = null
 	): bool {
 		if ( ! isset( $wpdb ) ) {
 			return false;
@@ -48,22 +58,27 @@ final class ConsentService {
 			return true;
 		}
 
-		// Append new consent_granted event
-		$inserted = $wpdb->insert(
-			$table,
-			array(
-				'email_hash'        => $email_hash,
-				'drop_term_id'      => $drop_term_id,
-				'grant_id'          => $grant_id,
-				'event_type'        => self::EVENT_GRANTED,
-				'consent_version'   => self::CONSENT_VERSION,
-				'exact_consent_text' => $consent_text,
-				'consent_text_hash' => $text_hash,
-				'source'            => $source,
-				'occurred_at'       => $now_str,
-				'schema_version'    => '1.0',
-			)
+		$data = array(
+			'email_hash'         => $email_hash,
+			'drop_term_id'       => $drop_term_id,
+			'grant_id'           => $grant_id,
+			'event_type'         => self::EVENT_GRANTED,
+			'consent_version'    => self::CONSENT_VERSION,
+			'exact_consent_text' => $consent_text,
+			'consent_text_hash'  => $text_hash,
+			'source'             => $source,
+			'occurred_at'        => $now_str,
+			'schema_version'     => '1.0',
 		);
+
+		if ( is_array( $encrypted_payload ) && ! empty( $encrypted_payload['ciphertext'] ) ) {
+			$data['encrypted_email'] = wp_json_encode( $encrypted_payload );
+			$data['encryption_algo'] = $encrypted_payload['algo'] ?? 'xchacha20-poly1305';
+			$data['key_version']     = $encrypted_payload['key_version'] ?? 'v1';
+		}
+
+		// Append new consent_granted event
+		$inserted = $wpdb->insert( $table, $data );
 
 		return (bool) $inserted;
 	}

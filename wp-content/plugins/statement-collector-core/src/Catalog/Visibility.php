@@ -52,7 +52,14 @@ final class Visibility {
 			return $clauses;
 		}
 
-		$clauses['where'] .= " AND {$wpdb->posts}.post_title NOT LIKE 'TEST —%' AND {$wpdb->posts}.post_name NOT LIKE 'test-%' ";
+		$postmeta_table = $wpdb->postmeta ?? ( ( $wpdb->prefix ?? 'wp_' ) . 'postmeta' );
+		$posts_table    = $wpdb->posts ?? ( ( $wpdb->prefix ?? 'wp_' ) . 'posts' );
+
+		$clauses['where'] .= " AND {$posts_table}.ID NOT IN (
+			SELECT post_id FROM {$postmeta_table}
+			WHERE (meta_key = '_statement_fixture' AND meta_value = '1')
+			   OR (meta_key = '_sku' AND meta_value LIKE 'TEST-%')
+		) AND {$posts_table}.post_title NOT LIKE 'TEST —%' AND {$posts_table}.post_name NOT LIKE 'test-%' ";
 
 		return $clauses;
 	}

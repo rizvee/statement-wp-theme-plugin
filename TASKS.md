@@ -1,8 +1,22 @@
 # Current Priority — Client Visual Delivery & Production Preparation
 
-## CLIENT VISUAL DELIVERY — VISUAL SPRINT 03 / OVERNIGHT MEGA BUILD COMPLETE (2026-08-17)
+## VISUAL SPRINT 03.1 — CORE RC.11 RUNTIME HARDENING & PRIVILEGED LIFECYCLE REPAIR (2026-08-17)
 
-Status: complete (Theme Candidate 0.13.0-rc.7 + Core Plugin 0.13.0-rc.10 + Client Demo 0.2.0 ready for Atomic deployment)
+Status: complete (Theme Candidate 0.13.0-rc.7 + Core Plugin Candidate 0.13.0-rc.11 + Client Demo 0.2.0 + Fixtures 0.3.3 ready for deployment; ZERO live mutations executed)
+
+- [x] Candidate RC.10 Defect Resolution & Formal Rejection: Treated Core `0.13.0-rc.10` as a failed release candidate due to RateLimiter signature mismatch, plaintext email fallback, and uncontrolled lifecycle setters.
+- [x] RateLimiter & Crypto API Alignment: Adapted `SignupService.php` to canonical `RateLimiter::is_allowed()` / `RateLimiter::record_attempt()` (5 parameters). Replaced generic salt with dedicated Statement identity and rate limit HMAC keys (`Crypto::hash_email()`, `Crypto::hash_ip()`).
+- [x] Fail-Closed Security & Storage Hardening: Removed giant plaintext option storage; replaced with durable `statement_consent_events` table supporting Mode A (Private Access session grant), Mode B (Live Drop encrypted consent), and Mode C (Generic VIP encrypted consent). Configured fail-closed behavior on uninitialized vault / crypto unavailable.
+- [x] Privileged Lifecycle Override Service: Created `LifecycleOverrideService.php` enforcing mandatory preconditions (stock > 0 for LIVE/PRIVATE_ACCESS, future `DropConfig` with valid close timestamp, mandatory non-empty reason, canonicalization of variations to parent owner). Public `Metadata::set_release_state()` remains strictly forward-only. Verified database persistence before logging structured audit events.
+- [x] Context-Aware Lifecycle Admin Meta Box: Hardened `LifecycleV2Admin.php` with state-specific allowed actions, warning banners for archived items, and secure delegation to `LifecycleOverrideService`.
+- [x] Public Catalog QA Isolation: Hardened `Visibility::filter_public_catalog_posts_clauses` to query `_statement_fixture = '1'` and `_sku LIKE 'TEST-%'` with title/slug fallbacks.
+- [x] Client Demo Collision Prevention Behavior Test: Created `tests/php/test-client-demo-collision.php` (13 assertions) proving QA product 213 is protected from adoption or mutation.
+- [x] Comprehensive PHP Behavioral Suites: Authored and executed `test-marketing-signup.php` (41 assertions), `test-lifecycle-override.php` (34 assertions), and `test-client-demo-collision.php` (13 assertions).
+- [x] Version Bump & Master Packaging: Promoted Core to `0.13.0-rc.11`, generated verified ZIP packages and master `dist/manifest.json`.
+
+## CLIENT VISUAL DELIVERY — VISUAL SPRINT 03 / OVERNIGHT MEGA BUILD (2026-08-17)
+
+Status: complete (Theme Candidate 0.13.0-rc.7 + Core Plugin 0.13.0-rc.10 [SUPERSEDED by rc.11] + Client Demo 0.2.0)
 
 - [x] Homepage Release Contract Enforced: Strict 6-part layout locked (Header -> Current Offer/Hero -> Active Drop -> Featured 2 Pieces -> Email Capture -> Minimal Footer). Off-home content (Lookbook, Brand Object, Principle) migrated to dedicated journal templates.
 - [x] Typographical Brand Wordmark: Replaced cramped logo markup with elegant, letter-spaced `STATEMENT` typography in both desktop and mobile headers.
