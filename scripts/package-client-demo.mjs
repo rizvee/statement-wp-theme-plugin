@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.2.3';
+const defaultVersion = '0.2.4';
 
 export const approvedDemoFiles = [
   'statement-client-demo.php',
@@ -15,10 +15,12 @@ export const approvedDemoFiles = [
   'src/ManifestService.php',
   'assets/images/statement-monogram-jacket-front.jpg',
   'assets/images/statement-monogram-jacket-back.jpg',
+  'assets/images/statement-monogram-jacket-side.jpg',
   'assets/images/statement-monogram-jacket-flatlay-concrete.jpg',
   'assets/images/statement-monogram-jacket-collar-detail.jpg',
   'assets/images/statement-monogram-jacket-flatlay-slate.jpg',
   'assets/images/statement-panelled-hood-jacket-front.jpg',
+  'assets/images/statement-panelled-hood-jacket-side.jpg',
   'assets/images/statement-panelled-hood-jacket-back.jpg',
   'assets/images/statement-panelled-hood-jacket-cathedral-front.jpg',
   'assets/images/statement-panelled-hood-jacket-embroidery-detail.jpg',
@@ -31,6 +33,10 @@ export const approvedDemoFiles = [
   'assets/images/statement-collector-dust-bag.jpg',
   'assets/images/statement-collector-patch-palm.jpg',
   'assets/images/statement-crafted-not-mass-made-poster.jpg',
+  'assets/images/statement-hero-slide-hood-01.jpg',
+  'assets/images/statement-hero-slide-hood-02.jpg',
+  'assets/images/statement-hero-slide-monogram-01.jpg',
+  'assets/images/statement-hero-slide-monogram-02.jpg',
 ];
 
 export function packageClientDemo(version = defaultVersion) {

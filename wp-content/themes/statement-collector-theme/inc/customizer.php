@@ -324,7 +324,7 @@ function customize_register( \WP_Customize_Manager $wp_customize ): void {
 	$wp_customize->add_setting(
 		'statement_enable_email_capture',
 		array(
-			'default'           => true,
+			'default'           => false,
 			'sanitize_callback' => 'wp_validate_boolean',
 			'transport'         => 'refresh',
 		)
@@ -332,9 +332,28 @@ function customize_register( \WP_Customize_Manager $wp_customize ): void {
 	$wp_customize->add_control(
 		'statement_enable_email_capture',
 		array(
-			'label'   => __( 'Enable Homepage Email Capture Form', 'statement-collector-theme' ),
-			'section' => 'statement_home_section',
-			'type'    => 'checkbox',
+			'label'       => __( 'Enable Homepage Email Capture Form', 'statement-collector-theme' ),
+			'description' => __( 'Disabled by default per client direction. Can be enabled at any time.', 'statement-collector-theme' ),
+			'section'     => 'statement_home_section',
+			'type'        => 'checkbox',
+		)
+	);
+
+	// Alias: statement_home_show_access_capture
+	$wp_customize->add_setting(
+		'statement_home_show_access_capture',
+		array(
+			'default'           => false,
+			'sanitize_callback' => 'wp_validate_boolean',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'statement_home_show_access_capture',
+		array(
+			'label'       => __( 'Show Homepage Access Capture', 'statement-collector-theme' ),
+			'section'     => 'statement_home_section',
+			'type'        => 'checkbox',
 		)
 	);
 
@@ -345,13 +364,13 @@ function customize_register( \WP_Customize_Manager $wp_customize ): void {
 		'statement_hero_slider',
 		array(
 			'title'       => __( 'Homepage Hero Slider', 'statement-collector-theme' ),
-			'description' => __( 'Configure up to 4 campaign slides for the homepage hero carousel.', 'statement-collector-theme' ),
+			'description' => __( 'Configure up to 6 campaign slides for the homepage hero carousel.', 'statement-collector-theme' ),
 			'panel'       => 'statement_theme_panel',
 			'priority'    => 40,
 		)
 	);
 
-	for ( $i = 1; $i <= 4; $i++ ) {
+	for ( $i = 1; $i <= 6; $i++ ) {
 		// Slide Image
 		$wp_customize->add_setting(
 			"statement_hero_slide_{$i}_image",

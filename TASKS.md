@@ -1,5 +1,20 @@
 # Current Priority — Production Convergence & Release Candidates
 
+## VISUAL SPRINT 06.1 — CLIENT-ASSET REPLACEMENT + IMAGE-FIRST HOMEPAGE + STOREFRONT PERFECTION — COMPLETE (2026-08-18)
+
+Status: complete (Theme Candidate 0.13.0-rc.11 + Core Plugin Candidate 0.13.0-rc.13 + Client Demo 0.2.4 + Child Theme 0.1.0 packaged and verified; ZERO live mutations executed)
+
+- [x] Client Drive Asset Ingestion: Ingested and optimized 18 high-resolution client drive photographs (`.local-assets/client-drive/`), synchronized to `tools/statement-client-demo/assets/images/` and `wp-content/themes/statement-collector-theme/assets/images/`.
+- [x] Client Drive Documentation & Script: Authored `docs/client-drive-asset-map.md`, `docs/client-drive-asset-download-blocker.md`, and asset download/optimization scripts.
+- [x] Client Demo Seeder Upgraded (0.2.4): Registered new asset keys (`monogram_side`, `hood_side`), updated product gallery sequences, implemented `apply_new_client_media_set()` in `DemoSeederService.php`, and added "Apply New Client Media Set" admin button in `tools/statement-client-demo/src/AdminPage.php`.
+- [x] Image-First Homepage Hero Slider: Redesigned hero slider defaults in `template-parts/home/hero.php` and Customizer to 5 curated image-first client slides (`statement-hero-slide-monogram-01.jpg`, `statement-panelled-hood-jacket-front.jpg`, `statement-monogram-jacket-front.jpg`, `statement-hero-slide-hood-01.jpg`, `statement-hero-slide-monogram-02.jpg`) without prominent overlay copy by default. Added `.statement-hero-slider--image-first` subtle gradient overlay in `assets/css/home.css`.
+- [x] Default Disabled Email Capture: Updated `front-page.php` and `inc/customizer.php` (`statement_enable_email_capture`, `statement_home_show_access_capture`) to default to disabled (`false`) while strictly preserving M10 Private Access architecture.
+- [x] Drops Index Polish: Updated `page-drops.php` hero to feature client jacket photography (`statement-monogram-jacket-front.jpg`).
+- [x] Product Gallery & Mobile UX: Refined WooCommerce native gallery styling in `assets/css/product.css` with tokenized variables and mobile swipe responsiveness.
+- [x] Verification Suite: All 119 PHP files linted clean (0 errors), all 42 PHP tests passed (100%), all Node milestone suites (M1–M19, M13 packaging) passed, `verify-foundation.mjs` and `verify-git-runtime-tracking.mjs` passed 100%.
+- [x] Release Candidate Packaging: Generated and verified single-root ZIPs in `dist/` with SHA-256 manifest: Theme `0.13.0-rc.11`, Demo `0.2.4`, Core `0.13.0-rc.13`, Child `0.1.0`.
+- [x] Documentation: Authored `docs/visual-sprint-06-1-client-convergence.md`.
+
 ## SPRINT 05.1 ACCEPTANCE HARDENING & SPRINT 06 PRODUCTION CONVERGENCE — COMPLETE (2026-08-18)
 
 Status: complete (Theme Candidate 0.13.0-rc.10 + Core Plugin Candidate 0.13.0-rc.13 + Client Demo 0.2.3 + Child Theme 0.1.0 ready for manual deployment; ZERO live mutations executed)

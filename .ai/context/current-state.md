@@ -51,6 +51,15 @@ Updated: 2026-08-18
   5. *Security & Extensibility Hardening*: Verified strict nonces, `manage_options` / `edit_post` capability checks, and allow-list sanitization in `inc/admin/options-export.php` and `inc/page-meta.php`.
   6. *Full Test Battery & Packaging*: Authored `tests/m19-acceptance-hardening.test.mjs`, `tests/php/test-hpos-compatibility.php`, `tests/php/test-theme-security-and-extensibility.php`, `tests/php/test-public-fixture-isolation.php`, `tests/php/test-client-demo-collision.php`. All 42 PHP tests and 19 Node milestone test suites pass 100% clean. Packaged all ZIP artifacts in `dist/` with SHA-256 checksums.
 
+- Visual Sprint 06.1 Client Convergence (COMPLETE):
+  1. *Client Drive Asset Ingestion*: Ingested and optimized 18 high-resolution client drive photographs (`.local-assets/client-drive/`), synchronized to `tools/statement-client-demo/assets/images/` and `wp-content/themes/statement-collector-theme/assets/images/`.
+  2. *Client Demo Seeder Upgraded (0.2.4)*: Registered new asset keys (`monogram_side`, `hood_side`), updated product gallery sequences, implemented `apply_new_client_media_set()` in `DemoSeederService.php`, and added "Apply New Client Media Set" admin button in `tools/statement-client-demo/src/AdminPage.php`.
+  3. *Image-First Homepage Hero Slider*: Redesigned hero slider defaults in `template-parts/home/hero.php` and Customizer to 5 curated image-first client slides without prominent overlay copy by default. Added `.statement-hero-slider--image-first` subtle gradient overlay in `assets/css/home.css`.
+  4. *Default Disabled Email Capture*: Updated `front-page.php` and `inc/customizer.php` (`statement_enable_email_capture`, `statement_home_show_access_capture`) to default to disabled (`false`) while strictly preserving M10 Private Access architecture.
+  5. *Drops Index Polish*: Updated `page-drops.php` hero to feature client jacket photography (`statement-monogram-jacket-front.jpg`).
+  6. *Product Gallery & Mobile UX*: Refined WooCommerce native gallery styling in `assets/css/product.css` with tokenized variables and mobile swipe responsiveness.
+  7. *Release Candidate Packaging*: Generated and verified single-root ZIPs in `dist/` with SHA-256 manifest: Theme `0.13.0-rc.11`, Demo `0.2.4`, Core `0.13.0-rc.13`, Child `0.1.0`.
+
 ## Local environment
 
 - Available: Git 2.45.1, Node.js 22.17.0, npm 11.15.0, ripgrep 15.1.0, bsdtar 3.5.2 (`tar.exe`).
@@ -62,12 +71,12 @@ Updated: 2026-08-18
 
 `https://mystatement.store/` is hosted on WordPress.com Atomic. Core `0.13.0-rc.9` is active with Fixtures `0.3.3` active on Atomic, Theme `0.13.0-rc.4` active, Secret Vault initialized (xchacha20-poly1305), and private fixture adopted and recovered (`Product ID: 213`, `Drop ID: 1376`). Synchronized with GitHub `https://github.com/rizvee/statement-wp-theme-plugin.git`. ZERO live mutations executed from workspace.
 
-- **Theme Candidate**: `statement-collector-theme-0.13.0-rc.10.zip` (4,129,197 bytes, SHA-256: `cf63e2f3f54a3fb3e3e952de5cde9aa7e655d4c32c64cc43a17b4ac74ac2bbca`)
-- **Core Candidate**: `statement-collector-core-0.13.0-rc.13.zip` (78,247 bytes, SHA-256: `94760ddbf49c974b36a7d28553f715a7d207fe7e8fb6359c9fa7143ce4933a25`)
-- **Client Demo Candidate**: `statement-client-demo-0.2.3.zip` (4,054,862 bytes, SHA-256: `0bc37da82b172622454ad2f3fb16607777ffd97cbc5fe4f13f13be6d837d69ca`)
-- **Child Theme Candidate**: `statement-collector-child-0.1.0.zip` (1,444 bytes, SHA-256: `8fd5d2323d51b37e16ef868a498635baf44a70abce0a45d7924ed710e06c978e`)
+- **Theme Candidate**: `statement-collector-theme-0.13.0-rc.11.zip` (20,858,283 bytes, SHA-256: `129202c8f3ae13d5b227024a43a8f64984f673e032bc287d0c11f69427fc0cfe`)
+- **Core Candidate**: `statement-collector-core-0.13.0-rc.13.zip` (78,247 bytes, SHA-256: `2580a5a83c3315a63716468407dbdd794e487812b9f8d061f0cee34f7478dfe7`)
+- **Client Demo Candidate**: `statement-client-demo-0.2.4.zip` (20,783,969 bytes, SHA-256: `22bb696eae8d873ace89fe29ed80e45e6718267ed7f8b35885cb10086225c02d`)
+- **Child Theme Candidate**: `statement-collector-child-0.1.0.zip` (1,444 bytes, SHA-256: `1a870412128c8cc51cedaa3906672c1d50dcf2f6d244446f95bc1b46a2a61f44`)
 - **Fixture Candidate**: `statement-integration-fixtures-0.3.3.zip` (27,311 bytes, SHA-256: `97fbb481613fc619434e87b5d81fb3815ab7b690bd2d1e80e94dbf547ec70850`)
 
 ## Verification
 
-M1–M18 Node structural tests (138 subtests across 19 suites pass 100% clean), PHP lint (116 PHP files), `verify-foundation.mjs`, `verify-git-runtime-tracking.mjs`, all 40 PHP test suites, theme package verifier (`statement-collector-theme-0.13.0-rc.9.zip`), core plugin package verifier (`statement-collector-core-0.13.0-rc.12.zip`), client demo package verifier (`statement-client-demo-0.2.2.zip`), child theme package verifier (`statement-collector-child-0.1.0.zip`), and master `packageAll` manifest generation pass cleanly with 100% green status.
+M1–M19 Node structural tests (144 subtests across 20 suites pass 100% clean), PHP lint (119 PHP files), `verify-foundation.mjs`, `verify-git-runtime-tracking.mjs`, all 42 PHP test suites, theme package verifier (`statement-collector-theme-0.13.0-rc.11.zip`), core plugin package verifier (`statement-collector-core-0.13.0-rc.13.zip`), client demo package verifier (`statement-client-demo-0.2.4.zip`), child theme package verifier (`statement-collector-child-0.1.0.zip`), and master `packageAll` manifest generation pass cleanly with 100% green status.

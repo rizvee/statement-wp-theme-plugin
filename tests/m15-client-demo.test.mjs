@@ -8,12 +8,12 @@ import { verifyPackage } from '../scripts/verify-package.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 
-test('M15: Theme 0.13.0-rc.10 metadata and file structure', () => {
+test('M15: Theme 0.13.0-rc.11 metadata and file structure', () => {
   const styleCss = readFileSync(join(root, 'wp-content/themes/statement-collector-theme/style.css'), 'utf8');
-  assert.match(styleCss, /Version:\s*0\.13\.0-rc\.10/);
+  assert.match(styleCss, /Version:\s*0\.13\.0-rc\.11/);
 
   const functionsPhp = readFileSync(join(root, 'wp-content/themes/statement-collector-theme/functions.php'), 'utf8');
-  assert.match(functionsPhp, /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.10['"]\s*\);/);
+  assert.match(functionsPhp, /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.11['"]\s*\);/);
 
   const setupPhp = readFileSync(join(root, 'wp-content/themes/statement-collector-theme/inc/setup.php'), 'utf8');
   assert.match(setupPhp, /function protect_front_page_template/);
@@ -38,7 +38,7 @@ test('M15: Theme 0.13.0-rc.10 metadata and file structure', () => {
 
 test('M15: Client Demo plugin structure and security invariants', () => {
   const mainPhp = readFileSync(join(root, 'tools/statement-client-demo/statement-client-demo.php'), 'utf8');
-  assert.match(mainPhp, /Version:\s*0\.2\.3/);
+  assert.match(mainPhp, /Version:\s*0\.2\.4/);
   assert.match(mainPhp, /namespace Statement\\ClientDemo/);
 
   const adminPhp = readFileSync(join(root, 'tools/statement-client-demo/src/AdminPage.php'), 'utf8');
@@ -63,20 +63,20 @@ test('M15: Client Demo plugin structure and security invariants', () => {
   assert.match(registryPhp, /statement-panelled-hood-jacket-front\.jpg/);
 });
 
-test('M15: Package Theme 0.13.0-rc.10 and Client Demo 0.2.3', () => {
-  const themePkg = packageTheme('0.13.0-rc.10');
-  assert.equal(themePkg.version, '0.13.0-rc.10');
+test('M15: Package Theme 0.13.0-rc.11 and Client Demo 0.2.4', () => {
+  const themePkg = packageTheme('0.13.0-rc.11');
+  assert.equal(themePkg.version, '0.13.0-rc.11');
   assert.ok(themePkg.sizeBytes > 0);
   assert.ok(existsSync(themePkg.path));
 
-  const themeVerify = verifyPackage(themePkg.path, '0.13.0-rc.10');
+  const themeVerify = verifyPackage(themePkg.path, '0.13.0-rc.11');
   assert.ok(themeVerify.ok, `Theme package verification failed: ${themeVerify.errors.join(', ')}`);
 
-  const demoPkg = packageClientDemo('0.2.3');
-  assert.equal(demoPkg.version, '0.2.3');
+  const demoPkg = packageClientDemo('0.2.4');
+  assert.equal(demoPkg.version, '0.2.4');
   assert.ok(demoPkg.sizeBytes > 0);
   assert.ok(existsSync(demoPkg.path));
 
-  const demoVerify = verifyPackage(demoPkg.path, '0.2.3');
+  const demoVerify = verifyPackage(demoPkg.path, '0.2.4');
   assert.ok(demoVerify.ok, `Demo package verification failed: ${demoVerify.errors.join(', ')}`);
 });

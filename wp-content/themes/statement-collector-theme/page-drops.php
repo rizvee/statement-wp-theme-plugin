@@ -39,7 +39,7 @@ $drop_url = is_object( $current_drop ) ? get_term_link( $current_drop ) : home_u
 
 		<div class="statement-drops-current__card">
 			<div class="statement-drops-current__media">
-				<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/statement-brand-wordmark.jpg' ); ?>"
+				<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/statement-monogram-jacket-front.jpg' ); ?>"
 					 alt="<?php esc_attr_e( 'Drop 001 — Monogram Study Campaign', 'statement-collector-theme' ); ?>"
 					 class="statement-drops-current__image"
 					 loading="eager"

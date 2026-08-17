@@ -65,6 +65,19 @@
 	);
 }
 
+.statement-hero-slider--image-first .statement-hero-slide__overlay {
+	background: linear-gradient(
+		180deg,
+		rgba(17, 17, 17, 0.04) 0%,
+		rgba(17, 17, 17, 0.0) 50%,
+		rgba(17, 17, 17, 0.28) 100%
+	);
+}
+
+.statement-hero-slider--image-first .statement-hero-slide__image {
+	filter: none;
+}
+
 .statement-hero-slide__content {
 	position: relative;
 	z-index: 3;

@@ -53,6 +53,13 @@ final class AdminPage {
 			exit;
 		}
 
+		if ( 'apply_media' === $action_type ) {
+			$result = DemoSeederService::apply_new_client_media_set();
+			set_transient( 'statement_client_demo_last_result', $result, 60 );
+			wp_safe_redirect( admin_url( 'admin.php?page=' . self::SLUG . '&media_applied=1' ) );
+			exit;
+		}
+
 		if ( 'repair' === $action_type ) {
 			$result = DemoSeederService::repair_client_demo();
 			set_transient( 'statement_client_demo_last_result', $result, 60 );
@@ -89,12 +96,21 @@ final class AdminPage {
 			: DemoSeederService::dry_run();
 		?>
 		<div class="wrap statement-client-demo-admin" style="max-width: 1100px;">
-			<h1><?php esc_html_e( 'Statement — Client Demo Seeder & Importer (v0.2.1)', 'statement-client-demo' ); ?></h1>
+			<h1><?php esc_html_e( 'Statement — Client Demo Seeder & Importer (v0.2.4)', 'statement-client-demo' ); ?></h1>
 			<p class="description">
 				<?php esc_html_e( 'Manage real Statement brand media, Drop 001, variable products (S/M/L), and light-first editorial pages with strict ownership safety.', 'statement-client-demo' ); ?>
 			</p>
 
-			<?php if ( isset( $_GET['seeded'] ) && is_array( $last_res ) ) : ?>
+			<?php if ( isset( $_GET['media_applied'] ) && is_array( $last_res ) ) : ?>
+				<div class="notice notice-success is-dismissible">
+					<p><strong><?php esc_html_e( 'New Client Media Set Applied Successfully!', 'statement-client-demo' ); ?></strong></p>
+					<ul>
+						<li><?php printf( esc_html__( 'Media Items Ingested / Reused: %d', 'statement-client-demo' ), count( $last_res['media'] ?? array() ) ); ?></li>
+						<li><?php printf( esc_html__( 'Product 01 (Monogram Jacquard): %s', 'statement-client-demo' ), esc_html( $last_res['products']['product_01']['status'] ?? 'N/A' ) ); ?></li>
+						<li><?php printf( esc_html__( 'Product 02 (Panelled Hood): %s', 'statement-client-demo' ), esc_html( $last_res['products']['product_02']['status'] ?? 'N/A' ) ); ?></li>
+					</ul>
+				</div>
+			<?php elseif ( isset( $_GET['seeded'] ) && is_array( $last_res ) ) : ?>
 				<?php if ( empty( $last_res['errors'] ) && ( $last_res['success'] ?? true ) ) : ?>
 					<div class="notice notice-success is-dismissible">
 						<p><strong><?php esc_html_e( 'Client Demo Content Successfully Seeded & Updated!', 'statement-client-demo' ); ?></strong></p>
@@ -244,6 +260,15 @@ final class AdminPage {
 							<?php wp_nonce_field( 'statement_client_demo_action_nonce', 'demo_nonce' ); ?>
 							<button type="submit" class="button button-primary">
 								<?php esc_html_e( 'Seed / Update Client Demo Content', 'statement-client-demo' ); ?>
+							</button>
+						</form>
+
+						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display: inline-block; margin-right: 10px;">
+							<input type="hidden" name="action" value="statement_client_demo_action">
+							<input type="hidden" name="demo_action" value="apply_media">
+							<?php wp_nonce_field( 'statement_client_demo_action_nonce', 'demo_nonce' ); ?>
+							<button type="submit" class="button button-secondary" style="font-weight: 600;">
+								<?php esc_html_e( 'Apply New Client Media Set', 'statement-client-demo' ); ?>
 							</button>
 						</form>
 

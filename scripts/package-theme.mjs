@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.13.0-rc.10';
+const defaultVersion = '0.13.0-rc.11';
 
 export const approvedThemeFiles = [
   'style.css',
@@ -46,14 +46,20 @@ export const approvedThemeFiles = [
   'assets/images/statement-collector-patch-palm.jpg',
   'assets/images/statement-monogram-jacket-front.jpg',
   'assets/images/statement-monogram-jacket-back.jpg',
+  'assets/images/statement-monogram-jacket-side.jpg',
   'assets/images/statement-monogram-jacket-flatlay-concrete.jpg',
   'assets/images/statement-monogram-jacket-flatlay-slate.jpg',
   'assets/images/statement-monogram-jacket-collar-detail.jpg',
   'assets/images/statement-panelled-hood-jacket-front.jpg',
+  'assets/images/statement-panelled-hood-jacket-side.jpg',
   'assets/images/statement-panelled-hood-jacket-back.jpg',
   'assets/images/statement-panelled-hood-jacket-cathedral-front.jpg',
   'assets/images/statement-panelled-hood-jacket-embroidery-detail.jpg',
   'assets/images/statement-panelled-hood-jacket-night-34.jpg',
+  'assets/images/statement-hero-slide-hood-01.jpg',
+  'assets/images/statement-hero-slide-hood-02.jpg',
+  'assets/images/statement-hero-slide-monogram-01.jpg',
+  'assets/images/statement-hero-slide-monogram-02.jpg',
   'inc/assets.php',
   'inc/navigation.php',
   'inc/home.php',

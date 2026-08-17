@@ -7,6 +7,7 @@ defined( 'ABSPATH' ) || exit;
 $page_id   = isset( $args['page_id'] ) ? absint( $args['page_id'] ) : 0;
 $drop      = isset( $args['drop'] ) && is_object( $args['drop'] ) ? $args['drop'] : null;
 $drop_url  = isset( $args['drop_url'] ) && is_string( $args['drop_url'] ) && '' !== $args['drop_url'] ? $args['drop_url'] : home_url( '/drops/' );
+$shop_url  = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' );
 $theme_uri = get_template_directory_uri();
 $has_featured = ( $page_id > 0 && function_exists( 'has_post_thumbnail' ) && has_post_thumbnail( $page_id ) );
 $featured_url = $has_featured ? get_the_post_thumbnail_url( $page_id, 'full' ) : '';
@@ -14,14 +15,14 @@ $featured_url = $has_featured ? get_the_post_thumbnail_url( $page_id, 'full' ) :
 // Discover configured slides from Theme Customizer or curated defaults
 $slides = array();
 
-for ( $i = 1; $i <= 4; $i++ ) {
+for ( $i = 1; $i <= 6; $i++ ) {
 	$img_id    = get_theme_mod( "statement_hero_slide_{$i}_image", '' );
 	$mob_id    = get_theme_mod( "statement_hero_slide_{$i}_mobile_image", '' );
 	$eyebrow   = get_theme_mod( "statement_hero_slide_{$i}_eyebrow", '' );
 	$heading   = get_theme_mod( "statement_hero_slide_{$i}_heading", '' );
 	$link      = get_theme_mod( "statement_hero_slide_{$i}_link", '' );
 	$cta       = get_theme_mod( "statement_hero_slide_{$i}_cta", '' );
-	$focal     = get_theme_mod( "statement_hero_slide_{$i}_focal", 'center 25%' );
+	$focal     = get_theme_mod( "statement_hero_slide_{$i}_focal", 'center 20%' );
 
 	$img_url = ( 1 === $i && ! empty( $featured_url ) && empty( $img_id ) ) ? $featured_url : '';
 	$mob_url = '';
@@ -33,74 +34,93 @@ for ( $i = 1; $i <= 4; $i++ ) {
 		$mob_url = wp_get_attachment_image_url( (int) $mob_id, 'full' );
 	}
 
-	if ( ! empty( $heading ) || ! empty( $img_url ) ) {
+	if ( ! empty( $img_url ) ) {
 		$slides[] = array(
 			'image'        => $img_url,
 			'mobile_image' => $mob_url,
 			'eyebrow'      => $eyebrow,
 			'heading'      => $heading,
-			'link'         => ! empty( $link ) ? $link : $drop_url,
-			'cta'          => ! empty( $cta ) ? $cta : __( 'VIEW RELEASE', 'statement-collector-theme' ),
+			'link'         => ! empty( $link ) ? $link : $shop_url,
+			'cta'          => ! empty( $cta ) ? $cta : __( 'EXPLORE RELEASE', 'statement-collector-theme' ),
 			'focal'        => $focal,
+			'alt'          => ! empty( $heading ) ? $heading : __( 'Statement Editorial Campaign', 'statement-collector-theme' ),
 		);
 	}
 }
 
-// Curated default slides if Customizer has not been populated
+// Curated default image-first slides using new client Drive photography
 if ( empty( $slides ) ) {
 	$slides = array(
 		array(
+			'image'        => $theme_uri . '/assets/images/statement-hero-slide-monogram-01.jpg',
+			'mobile_image' => '',
+			'eyebrow'      => '',
+			'heading'      => '',
+			'link'         => $shop_url,
+			'cta'          => '',
+			'focal'        => 'center 20%',
+			'alt'          => __( 'Statement Monogram Jacquard Campaign Editorial', 'statement-collector-theme' ),
+		),
+		array(
 			'image'        => $theme_uri . '/assets/images/statement-panelled-hood-jacket-front.jpg',
 			'mobile_image' => '',
-			'eyebrow'      => 'DROP 001',
-			'heading'      => 'MONOGRAM STUDY',
-			'link'         => $drop_url,
-			'cta'          => __( 'EXPLORE RELEASE', 'statement-collector-theme' ),
-			'focal'        => 'center 25%',
+			'eyebrow'      => '',
+			'heading'      => '',
+			'link'         => $shop_url,
+			'cta'          => '',
+			'focal'        => 'center 20%',
+			'alt'          => __( 'Statement Panelled Hood Jacket Studio Cut', 'statement-collector-theme' ),
 		),
 		array(
 			'image'        => $theme_uri . '/assets/images/statement-monogram-jacket-front.jpg',
 			'mobile_image' => '',
-			'eyebrow'      => 'PIECE 01',
-			'heading'      => 'MONOGRAM JACQUARD',
-			'link'         => home_url( '/shop/' ),
-			'cta'          => __( 'VIEW PIECE', 'statement-collector-theme' ),
-			'focal'        => 'center 25%',
+			'eyebrow'      => '',
+			'heading'      => '',
+			'link'         => $shop_url,
+			'cta'          => '',
+			'focal'        => 'center 20%',
+			'alt'          => __( 'Statement Monogram Jacquard Jacket Studio Cut', 'statement-collector-theme' ),
 		),
 		array(
-			'image'        => $theme_uri . '/assets/images/statement-panelled-hood-jacket-cathedral-front.jpg',
+			'image'        => $theme_uri . '/assets/images/statement-hero-slide-hood-01.jpg',
 			'mobile_image' => '',
-			'eyebrow'      => 'PIECE 02',
-			'heading'      => 'PANELLED HOOD',
-			'link'         => home_url( '/shop/' ),
-			'cta'          => __( 'VIEW PIECE', 'statement-collector-theme' ),
+			'eyebrow'      => '',
+			'heading'      => '',
+			'link'         => $drop_url,
+			'cta'          => '',
 			'focal'        => 'center 25%',
+			'alt'          => __( 'Statement Panelled Hood Campaign Atmosphere', 'statement-collector-theme' ),
 		),
 		array(
-			'image'        => $theme_uri . '/assets/images/statement-collector-dust-bag.jpg',
+			'image'        => $theme_uri . '/assets/images/statement-hero-slide-monogram-02.jpg',
 			'mobile_image' => '',
-			'eyebrow'      => 'EDITION PROVENANCE',
-			'heading'      => 'CRAFTED. NOT MASS MADE.',
-			'link'         => home_url( '/about/' ),
-			'cta'          => __( 'READ ABOUT', 'statement-collector-theme' ),
-			'focal'        => 'center 45%',
+			'eyebrow'      => '',
+			'heading'      => '',
+			'link'         => $shop_url,
+			'cta'          => '',
+			'focal'        => 'center 25%',
+			'alt'          => __( 'Statement Architectural Lookbook Study', 'statement-collector-theme' ),
 		),
 	);
 }
 
 $total_slides = count( $slides );
 ?>
-<section class="statement-hero-slider"
+<section class="statement-hero-slider statement-hero-slider--image-first"
 		 role="region"
 		 aria-roledescription="carousel"
-		 aria-label="<?php esc_attr_e( 'Statement Campaign Releases', 'statement-collector-theme' ); ?>">
+		 aria-label="<?php esc_attr_e( 'Statement Campaign Showcase', 'statement-collector-theme' ); ?>">
 
 	<div class="statement-hero-slider__track">
 		<?php foreach ( $slides as $idx => $slide ) : ?>
 			<?php
-			$is_first   = ( 0 === $idx );
-			$slide_num  = $idx + 1;
-			$aria_label = sprintf( __( 'Slide %1$d of %2$d: %3$s', 'statement-collector-theme' ), $slide_num, $total_slides, esc_attr( $slide['heading'] ) );
+			$is_first    = ( 0 === $idx );
+			$slide_num   = $idx + 1;
+			$has_content = ( ! empty( $slide['heading'] ) || ! empty( $slide['eyebrow'] ) || ( ! empty( $slide['link'] ) && ! empty( $slide['cta'] ) ) );
+			$aria_label  = sprintf( __( 'Slide %1$d of %2$d', 'statement-collector-theme' ), $slide_num, $total_slides );
+			if ( ! empty( $slide['heading'] ) ) {
+				$aria_label .= ': ' . esc_attr( $slide['heading'] );
+			}
 			?>
 			<div class="statement-hero-slide <?php echo $is_first ? 'is-active' : ''; ?>"
 				 role="group"
@@ -115,7 +135,7 @@ $total_slides = count( $slides );
 							<source media="(max-width: 640px)" srcset="<?php echo esc_url( $slide['mobile_image'] ); ?>">
 						<?php endif; ?>
 						<img src="<?php echo esc_url( $slide['image'] ); ?>"
-							 alt="<?php echo esc_attr( $slide['heading'] . ( ! empty( $slide['eyebrow'] ) ? ' — ' . $slide['eyebrow'] : '' ) ); ?>"
+							 alt="<?php echo esc_attr( $slide['alt'] ); ?>"
 							 class="statement-hero-slide__image"
 							 loading="<?php echo $is_first ? 'eager' : 'lazy'; ?>"
 							 fetchpriority="<?php echo $is_first ? 'high' : 'auto'; ?>"
@@ -124,26 +144,30 @@ $total_slides = count( $slides );
 					<div class="statement-hero-slide__overlay" aria-hidden="true"></div>
 				</div>
 
-				<div class="statement-hero-slide__content statement-container--wide">
-					<div class="statement-hero-slide__inner">
-						<?php if ( ! empty( $slide['eyebrow'] ) ) : ?>
-							<p class="statement-eyebrow statement-hero-slide__eyebrow"><?php echo esc_html( $slide['eyebrow'] ); ?></p>
-						<?php endif; ?>
+				<?php if ( $has_content ) : ?>
+					<div class="statement-hero-slide__content statement-container--wide">
+						<div class="statement-hero-slide__inner">
+							<?php if ( ! empty( $slide['eyebrow'] ) ) : ?>
+								<p class="statement-eyebrow statement-hero-slide__eyebrow"><?php echo esc_html( $slide['eyebrow'] ); ?></p>
+							<?php endif; ?>
 
-						<h2 class="statement-hero-slide__heading">
-							<?php echo esc_html( $slide['heading'] ); ?>
-						</h2>
+							<?php if ( ! empty( $slide['heading'] ) ) : ?>
+								<h2 class="statement-hero-slide__heading">
+									<?php echo esc_html( $slide['heading'] ); ?>
+								</h2>
+							<?php endif; ?>
 
-						<?php if ( ! empty( $slide['link'] ) && ! empty( $slide['cta'] ) ) : ?>
-							<div class="statement-hero-slide__actions">
-								<a class="statement-hero-slide__cta" href="<?php echo esc_url( $slide['link'] ); ?>">
-									<span><?php echo esc_html( $slide['cta'] ); ?></span>
-									<span aria-hidden="true" class="statement-hero-slide__arrow">&rarr;</span>
-								</a>
-							</div>
-						<?php endif; ?>
+							<?php if ( ! empty( $slide['link'] ) && ! empty( $slide['cta'] ) ) : ?>
+								<div class="statement-hero-slide__actions">
+									<a class="statement-hero-slide__cta" href="<?php echo esc_url( $slide['link'] ); ?>">
+										<span><?php echo esc_html( $slide['cta'] ); ?></span>
+										<span aria-hidden="true" class="statement-hero-slide__arrow">&rarr;</span>
+									</a>
+								</div>
+							<?php endif; ?>
+						</div>
 					</div>
-				</div>
+				<?php endif; ?>
 			</div>
 		<?php endforeach; ?>
 	</div>

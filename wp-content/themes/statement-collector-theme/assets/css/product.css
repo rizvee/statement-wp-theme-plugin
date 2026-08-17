@@ -430,6 +430,101 @@ table.variations select:focus {
 	border-color: var(--wp--preset--color--near-black);
 }
 
+/* WOOCOMMERCE DEFAULT GALLERY REFINEMENT */
+.woocommerce-product-gallery {
+	position: relative;
+	inline-size: 100%;
+}
+
+.woocommerce-product-gallery .woocommerce-product-gallery__wrapper {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.woocommerce-product-gallery .woocommerce-product-gallery__image {
+	background: var(--wp--preset--color--gallery-ivory);
+	border: 1px solid var(--wp--preset--color--border-grey);
+	overflow: hidden;
+}
+
+.woocommerce-product-gallery .woocommerce-product-gallery__image img {
+	display: block;
+	inline-size: 100%;
+	block-size: auto;
+	object-fit: cover;
+	aspect-ratio: 4 / 5;
+}
+
+.woocommerce-product-gallery .woocommerce-product-gallery__trigger {
+	position: absolute;
+	top: 1rem;
+	right: 1rem;
+	z-index: 10;
+	inline-size: 2.25rem;
+	block-size: 2.25rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(255, 255, 255, 0.85);
+	backdrop-filter: blur(4px);
+	border: 1px solid var(--wp--preset--color--border-grey);
+	color: var(--wp--preset--color--near-black);
+	text-decoration: none;
+	transition: background-color 200ms ease;
+}
+
+.woocommerce-product-gallery .woocommerce-product-gallery__trigger:hover {
+	background: var(--wp--preset--color--warm-white);
+}
+
+.woocommerce-product-gallery ol.flex-control-nav.flex-control-thumbs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin: 1rem 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.woocommerce-product-gallery ol.flex-control-nav.flex-control-thumbs li {
+	flex: 0 0 calc(25% - 0.375rem);
+	cursor: pointer;
+}
+
+.woocommerce-product-gallery ol.flex-control-nav.flex-control-thumbs li img {
+	display: block;
+	inline-size: 100%;
+	aspect-ratio: 1 / 1;
+	object-fit: cover;
+	border: 1px solid var(--wp--preset--color--border-grey);
+	opacity: 0.65;
+	transition: opacity 200ms ease, border-color 200ms ease;
+}
+
+.woocommerce-product-gallery ol.flex-control-nav.flex-control-thumbs li img.flex-active,
+.woocommerce-product-gallery ol.flex-control-nav.flex-control-thumbs li img:hover {
+	opacity: 1;
+	border-color: var(--wp--preset--color--near-black);
+}
+
+@media (max-width: 768px) {
+	.woocommerce-product-gallery ol.flex-control-nav.flex-control-thumbs {
+		display: flex;
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scroll-snap-type: x mandatory;
+		gap: 0.5rem;
+		padding-block-end: 0.5rem;
+	}
+
+	.woocommerce-product-gallery ol.flex-control-nav.flex-control-thumbs li {
+		flex: 0 0 4.5rem;
+		scroll-snap-align: start;
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.statement-product__image img {
 		transition: none !important;

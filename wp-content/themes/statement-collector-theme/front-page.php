@@ -51,7 +51,8 @@ $drop_url     = get_home_drop_url( $release_data['drop'] );
 		);
 	}
 
-	if ( (bool) get_theme_mod( 'statement_enable_email_capture', true ) ) {
+	$show_access = (bool) get_theme_mod( 'statement_home_show_access_capture', get_theme_mod( 'statement_enable_email_capture', false ) );
+	if ( $show_access ) {
 		get_template_part( 'template-parts/home/email-capture' );
 	}
 	?>

@@ -301,6 +301,13 @@ function wp_update_post( $args ) {
 function get_the_title( $id ) {
 	return MockWpStore::$posts[ $id ]['post_title'] ?? '';
 }
+function wp_insert_attachment( $attachment, $file ) {
+	$id = ++MockWpStore::$next_id;
+	$attachment['ID'] = $id;
+	$attachment['post_type'] = 'attachment';
+	MockWpStore::$posts[ $id ] = $attachment;
+	return $id;
+}
 function is_wp_error( $thing ) {
 	return false;
 }
@@ -393,10 +400,10 @@ assert_runtime( '295.00' === ( $var_s['_price'] ?? '' ), 'Variation S Price must
 assert_runtime( 'STMT-CD-D001-MJ-M' === ( $var_m['_sku'] ?? '' ), 'Variation M SKU must match STMT-CD-D001-MJ-M' );
 assert_runtime( 'STMT-CD-D001-MJ-L' === ( $var_l['_sku'] ?? '' ), 'Variation L SKU must match STMT-CD-D001-MJ-L' );
 
-// TEST 8: Verify Hero Slider Theme Mods
-assert_runtime( 'DROP 001' === MockWpStore::$theme_mods['statement_hero_slide_1_eyebrow'], 'Slide 1 eyebrow must be DROP 001' );
-assert_runtime( 'MONOGRAM STUDY' === MockWpStore::$theme_mods['statement_hero_slide_1_heading'], 'Slide 1 heading must be MONOGRAM STUDY' );
-assert_runtime( 'PIECE 01' === MockWpStore::$theme_mods['statement_hero_slide_2_eyebrow'], 'Slide 2 eyebrow must be PIECE 01' );
+// TEST 8: Verify Hero Slider Theme Mods (Image-First Defaults)
+assert_runtime( '' === MockWpStore::$theme_mods['statement_hero_slide_1_eyebrow'], 'Slide 1 eyebrow must be empty for image-first' );
+assert_runtime( '' === MockWpStore::$theme_mods['statement_hero_slide_1_heading'], 'Slide 1 heading must be empty for image-first' );
+assert_runtime( (int) MockWpStore::$theme_mods['statement_hero_slide_1_image'] > 0, 'Slide 1 image must be valid attachment ID' );
 
 // TEST 9: Idempotency (Second Seed Execution)
 $report_2 = DemoSeederService::seed_or_update();

@@ -491,8 +491,9 @@ final class DemoSeederService {
 		$p1_gall  = array_filter(
 			array(
 				$media['monogram_back'] ?? 0,
-				$media['monogram_concrete'] ?? 0,
+				$media['monogram_side'] ?? 0,
 				$media['monogram_collar'] ?? 0,
+				$media['monogram_concrete'] ?? 0,
 				$media['monogram_slate'] ?? 0,
 			)
 		);
@@ -527,9 +528,10 @@ final class DemoSeederService {
 		$p2_feat  = $media['hood_front'] ?? 0;
 		$p2_gall  = array_filter(
 			array(
+				$media['hood_side'] ?? 0,
 				$media['hood_back'] ?? 0,
-				$media['hood_cathedral'] ?? 0,
 				$media['hood_embroidery'] ?? 0,
+				$media['hood_cathedral'] ?? 0,
 				$media['hood_night'] ?? 0,
 			)
 		);
@@ -558,6 +560,111 @@ final class DemoSeederService {
 		$report['products']['product_02'] = $prod2_id;
 
 		ManifestService::save_hashes( $hashes );
+	}
+
+	/**
+	 * Apply new client media set: explicitly updates product media on strictly owned CLIENT_DEMO products.
+	 *
+	 * Safety: Never mutates QA fixtures or unowned production products.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function apply_new_client_media_set(): array {
+		$report = array(
+			'mode'      => 'APPLY_MEDIA_SET',
+			'timestamp' => gmdate( 'Y-m-d H:i:s' ),
+			'media'     => array(),
+			'products'  => array(),
+			'errors'    => array(),
+			'success'   => true,
+		);
+
+		try {
+			$preflight = self::preflight();
+			if ( ! $preflight['safe'] ) {
+				$report['success'] = false;
+				$report['errors']  = array_merge( array( 'Preflight safety check failed.' ), (array) ( $preflight['collision_details'] ?? array() ) );
+				return $report;
+			}
+
+			// 1. Re-import / ensure media items exist
+			$imported_media = self::import_assets( $report );
+
+			// 2. Locate owned Product 01
+			$prod1 = self::find_owned_product( self::SKU_P1, 'monogram-jacquard-jacket' );
+			if ( is_object( $prod1 ) && method_exists( $prod1, 'get_id' ) && $prod1->get_id() > 0 ) {
+				$p1_feat = $imported_media['monogram_front'] ?? 0;
+				$p1_gall = array_filter(
+					array(
+						$imported_media['monogram_back'] ?? 0,
+						$imported_media['monogram_side'] ?? 0,
+						$imported_media['monogram_collar'] ?? 0,
+						$imported_media['monogram_concrete'] ?? 0,
+						$imported_media['monogram_slate'] ?? 0,
+					)
+				);
+
+				if ( $p1_feat > 0 ) {
+					$prod1->set_image_id( $p1_feat );
+				}
+				if ( ! empty( $p1_gall ) ) {
+					$prod1->set_gallery_image_ids( $p1_gall );
+				}
+				$prod1->save();
+				$report['products']['product_01'] = array(
+					'id'       => $prod1->get_id(),
+					'featured' => $p1_feat,
+					'gallery'  => $p1_gall,
+					'status'   => 'MEDIA_UPDATED',
+				);
+			} else {
+				$report['products']['product_01'] = array(
+					'status' => 'NOT_FOUND_OR_NOT_OWNED',
+				);
+			}
+
+			// 3. Locate owned Product 02
+			$prod2 = self::find_owned_product( self::SKU_P2, 'panelled-hood-jacket' );
+			if ( is_object( $prod2 ) && method_exists( $prod2, 'get_id' ) && $prod2->get_id() > 0 ) {
+				$p2_feat = $imported_media['hood_front'] ?? 0;
+				$p2_gall = array_filter(
+					array(
+						$imported_media['hood_side'] ?? 0,
+						$imported_media['hood_back'] ?? 0,
+						$imported_media['hood_embroidery'] ?? 0,
+						$imported_media['hood_cathedral'] ?? 0,
+						$imported_media['hood_night'] ?? 0,
+					)
+				);
+
+				if ( $p2_feat > 0 ) {
+					$prod2->set_image_id( $p2_feat );
+				}
+				if ( ! empty( $p2_gall ) ) {
+					$prod2->set_gallery_image_ids( $p2_gall );
+				}
+				$prod2->save();
+				$report['products']['product_02'] = array(
+					'id'       => $prod2->get_id(),
+					'featured' => $p2_feat,
+					'gallery'  => $p2_gall,
+					'status'   => 'MEDIA_UPDATED',
+				);
+			} else {
+				$report['products']['product_02'] = array(
+					'status' => 'NOT_FOUND_OR_NOT_OWNED',
+				);
+			}
+
+			// 4. Update slider theme mods with new clean slides
+			self::seed_slider_theme_mods( $imported_media, $report );
+
+		} catch ( \Throwable $t ) {
+			$report['success']  = false;
+			$report['errors'][] = 'Apply media error: ' . $t->getMessage();
+		}
+
+		return $report;
 	}
 
 	/**
@@ -770,54 +877,50 @@ final class DemoSeederService {
 
 		$slider_defaults = array(
 			1 => array(
-				'image'   => $media['hood_front'] ?? 0,
-				'eyebrow' => 'DROP 001',
-				'heading' => 'MONOGRAM STUDY',
-				'link'    => '/drops/',
-				'cta'     => 'EXPLORE RELEASE',
-				'focal'   => 'center 25%',
+				'image'   => $media['monogram_front'] ?? 0,
+				'eyebrow' => '',
+				'heading' => '',
+				'link'    => function_exists( 'home_url' ) ? home_url( '/shop/' ) : '/shop/',
+				'cta'     => '',
+				'focal'   => 'center 20%',
 			),
 			2 => array(
-				'image'   => $media['monogram_front'] ?? 0,
-				'eyebrow' => 'PIECE 01',
-				'heading' => 'MONOGRAM JACQUARD',
-				'link'    => '/shop/',
-				'cta'     => 'VIEW PIECE',
-				'focal'   => 'center 25%',
+				'image'   => $media['hood_front'] ?? 0,
+				'eyebrow' => '',
+				'heading' => '',
+				'link'    => function_exists( 'home_url' ) ? home_url( '/shop/' ) : '/shop/',
+				'cta'     => '',
+				'focal'   => 'center 20%',
 			),
 			3 => array(
-				'image'   => $media['hood_cathedral'] ?? 0,
-				'eyebrow' => 'PIECE 02',
-				'heading' => 'PANELLED HOOD',
-				'link'    => '/shop/',
-				'cta'     => 'VIEW PIECE',
+				'image'   => $media['monogram_side'] ?? 0,
+				'eyebrow' => '',
+				'heading' => '',
+				'link'    => function_exists( 'home_url' ) ? home_url( '/drops/' ) : '/drops/',
+				'cta'     => '',
 				'focal'   => 'center 25%',
 			),
 			4 => array(
-				'image'   => $media['dust_bag'] ?? 0,
-				'eyebrow' => 'EDITION PROVENANCE',
-				'heading' => 'CRAFTED. NOT MASS MADE.',
-				'link'    => '/about/',
-				'cta'     => 'READ ABOUT',
-				'focal'   => 'center 45%',
+				'image'   => $media['hood_side'] ?? 0,
+				'eyebrow' => '',
+				'heading' => '',
+				'link'    => function_exists( 'home_url' ) ? home_url( '/drops/' ) : '/drops/',
+				'cta'     => '',
+				'focal'   => 'center 25%',
 			),
 		);
 
 		$seeded_count = 0;
 		foreach ( $slider_defaults as $index => $defaults ) {
-			$mod_key = "statement_hero_slide_{$index}_heading";
-			$existing_heading = get_theme_mod( $mod_key, '' );
-			if ( empty( $existing_heading ) ) {
-				if ( $defaults['image'] > 0 ) {
-					set_theme_mod( "statement_hero_slide_{$index}_image", $defaults['image'] );
-				}
-				set_theme_mod( "statement_hero_slide_{$index}_eyebrow", $defaults['eyebrow'] );
-				set_theme_mod( "statement_hero_slide_{$index}_heading", $defaults['heading'] );
-				set_theme_mod( "statement_hero_slide_{$index}_link", $defaults['link'] );
-				set_theme_mod( "statement_hero_slide_{$index}_cta", $defaults['cta'] );
-				set_theme_mod( "statement_hero_slide_{$index}_focal", $defaults['focal'] );
-				$seeded_count++;
+			if ( $defaults['image'] > 0 ) {
+				set_theme_mod( "statement_hero_slide_{$index}_image", $defaults['image'] );
 			}
+			set_theme_mod( "statement_hero_slide_{$index}_eyebrow", $defaults['eyebrow'] );
+			set_theme_mod( "statement_hero_slide_{$index}_heading", $defaults['heading'] );
+			set_theme_mod( "statement_hero_slide_{$index}_link", $defaults['link'] );
+			set_theme_mod( "statement_hero_slide_{$index}_cta", $defaults['cta'] );
+			set_theme_mod( "statement_hero_slide_{$index}_focal", $defaults['focal'] );
+			$seeded_count++;
 		}
 
 		$report['slider'] = array(

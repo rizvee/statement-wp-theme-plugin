@@ -10,41 +10,41 @@ import { verifyPackage } from '../scripts/verify-package.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 
-test('Theme packaging generates single-root ZIP artifact with matching 0.13.0-rc.9 version', () => {
-  const result = packageTheme('0.13.0-rc.9');
+test('Theme packaging generates single-root ZIP artifact with matching 0.13.0-rc.11 version', () => {
+  const result = packageTheme('0.13.0-rc.11');
   assert.ok(existsSync(result.path), 'Theme ZIP must exist in dist/');
   assert.equal(result.rootFolder, 'statement-collector-theme', 'Theme root folder must be statement-collector-theme');
-  assert.equal(result.version, '0.13.0-rc.9');
+  assert.equal(result.version, '0.13.0-rc.11');
   assert.ok(result.fileCount > 0, 'File count must be greater than 0');
   assert.ok(result.phpCount > 0, 'PHP file count must be greater than 0');
   assert.ok(result.sha256.length === 64, 'SHA-256 hash must be 64 hex characters');
 });
 
-test('Plugin packaging generates single-root ZIP artifact with matching 0.13.0-rc.12 version', () => {
-  const result = packagePlugin('0.13.0-rc.12');
+test('Plugin packaging generates single-root ZIP artifact with matching 0.13.0-rc.13 version', () => {
+  const result = packagePlugin('0.13.0-rc.13');
   assert.ok(existsSync(result.path), 'Plugin ZIP must exist in dist/');
   assert.equal(result.rootFolder, 'statement-collector-core', 'Plugin root folder must be statement-collector-core');
-  assert.equal(result.version, '0.13.0-rc.12');
+  assert.equal(result.version, '0.13.0-rc.13');
   assert.ok(result.fileCount > 0, 'File count must be greater than 0');
   assert.ok(result.phpCount > 0, 'PHP file count must be greater than 0');
   assert.ok(result.sha256.length === 64, 'SHA-256 hash must be 64 hex characters');
 });
 
 test('Package verification confirms headers, constants, exclusions, and PHP syntax', () => {
-  const themePath = resolve(root, 'dist', 'statement-collector-theme-0.13.0-rc.9.zip');
-  const pluginPath = resolve(root, 'dist', 'statement-collector-core-0.13.0-rc.12.zip');
+  const themePath = resolve(root, 'dist', 'statement-collector-theme-0.13.0-rc.11.zip');
+  const pluginPath = resolve(root, 'dist', 'statement-collector-core-0.13.0-rc.13.zip');
 
-  const themeVerify = verifyPackage(themePath, '0.13.0-rc.9');
+  const themeVerify = verifyPackage(themePath, '0.13.0-rc.11');
   assert.ok(themeVerify.ok, `Theme package verification must pass. Errors: ${themeVerify.errors?.join(', ')}`);
   assert.equal(themeVerify.rootFolder, 'statement-collector-theme');
-  assert.equal(themeVerify.headerVersion, '0.13.0-rc.9');
-  assert.equal(themeVerify.constantVersion, '0.13.0-rc.9');
+  assert.equal(themeVerify.headerVersion, '0.13.0-rc.11');
+  assert.equal(themeVerify.constantVersion, '0.13.0-rc.11');
 
-  const pluginVerify = verifyPackage(pluginPath, '0.13.0-rc.12');
+  const pluginVerify = verifyPackage(pluginPath, '0.13.0-rc.13');
   assert.ok(pluginVerify.ok, `Plugin package verification must pass. Errors: ${pluginVerify.errors?.join(', ')}`);
   assert.equal(pluginVerify.rootFolder, 'statement-collector-core');
-  assert.equal(pluginVerify.headerVersion, '0.13.0-rc.12');
-  assert.equal(pluginVerify.constantVersion, '0.13.0-rc.12');
+  assert.equal(pluginVerify.headerVersion, '0.13.0-rc.13');
+  assert.equal(pluginVerify.constantVersion, '0.13.0-rc.13');
 });
 
 test('Negative regression test: verifier rejects ZIP when internal plugin header Version is 0.1.0 vs filename 0.13.0-rc.11', () => {
@@ -88,10 +88,10 @@ test('packageAll orchestration generates verified artifacts and manifest without
   const manifestPath = resolve(root, 'dist', 'manifest.json');
   assert.ok(existsSync(manifestPath), 'manifest.json must exist in dist/');
 
-  assert.equal(manifest.plugin.header_version, '0.13.0-rc.12', 'plugin header_version must be 0.13.0-rc.12');
-  assert.equal(manifest.plugin.runtime_version, '0.13.0-rc.12', 'plugin runtime_version must be 0.13.0-rc.12');
-  assert.equal(manifest.theme.header_version, '0.13.0-rc.9', 'theme header_version must be 0.13.0-rc.9');
-  assert.equal(manifest.theme.runtime_version, '0.13.0-rc.9', 'theme runtime_version must be 0.13.0-rc.9');
+  assert.equal(manifest.plugin.header_version, '0.13.0-rc.13', 'plugin header_version must be 0.13.0-rc.13');
+  assert.equal(manifest.plugin.runtime_version, '0.13.0-rc.13', 'plugin runtime_version must be 0.13.0-rc.13');
+  assert.equal(manifest.theme.header_version, '0.13.0-rc.11', 'theme header_version must be 0.13.0-rc.11');
+  assert.equal(manifest.theme.runtime_version, '0.13.0-rc.11', 'theme runtime_version must be 0.13.0-rc.11');
 
   assert.equal(manifest.deployment_authorized, false, 'deployment_authorized must be false');
   assert.equal(manifest.environment, 'integration-candidate', 'environment must be integration-candidate');

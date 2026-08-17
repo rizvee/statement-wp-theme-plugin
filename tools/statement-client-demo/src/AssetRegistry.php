@@ -83,6 +83,20 @@ final class AssetRegistry {
 				'caption' => '',
 				'role'    => 'product_02_gallery',
 			),
+			'monogram_side' => array(
+				'file'    => 'statement-monogram-jacket-side.jpg',
+				'title'   => 'Statement Monogram Jacquard Jacket — Model Side Profile',
+				'alt'     => 'Side three-quarter view of male model in Statement Monogram Jacquard Jacket',
+				'caption' => '',
+				'role'    => 'product_01_gallery',
+			),
+			'hood_side' => array(
+				'file'    => 'statement-panelled-hood-jacket-side.jpg',
+				'title'   => 'Statement Panelled Hood Jacket — Model Side Profile',
+				'alt'     => 'Side view of model wearing white Statement Panelled Hood Jacket with hood drape',
+				'caption' => '',
+				'role'    => 'product_02_gallery',
+			),
 			'leather_patch' => array(
 				'file'    => 'statement-brand-leather-patch.jpg',
 				'title'   => "Statement Collector's Piece — Stitched Leather Label",
