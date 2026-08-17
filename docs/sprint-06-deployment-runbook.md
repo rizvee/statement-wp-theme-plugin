@@ -10,10 +10,10 @@
 
 | Component | Target Version | Artifact File | Size | SHA-256 Checksum |
 |---|---|---|---|---|
-| **Theme** | `0.13.0-rc.10` | `dist/statement-collector-theme-0.13.0-rc.10.zip` | 4.13 MB | `cf63e2f3f54a3fb3e3e952de5cde9aa7e655d4c32c64cc43a17b4ac74ac2bbca` |
-| **Core Plugin** | `0.13.0-rc.13` | `dist/statement-collector-core-0.13.0-rc.13.zip` | 78.2 KB | `94760ddbf49c974b36a7d28553f715a7d207fe7e8fb6359c9fa7143ce4933a25` |
-| **Client Demo** | `0.2.3` | `dist/statement-client-demo-0.2.3.zip` | 4.05 MB | `0bc37da82b172622454ad2f3fb16607777ffd97cbc5fe4f13f13be6d837d69ca` |
-| **Child Theme** | `0.1.0` | `dist/statement-collector-child-0.1.0.zip` | 1.44 KB | `8fd5d2323d51b37e16ef868a498635baf44a70abce0a45d7924ed710e06c978e` |
+| **Theme** | `0.13.0-rc.10` | `dist/statement-collector-theme-0.13.0-rc.10.zip` | 4.13 MB | `e6dc89092ce246f0205f07d4a4a5a77b430d9051f4a288a640347fae962b7688` |
+| **Core Plugin** | `0.13.0-rc.13` | `dist/statement-collector-core-0.13.0-rc.13.zip` | 78.2 KB | `6a38371b7cae35ae78d4e32faf9eb41c4e22f1a5d45329901b5fbb9e7802b3f5` |
+| **Client Demo** | `0.2.3` | `dist/statement-client-demo-0.2.3.zip` | 4.05 MB | `29cc2a9bc45c605829e4c7621e8d418cfe2015bd11d030e74c9157ceab71d7d6` |
+| **Child Theme** | `0.1.0` | `dist/statement-collector-child-0.1.0.zip` | 1.44 KB | `220438ebed9076dc25e2d2d12edb5d83de446c73300c9a1ede680ad5cb20874b` |
 
 ---
 
