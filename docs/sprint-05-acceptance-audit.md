@@ -1,6 +1,6 @@
 # Sprint 05.1 Acceptance Hardening & Forensic Ownership Audit
 
-**Date:** 2026-08-18  
+**Date:** 2026-08-18
 **Release Candidates:**
 - **Statement Collector Theme:** `0.13.0-rc.10`
 - **Statement Collector Core Plugin:** `0.13.0-rc.13`

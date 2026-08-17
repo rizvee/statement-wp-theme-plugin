@@ -1,7 +1,7 @@
 # Sprint 06 Production Deployment Runbook
 
-**Target Production Domain:** `https://mystatement.store`  
-**Deployment Authority:** Manual Operator Upload via WordPress Admin (`wp-admin`)  
+**Target Production Domain:** `https://mystatement.store`
+**Deployment Authority:** Manual Operator Upload via WordPress Admin (`wp-admin`)
 **Hard Rule:** NO DIRECT OR AUTOMATED MUTATIONS TO LIVE PRODUCTION FROM WORKSPACE.
 
 ---
