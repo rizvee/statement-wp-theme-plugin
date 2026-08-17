@@ -4,6 +4,22 @@ namespace Statement\Collector\Theme;
 
 defined( 'ABSPATH' ) || exit;
 
+// Require Modular Components
+require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/design-tokens.php';
+require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/hooks.php';
+require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/page-meta.php';
+require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/compatibility/woocommerce.php';
+require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/compatibility/woo-blocks.php';
+require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/compatibility/elementor.php';
+require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/compatibility/gutenberg.php';
+require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/compatibility/seo.php';
+require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/compatibility/jetpack.php';
+require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/compatibility/forms.php';
+require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/compatibility/caching.php';
+require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/admin/health.php';
+require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/admin/options-export.php';
+require_once STATEMENT_COLLECTOR_THEME_PATH . 'inc/admin/setup-screen.php';
+
 /**
  * Register the theme's foundational WordPress support.
  */
@@ -12,6 +28,8 @@ function setup(): void {
 
 	add_theme_support( 'title-tag' );
 	add_theme_support( 'post-thumbnails' );
+	add_theme_support( 'align-wide' );
+	add_theme_support( 'responsive-embeds' );
 	add_theme_support(
 		'custom-logo',
 		array(
@@ -38,6 +56,21 @@ function setup(): void {
 			'footer'  => __( 'Footer Navigation', 'statement-collector-theme' ),
 		)
 	);
+
+	// Boot Modular Framework Subsystems
+	Hooks::boot();
+	PageMeta::boot();
+	Compatibility\WooCommerce::boot();
+	Compatibility\WooBlocks::boot();
+	Compatibility\Elementor::boot();
+	Compatibility\Gutenberg::boot();
+	Compatibility\Jetpack::boot();
+	Compatibility\Forms::boot();
+	Compatibility\Caching::boot();
+
+	if ( function_exists( 'is_admin' ) && is_admin() ) {
+		Admin\SetupScreen::boot();
+	}
 }
 
 add_action( 'after_setup_theme', __NAMESPACE__ . '\\setup' );

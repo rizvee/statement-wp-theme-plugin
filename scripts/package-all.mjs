@@ -4,12 +4,14 @@ import { join, resolve } from 'node:path';
 import { packagePlugin } from './package-plugin.mjs';
 import { packageTheme } from './package-theme.mjs';
 import { packageClientDemo } from './package-client-demo.mjs';
+import { packageChildTheme } from './package-child-theme.mjs';
 import { verifyPackage } from './verify-package.mjs';
 
 const root = resolve(import.meta.dirname, '..');
-const themeVersion = '0.13.0-rc.8';
-const pluginVersion = '0.13.0-rc.11';
-const demoVersion = '0.2.1';
+const themeVersion = '0.13.0-rc.9';
+const pluginVersion = '0.13.0-rc.12';
+const demoVersion = '0.2.2';
+const childVersion = '0.1.0';
 
 export function packageAll(options = {}) {
   const silent = options.silent ?? false;
@@ -34,13 +36,16 @@ export function packageAll(options = {}) {
   log('Step 4: Packaging Statement Client Demo Tool...');
   const demoPkg = packageClientDemo(demoVersion);
 
-  log('Step 5: Verifying packaged theme ZIP artifact...');
+  log('Step 5: Packaging Statement Starter Child Theme...');
+  const childPkg = packageChildTheme(childVersion);
+
+  log('Step 6: Verifying packaged theme ZIP artifact...');
   const themeVerify = verifyPackage(themePkg.path, themeVersion);
   if (!themeVerify.ok) {
     throw new Error(`Packaged theme verification failed:\n  ${themeVerify.errors.join('\n  ')}`);
   }
 
-  log('Step 6: Verifying packaged plugin ZIP artifact...');
+  log('Step 7: Verifying packaged plugin ZIP artifact...');
   const pluginVerify = verifyPackage(pluginPkg.path, pluginVersion);
   if (!pluginVerify.ok) {
     throw new Error(`Packaged plugin verification failed:\n  ${pluginVerify.errors.join('\n  ')}`);
@@ -64,6 +69,7 @@ export function packageAll(options = {}) {
       theme: themeVersion,
       plugin: pluginVersion,
       demo: demoVersion,
+      child_theme: childVersion,
     },
     theme: {
       candidate_version: themePkg.version,
@@ -79,6 +85,11 @@ export function packageAll(options = {}) {
       candidate_version: demoPkg.version,
       size_bytes: demoPkg.sizeBytes,
       sha256: demoPkg.sha256,
+    },
+    child_theme: {
+      candidate_version: childPkg.version,
+      size_bytes: childPkg.sizeBytes,
+      sha256: childPkg.sha256,
     },
     environment: 'integration-candidate',
     deployment_authorized: false,
@@ -117,6 +128,15 @@ export function packageAll(options = {}) {
         php_count: demoPkg.phpCount,
         verification: 'PASS',
       },
+      {
+        type: 'child_theme',
+        filename: childPkg.name,
+        root_folder: childPkg.rootFolder,
+        size_bytes: childPkg.sizeBytes,
+        sha256: childPkg.sha256,
+        file_count: childPkg.fileCount,
+        verification: 'PASS',
+      },
     ],
   };
 
@@ -139,11 +159,15 @@ export function packageAll(options = {}) {
   log(`  - Size: ${demoPkg.sizeBytes} bytes`);
   log(`  - SHA-256: ${demoPkg.sha256}`);
   log(`  - Packaged Files: ${demoPkg.fileCount} (${demoPkg.phpCount} PHP)`);
+  log(`Child Theme ZIP: ${childPkg.path}`);
+  log(`  - Size: ${childPkg.sizeBytes} bytes`);
+  log(`  - SHA-256: ${childPkg.sha256}`);
+  log(`  - Packaged Files: ${childPkg.fileCount}`);
   log('--------------------------------------------------');
   log('STATUS: NOT DEPLOYED. ATOMIC UPLOAD AUTHORIZATION REQUIRED.');
   log('==================================================\n');
 
-  return { manifest, themePkg, pluginPkg, demoPkg };
+  return { manifest, themePkg, pluginPkg, demoPkg, childPkg };
 }
 
 if (process.argv[1] && process.argv[1].endsWith('package-all.mjs')) {

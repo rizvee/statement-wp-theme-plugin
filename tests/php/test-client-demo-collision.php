@@ -196,4 +196,14 @@ stmt_assert_same( 1, (int) get_post_meta( $found_owned->get_id(), '_statement_cl
 stmt_assert_same( '', get_post_meta( 213, '_statement_client_demo', true ), 'QA product 213 still has NO _statement_client_demo marker' );
 stmt_assert_same( 'TEST — QA Jacquard Jacket Fixture', $qa_product->get_name(), 'QA product 213 title remains intact' );
 
+// 7. Hard Invariant: Accidental coexistence of _statement_fixture and _statement_client_demo is rejected
+$mock_post_meta[301]['_statement_fixture'] = '1';
+$found_coexistent = DemoSeederService::find_owned_product( DemoSeederService::SKU_P1, 'monogram-jacquard-jacket' );
+stmt_assert( null === $found_coexistent, 'find_owned_product strictly rejects product if _statement_fixture is set, even if _statement_client_demo is present' );
+
+// 8. Restore clean demo marker on 301
+unset( $mock_post_meta[301]['_statement_fixture'] );
+$found_restored = DemoSeederService::find_owned_product( DemoSeederService::SKU_P1, 'monogram-jacquard-jacket' );
+stmt_assert( null !== $found_restored && 301 === $found_restored->get_id(), 'find_owned_product recovers once fixture marker is absent' );
+
 echo "PASS: All {$statement_assertions} Statement Client Demo Collision Prevention assertions passed cleanly.\n";

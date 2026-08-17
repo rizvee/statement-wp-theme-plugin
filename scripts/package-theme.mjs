@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.13.0-rc.8';
+const defaultVersion = '0.13.0-rc.9';
 
 export const approvedThemeFiles = [
   'style.css',
@@ -31,6 +31,7 @@ export const approvedThemeFiles = [
   'assets/css/product.css',
   'assets/css/cart.css',
   'assets/css/checkout.css',
+  'assets/css/woo-blocks.css',
   'assets/js/navigation.js',
   'assets/js/hero-slider.js',
   'assets/images/statement-brand-insignia-vector.jpg',
@@ -59,8 +60,22 @@ export const approvedThemeFiles = [
   'inc/cart.php',
   'inc/checkout.php',
   'inc/setup.php',
+  'inc/design-tokens.php',
+  'inc/hooks.php',
+  'inc/page-meta.php',
   'inc/customizer.php',
   'inc/woocommerce.php',
+  'inc/compatibility/woocommerce.php',
+  'inc/compatibility/woo-blocks.php',
+  'inc/compatibility/elementor.php',
+  'inc/compatibility/gutenberg.php',
+  'inc/compatibility/seo.php',
+  'inc/compatibility/jetpack.php',
+  'inc/compatibility/forms.php',
+  'inc/compatibility/caching.php',
+  'inc/admin/health.php',
+  'inc/admin/options-export.php',
+  'inc/admin/setup-screen.php',
   'template-parts/header/site-header.php',
   'template-parts/header/mobile-navigation.php',
   'template-parts/header/search-dialog.php',

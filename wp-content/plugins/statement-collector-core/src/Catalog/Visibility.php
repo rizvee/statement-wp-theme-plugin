@@ -36,6 +36,76 @@ final class Visibility {
 	}
 
 	/**
+	 * Determine whether a product or product ID is an internal QA test fixture.
+	 *
+	 * Note: Client Demo products (_statement_client_demo = 1, STMT-CD-*) are legitimate client-facing entities and are NEVER treated as fixtures.
+	 *
+	 * @param mixed $product_or_id WC_Product instance, WP_Post instance, or numeric ID.
+	 * @return bool True if product is a QA test fixture.
+	 */
+	public static function is_fixture_product( $product_or_id ): bool {
+		$product = null;
+		$post_id = 0;
+
+		if ( is_numeric( $product_or_id ) ) {
+			$post_id = (int) $product_or_id;
+			$product = function_exists( 'wc_get_product' ) ? wc_get_product( $post_id ) : null;
+		} elseif ( is_object( $product_or_id ) ) {
+			if ( method_exists( $product_or_id, 'get_id' ) ) {
+				$post_id = (int) $product_or_id->get_id();
+				$product = $product_or_id;
+			} elseif ( isset( $product_or_id->ID ) ) {
+				$post_id = (int) $product_or_id->ID;
+				$product = function_exists( 'wc_get_product' ) ? wc_get_product( $post_id ) : null;
+			}
+		}
+
+		if ( $post_id <= 0 ) {
+			return false;
+		}
+
+		// Explicit Client Demo protection: Client Demo entities are never fixtures
+		$is_client_demo = function_exists( 'get_post_meta' ) && '1' === (string) get_post_meta( $post_id, '_statement_client_demo', true );
+		if ( $is_client_demo ) {
+			return false;
+		}
+
+		// 1. Explicit fixture meta
+		if ( function_exists( 'get_post_meta' ) && '1' === (string) get_post_meta( $post_id, '_statement_fixture', true ) ) {
+			return true;
+		}
+
+		// 2. SKU matching TEST-
+		$sku = is_object( $product ) && method_exists( $product, 'get_sku' )
+			? (string) $product->get_sku()
+			: ( function_exists( 'get_post_meta' ) ? (string) get_post_meta( $post_id, '_sku', true ) : '' );
+
+		if ( '' !== $sku && 0 === stripos( $sku, 'TEST-' ) ) {
+			return true;
+		}
+
+		// 3. Title starting with TEST — or TEST - or TEST:
+		$title = is_object( $product ) && method_exists( $product, 'get_name' )
+			? (string) $product->get_name()
+			: ( function_exists( 'get_the_title' ) ? (string) get_the_title( $post_id ) : '' );
+
+		if ( '' !== $title && ( 0 === stripos( $title, 'TEST —' ) || 0 === stripos( $title, 'TEST -' ) || 0 === stripos( $title, 'TEST:' ) ) ) {
+			return true;
+		}
+
+		// 4. Slug starting with test- (unless client demo)
+		$slug = is_object( $product ) && method_exists( $product, 'get_slug' )
+			? (string) $product->get_slug()
+			: ( function_exists( 'get_post_field' ) ? (string) get_post_field( 'post_name', $post_id ) : '' );
+
+		if ( '' !== $slug && 0 === stripos( $slug, 'test-' ) && false === stripos( $slug, 'demo' ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Exclude QA test fixtures from public customer-facing catalog loops.
 	 *
 	 * @param array $clauses Query clauses.
@@ -43,7 +113,7 @@ final class Visibility {
 	 * @return array
 	 */
 	public static function filter_public_catalog_posts_clauses( array $clauses, $query ): array {
-		if ( ! self::is_public_catalog_query( $query ) ) {
+		if ( ! self::is_public_frontend_product_query( $query ) ) {
 			return $clauses;
 		}
 
@@ -59,7 +129,10 @@ final class Visibility {
 			SELECT post_id FROM {$postmeta_table}
 			WHERE (meta_key = '_statement_fixture' AND meta_value = '1')
 			   OR (meta_key = '_sku' AND meta_value LIKE 'TEST-%')
-		) AND {$posts_table}.post_title NOT LIKE 'TEST —%' AND {$posts_table}.post_name NOT LIKE 'test-%' ";
+		) AND {$posts_table}.post_title NOT LIKE 'TEST —%' AND {$posts_table}.post_title NOT LIKE 'TEST -%' AND ({$posts_table}.post_name NOT LIKE 'test-%' OR {$posts_table}.ID IN (
+			SELECT post_id FROM {$postmeta_table}
+			WHERE meta_key = '_statement_client_demo' AND meta_value = '1'
+		)) ";
 
 		return $clauses;
 	}
@@ -160,6 +233,31 @@ final class Visibility {
 			&& $query->is_tax( Taxonomy::KEY );
 
 		return $is_shop || $is_drop;
+	}
+
+	/**
+	 * Whether this is any public frontend query that may load products.
+	 *
+	 * @param object $query Query-like object.
+	 */
+	private static function is_public_frontend_product_query( $query ): bool {
+		if (
+			! is_object( $query )
+			|| ! method_exists( $query, 'get' )
+			|| self::is_non_public_request()
+		) {
+			return false;
+		}
+
+		if ( self::is_public_catalog_query( $query ) ) {
+			return true;
+		}
+
+		$is_search = method_exists( $query, 'is_search' ) && $query->is_search();
+		$post_types = (array) $query->get( 'post_type' );
+		$is_product = in_array( 'product', $post_types, true ) || in_array( 'product_variation', $post_types, true );
+
+		return $is_search || $is_product;
 	}
 
 	/**

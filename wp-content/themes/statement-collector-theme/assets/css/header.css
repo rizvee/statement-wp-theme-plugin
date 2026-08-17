@@ -240,20 +240,21 @@
 .statement-mobile-navigation__list a {
 	display: inline-flex;
 	align-items: center;
-	min-block-size: 3rem;
+	min-block-size: 2.75rem;
 	color: var(--wp--preset--color--near-black);
-	font-family: var(--wp--preset--font-family--display);
-	font-size: clamp(2.25rem, 1.6rem + 3.5vw, 3.75rem);
-	line-height: 1.05;
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: clamp(1.5rem, 1.25rem + 1.5vw, 2rem);
+	font-weight: 500;
+	line-height: 1.15;
 	text-decoration: none;
 	text-transform: uppercase;
-	letter-spacing: -0.01em;
-	transition: transform 300ms ease, opacity 300ms ease;
+	letter-spacing: 0.06em;
+	transition: opacity 250ms ease, transform 250ms ease;
 }
 
 .statement-mobile-navigation__list a:hover {
-	transform: translateX(0.5rem);
-	opacity: 0.75;
+	opacity: 0.6;
+	transform: translateX(4px);
 }
 
 .statement-mobile-utilities {

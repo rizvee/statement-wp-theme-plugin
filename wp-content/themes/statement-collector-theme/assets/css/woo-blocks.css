@@ -1,0 +1,128 @@
+/* ==========================================================================
+   STATEMENT COLLECTOR'S PIECE — WOOCOMMERCE BLOCKS COMPATIBILITY
+   Scoped, non-destructive styling for WooCommerce Cart & Checkout Blocks
+   ========================================================================== */
+
+.wc-block-components-sidebar,
+.wc-block-components-main {
+	font-family: var(--wp--preset--font-family--ui, inherit);
+	color: var(--wp--preset--color--near-black, #111111);
+}
+
+.wc-block-components-title {
+	font-family: var(--wp--preset--font-family--ui, inherit);
+	font-weight: 500;
+	letter-spacing: -0.01em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--near-black, #111111);
+}
+
+.wc-block-components-button,
+.wc-block-cart__submit-button,
+.wc-block-checkout__actions .wc-block-components-checkout-place-order-button {
+	border-radius: 0 !important;
+	background-color: var(--wp--preset--color--near-black, #111111) !important;
+	color: var(--wp--preset--color--warm-white, #FFFFFF) !important;
+	font-family: var(--wp--preset--font-family--ui, inherit) !important;
+	font-size: 0.75rem !important;
+	font-weight: 600 !important;
+	letter-spacing: 0.2em !important;
+	text-transform: uppercase !important;
+	padding: 1rem 2rem !important;
+	border: 1px solid var(--wp--preset--color--near-black, #111111) !important;
+	transition: background-color 250ms ease, opacity 250ms ease !important;
+}
+
+.wc-block-components-button:hover,
+.wc-block-cart__submit-button:hover,
+.wc-block-checkout__actions .wc-block-components-checkout-place-order-button:hover {
+	background-color: #222222 !important;
+	border-color: #222222 !important;
+	opacity: 0.9 !important;
+}
+
+.wc-block-components-totals-wrapper {
+	border: 1px solid var(--wp--preset--color--border-grey, #E5E5E0) !important;
+	background: var(--wp--preset--color--warm-white, #FFFFFF) !important;
+	border-radius: 0 !important;
+	padding: 1.5rem !important;
+}
+
+.wc-block-components-text-input input[type="text"],
+.wc-block-components-text-input input[type="email"],
+.wc-block-components-text-input input[type="tel"],
+.wc-block-components-text-input input[type="password"] {
+	border-radius: 0 !important;
+	border-color: var(--wp--preset--color--border-grey, #E5E5E0) !important;
+	background: #FFFFFF !important;
+	font-family: var(--wp--preset--font-family--ui, inherit) !important;
+}
+
+.wc-block-components-text-input input:focus {
+	border-color: var(--wp--preset--color--near-black, #111111) !important;
+	outline: none !important;
+}
+
+/* Safe isolation for embedded payment card inputs - DO NOT override iframe styles */
+.wc-block-gateway-container {
+	padding: 1rem 0;
+}
+
+/* LUXURY WOOCOMMERCE NOTICES & BREADCRUMBS */
+.woocommerce-notice,
+.woocommerce-message,
+.woocommerce-info,
+.woocommerce-error {
+	padding: 1rem 1.5rem !important;
+	margin-block-end: 2rem !important;
+	background: #FFFFFF !important;
+	border: 1px solid var(--wp--preset--color--border-grey, #E5E5E0) !important;
+	border-inline-start: 3px solid #111111 !important;
+	color: #111111 !important;
+	font-family: var(--wp--preset--font-family--ui, inherit) !important;
+	font-size: 0.875rem !important;
+	line-height: 1.5 !important;
+	list-style: none !important;
+}
+
+.woocommerce-message::before,
+.woocommerce-info::before,
+.woocommerce-error::before {
+	display: none !important;
+}
+
+.woocommerce-message .button,
+.woocommerce-info .button,
+.woocommerce-error .button {
+	float: right;
+	padding: 0.375rem 1rem !important;
+	background: #111111 !important;
+	color: #FFFFFF !important;
+	font-size: 0.6875rem !important;
+	letter-spacing: 0.16em !important;
+	text-transform: uppercase !important;
+	border-radius: 0 !important;
+	text-decoration: none !important;
+}
+
+.woocommerce-error {
+	border-inline-start-color: #D9381E !important;
+}
+
+.woocommerce-breadcrumb {
+	margin-block-end: 2rem;
+	font-family: var(--wp--preset--font-family--ui, inherit);
+	font-size: 0.6875rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--soft-graphite, #666666);
+}
+
+.woocommerce-breadcrumb a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.woocommerce-breadcrumb a:hover {
+	color: #111111;
+}

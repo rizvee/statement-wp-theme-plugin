@@ -1,22 +1,279 @@
 <?php
+/**
+ * Register Statement Theme Customizer Settings, Panels, and Controls.
+ *
+ * Provides structured customization for Global design tokens, Header,
+ * Shop & Catalog, and the Homepage Hero Slider with strict sanitization.
+ *
+ * @package Statement_Collector_Theme
+ */
 
 namespace Statement\Collector\Theme;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Register Statement Theme Customizer settings and controls.
+ * Register customizer settings and controls.
  *
  * @param \WP_Customize_Manager $wp_customize Customizer manager.
  */
 function customize_register( \WP_Customize_Manager $wp_customize ): void {
-	// Section: Hero Slider
+	// ==========================================
+	// 1. PANEL: STATEMENT DESIGN SYSTEM
+	// ==========================================
+	$wp_customize->add_panel(
+		'statement_theme_panel',
+		array(
+			'title'       => __( 'Statement Design Settings', 'statement-collector-theme' ),
+			'description' => __( 'Customize Statement luxury design tokens, layout options, and hero slider.', 'statement-collector-theme' ),
+			'priority'    => 25,
+		)
+	);
+
+	// ==========================================
+	// SECTION 1: GLOBAL PALETTE & LAYOUT
+	// ==========================================
+	$wp_customize->add_section(
+		'statement_global_section',
+		array(
+			'title'       => __( 'Global Palette & Layout', 'statement-collector-theme' ),
+			'description' => __( 'Configure foundational gallery colors and layout widths.', 'statement-collector-theme' ),
+			'panel'       => 'statement_theme_panel',
+			'priority'    => 10,
+		)
+	);
+
+	// Color: Background
+	$wp_customize->add_setting(
+		'statement_color_bg',
+		array(
+			'default'           => '#FBFBFA',
+			'sanitize_callback' => 'sanitize_hex_color',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		new \WP_Customize_Color_Control(
+			$wp_customize,
+			'statement_color_bg',
+			array(
+				'label'   => __( 'Background Color', 'statement-collector-theme' ),
+				'section' => 'statement_global_section',
+			)
+		)
+	);
+
+	// Color: Surface
+	$wp_customize->add_setting(
+		'statement_color_surface',
+		array(
+			'default'           => '#FFFFFF',
+			'sanitize_callback' => 'sanitize_hex_color',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		new \WP_Customize_Color_Control(
+			$wp_customize,
+			'statement_color_surface',
+			array(
+				'label'   => __( 'Card / Surface Color', 'statement-collector-theme' ),
+				'section' => 'statement_global_section',
+			)
+		)
+	);
+
+	// Color: Text (Ink)
+	$wp_customize->add_setting(
+		'statement_color_text',
+		array(
+			'default'           => '#111111',
+			'sanitize_callback' => 'sanitize_hex_color',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		new \WP_Customize_Color_Control(
+			$wp_customize,
+			'statement_color_text',
+			array(
+				'label'   => __( 'Primary Text (Ink)', 'statement-collector-theme' ),
+				'section' => 'statement_global_section',
+			)
+		)
+	);
+
+	// Color: Muted Text
+	$wp_customize->add_setting(
+		'statement_color_muted',
+		array(
+			'default'           => '#666666',
+			'sanitize_callback' => 'sanitize_hex_color',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		new \WP_Customize_Color_Control(
+			$wp_customize,
+			'statement_color_muted',
+			array(
+				'label'   => __( 'Muted Secondary Text', 'statement-collector-theme' ),
+				'section' => 'statement_global_section',
+			)
+		)
+	);
+
+	// Color: Border
+	$wp_customize->add_setting(
+		'statement_color_border',
+		array(
+			'default'           => '#E5E5E0',
+			'sanitize_callback' => 'sanitize_hex_color',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		new \WP_Customize_Color_Control(
+			$wp_customize,
+			'statement_color_border',
+			array(
+				'label'   => __( 'Border / Rule Color', 'statement-collector-theme' ),
+				'section' => 'statement_global_section',
+			)
+		)
+	);
+
+	// Container Width
+	$wp_customize->add_setting(
+		'statement_container_width',
+		array(
+			'default'           => 1200,
+			'sanitize_callback' => 'absint',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'statement_container_width',
+		array(
+			'label'   => __( 'Standard Container Width (px)', 'statement-collector-theme' ),
+			'section' => 'statement_global_section',
+			'type'    => 'number',
+		)
+	);
+
+	// Wide Container Width
+	$wp_customize->add_setting(
+		'statement_container_wide',
+		array(
+			'default'           => 1440,
+			'sanitize_callback' => 'absint',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'statement_container_wide',
+		array(
+			'label'   => __( 'Wide Container Width (px)', 'statement-collector-theme' ),
+			'section' => 'statement_global_section',
+			'type'    => 'number',
+		)
+	);
+
+	// ==========================================
+	// SECTION 2: HEADER & NAVIGATION
+	// ==========================================
+	$wp_customize->add_section(
+		'statement_header_section',
+		array(
+			'title'       => __( 'Header & Navigation', 'statement-collector-theme' ),
+			'description' => __( 'Configure header dimensions and navigation options.', 'statement-collector-theme' ),
+			'panel'       => 'statement_theme_panel',
+			'priority'    => 20,
+		)
+	);
+
+	// Header Height
+	$wp_customize->add_setting(
+		'statement_header_height',
+		array(
+			'default'           => 64,
+			'sanitize_callback' => 'absint',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'statement_header_height',
+		array(
+			'label'   => __( 'Desktop Header Height (px)', 'statement-collector-theme' ),
+			'section' => 'statement_header_section',
+			'type'    => 'number',
+		)
+	);
+
+	// ==========================================
+	// SECTION 3: SHOP & CATALOG
+	// ==========================================
+	$wp_customize->add_section(
+		'statement_shop_section',
+		array(
+			'title'       => __( 'Shop & Catalog', 'statement-collector-theme' ),
+			'description' => __( 'Configure product catalog presentation.', 'statement-collector-theme' ),
+			'panel'       => 'statement_theme_panel',
+			'priority'    => 30,
+		)
+	);
+
+	// Shop Columns
+	$wp_customize->add_setting(
+		'statement_shop_columns',
+		array(
+			'default'           => 3,
+			'sanitize_callback' => 'absint',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'statement_shop_columns',
+		array(
+			'label'   => __( 'Shop Grid Columns (Desktop)', 'statement-collector-theme' ),
+			'section' => 'statement_shop_section',
+			'type'    => 'select',
+			'choices' => array(
+				2 => __( '2 Columns (Editorial Large)', 'statement-collector-theme' ),
+				3 => __( '3 Columns (Balanced Default)', 'statement-collector-theme' ),
+				4 => __( '4 Columns (Compact Grid)', 'statement-collector-theme' ),
+			),
+		)
+	);
+
+	// Show Breadcrumbs
+	$wp_customize->add_setting(
+		'statement_show_breadcrumbs',
+		array(
+			'default'           => false,
+			'sanitize_callback' => 'wp_validate_boolean',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'statement_show_breadcrumbs',
+		array(
+			'label'   => __( 'Display Breadcrumb Trail', 'statement-collector-theme' ),
+			'section' => 'statement_shop_section',
+			'type'    => 'checkbox',
+		)
+	);
+
+	// ==========================================
+	// SECTION 4: HOMEPAGE HERO SLIDER
+	// ==========================================
 	$wp_customize->add_section(
 		'statement_hero_slider',
 		array(
 			'title'       => __( 'Homepage Hero Slider', 'statement-collector-theme' ),
 			'description' => __( 'Configure up to 4 campaign slides for the homepage hero carousel.', 'statement-collector-theme' ),
-			'priority'    => 30,
+			'panel'       => 'statement_theme_panel',
+			'priority'    => 40,
 		)
 	);
 
@@ -111,13 +368,13 @@ function customize_register( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_control(
 			"statement_hero_slide_{$i}_link",
 			array(
-				'label'   => sprintf( __( 'Slide %d: Link URL', 'statement-collector-theme' ), $i ),
+				'label'   => sprintf( __( 'Slide %d: Target Link', 'statement-collector-theme' ), $i ),
 				'section' => 'statement_hero_slider',
 				'type'    => 'url',
 			)
 		);
 
-		// Slide CTA
+		// Slide CTA Text
 		$wp_customize->add_setting(
 			"statement_hero_slide_{$i}_cta",
 			array(
@@ -129,7 +386,7 @@ function customize_register( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_control(
 			"statement_hero_slide_{$i}_cta",
 			array(
-				'label'   => sprintf( __( 'Slide %d: CTA Label', 'statement-collector-theme' ), $i ),
+				'label'   => sprintf( __( 'Slide %d: CTA Button Text', 'statement-collector-theme' ), $i ),
 				'section' => 'statement_hero_slider',
 				'type'    => 'text',
 			)
@@ -139,7 +396,7 @@ function customize_register( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting(
 			"statement_hero_slide_{$i}_focal",
 			array(
-				'default'           => 'center 25%',
+				'default'           => 'center center',
 				'sanitize_callback' => 'sanitize_text_field',
 				'transport'         => 'refresh',
 			)
@@ -147,19 +404,12 @@ function customize_register( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_control(
 			"statement_hero_slide_{$i}_focal",
 			array(
-				'label'   => sprintf( __( 'Slide %d: Image Focal Position', 'statement-collector-theme' ), $i ),
-				'section' => 'statement_hero_slider',
-				'type'    => 'select',
-				'choices' => array(
-					'center top'    => __( 'Top (center top)', 'statement-collector-theme' ),
-					'center 25%'    => __( 'Upper Chest (center 25%)', 'statement-collector-theme' ),
-					'center center' => __( 'Center (center center)', 'statement-collector-theme' ),
-					'center 75%'    => __( 'Lower (center 75%)', 'statement-collector-theme' ),
-					'center bottom' => __( 'Bottom (center bottom)', 'statement-collector-theme' ),
-				),
+				'label'       => sprintf( __( 'Slide %d: Focal Position', 'statement-collector-theme' ), $i ),
+				'description' => __( 'CSS object-position (e.g. "center 25%")', 'statement-collector-theme' ),
+				'section'     => 'statement_hero_slider',
+				'type'        => 'text',
 			)
 		);
 	}
 }
-
-add_action( 'customize_register', __NAMESPACE__ . '\\customize_register' );
+add_action( 'customize_register', __NAMESPACE__ . '\customize_register' );

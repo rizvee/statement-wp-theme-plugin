@@ -103,7 +103,7 @@ final class PublicApi {
 	}
 
 	/**
-	 * Retrieves products in ARCHIVED state for dedicated Archive presentation.
+	 * Retrieves products in ARCHIVED state for dedicated Archive presentation, excluding QA fixtures.
 	 *
 	 * @param int $limit Max items to return.
 	 * @return array WooCommerce product objects.
@@ -113,9 +113,9 @@ final class PublicApi {
 			return array();
 		}
 
-		return wc_get_products(
+		$products = wc_get_products(
 			array(
-				'limit'      => $limit,
+				'limit'      => -1,
 				'status'     => 'publish',
 				'meta_query' => array(
 					array(
@@ -126,16 +126,48 @@ final class PublicApi {
 				),
 			)
 		);
+
+		if ( empty( $products ) || ! is_array( $products ) ) {
+			return array();
+		}
+
+		$filtered = array();
+		foreach ( $products as $product ) {
+			if ( ! is_object( $product ) ) {
+				continue;
+			}
+
+			// Strictly exclude internal QA test fixtures
+			if ( class_exists( '\Statement\Collector\Core\Catalog\Visibility' ) && \Statement\Collector\Core\Catalog\Visibility::is_fixture_product( $product ) ) {
+				continue;
+			}
+
+			$filtered[] = $product;
+			if ( count( $filtered ) >= $limit ) {
+				break;
+			}
+		}
+
+		return $filtered;
 	}
 
 	/**
-	 * Whether a Drop taxonomy term is a Past Drop (contains ONLY ARCHIVED pieces and at least one ARCHIVED piece).
+	 * Whether a Drop taxonomy term is a Past Drop (contains ONLY ARCHIVED pieces and at least one ARCHIVED piece, excluding QA fixtures).
 	 *
 	 * @param int $term_id Drop term ID.
 	 */
 	public static function is_past_drop( int $term_id ): bool {
 		if ( $term_id < 1 || ! function_exists( 'get_posts' ) ) {
 			return false;
+		}
+
+		if ( function_exists( 'get_term' ) ) {
+			$term = get_term( $term_id, Taxonomy::KEY );
+			if ( is_object( $term ) && ! is_wp_error( $term ) ) {
+				if ( 0 === stripos( (string) $term->name, 'TEST' ) || 0 === stripos( (string) $term->slug, 'test-' ) ) {
+					return false;
+				}
+			}
 		}
 
 		$product_ids = get_posts(
@@ -161,6 +193,10 @@ final class PublicApi {
 		$has_archived = false;
 
 		foreach ( $product_ids as $pid ) {
+			if ( class_exists( '\Statement\Collector\Core\Catalog\Visibility' ) && \Statement\Collector\Core\Catalog\Visibility::is_fixture_product( $pid ) ) {
+				continue;
+			}
+
 			$product = function_exists( 'wc_get_product' ) ? wc_get_product( $pid ) : null;
 			$state   = Metadata::get_release_state( $product );
 
@@ -177,7 +213,7 @@ final class PublicApi {
 	}
 
 	/**
-	 * Retrieves past Drop taxonomy terms (drops with ONLY ARCHIVED pieces).
+	 * Retrieves past Drop taxonomy terms (drops with ONLY ARCHIVED pieces, excluding QA fixtures).
 	 *
 	 * @return array
 	 */
@@ -201,8 +237,13 @@ final class PublicApi {
 
 		$past_drops = array();
 		foreach ( $terms as $term ) {
-			if ( is_object( $term ) && isset( $term->term_id ) && self::is_past_drop( (int) $term->term_id ) ) {
-				$past_drops[] = $term;
+			if ( is_object( $term ) && isset( $term->term_id ) ) {
+				if ( 0 === stripos( (string) $term->name, 'TEST' ) || 0 === stripos( (string) $term->slug, 'test-' ) ) {
+					continue;
+				}
+				if ( self::is_past_drop( (int) $term->term_id ) ) {
+					$past_drops[] = $term;
+				}
 			}
 		}
 
@@ -210,7 +251,7 @@ final class PublicApi {
 	}
 
 	/**
-	 * Return the currently active Statement Drop (LIVE or PRIVATE_ACCESS).
+	 * Return the currently active Statement Drop (LIVE or PRIVATE_ACCESS, excluding QA fixtures).
 	 *
 	 * @return object|null
 	 */
@@ -235,6 +276,9 @@ final class PublicApi {
 		// First preference: Drop with LIVE products
 		foreach ( $terms as $term ) {
 			if ( is_object( $term ) && isset( $term->term_id ) ) {
+				if ( 0 === stripos( (string) $term->name, 'TEST' ) || 0 === stripos( (string) $term->slug, 'test-' ) ) {
+					continue;
+				}
 				$state = self::get_drop_state( $term );
 				if ( ReleaseState::LIVE === $state ) {
 					return $term;
@@ -245,6 +289,9 @@ final class PublicApi {
 		// Second preference: Drop with PRIVATE_ACCESS products
 		foreach ( $terms as $term ) {
 			if ( is_object( $term ) && isset( $term->term_id ) ) {
+				if ( 0 === stripos( (string) $term->name, 'TEST' ) || 0 === stripos( (string) $term->slug, 'test-' ) ) {
+					continue;
+				}
 				$state = self::get_drop_state( $term );
 				if ( ReleaseState::PRIVATE_ACCESS === $state ) {
 					return $term;
@@ -322,9 +369,9 @@ final class PublicApi {
 			return array();
 		}
 
-		return wc_get_products(
+		$products = wc_get_products(
 			array(
-				'limit'      => $limit,
+				'limit'      => -1,
 				'status'     => 'publish',
 				'tax_query'  => array(
 					array(
@@ -342,5 +389,27 @@ final class PublicApi {
 				),
 			)
 		);
+
+		if ( empty( $products ) || ! is_array( $products ) ) {
+			return array();
+		}
+
+		$filtered = array();
+		foreach ( $products as $product ) {
+			if ( ! is_object( $product ) ) {
+				continue;
+			}
+
+			if ( class_exists( '\Statement\Collector\Core\Catalog\Visibility' ) && \Statement\Collector\Core\Catalog\Visibility::is_fixture_product( $product ) ) {
+				continue;
+			}
+
+			$filtered[] = $product;
+			if ( count( $filtered ) >= $limit ) {
+				break;
+			}
+		}
+
+		return $filtered;
 	}
 }

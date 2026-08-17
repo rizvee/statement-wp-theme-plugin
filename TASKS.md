@@ -1,5 +1,31 @@
 # Current Priority — Client Visual Delivery & Production Preparation
 
+## VISUAL SPRINT 05 — IN PROGRESS (2026-08-18)
+
+Status: in_progress (Theme Framework + Plugin Compatibility + Design Perfection + Setup Experience + Woo Hardening + QA Isolation + Responsive Polish + Child-Theme Support + Full Release Prep)
+
+- [ ] Phase 0: Baseline state & clean git checkout
+- [ ] Phase 1: Research premium theme architecture (`docs/premium-theme-architecture-study.md`)
+- [ ] Phase 2: Critical Public QA Leak Fix in Core PublicApi & Catalog Visibility (`0.13.0-rc.12` candidate)
+- [ ] Phase 3: Product 213 deterministic ownership verification & test
+- [ ] Phase 4: Theme architecture modular refactor (`inc/setup.php`, `assets.php`, `hooks.php`, `compatibility/`, `admin/`)
+- [ ] Phase 5: Public extension API (`statement_theme_*` hooks/filters) & `docs/theme-hooks-reference.md`
+- [ ] Phase 6: Child theme starter package (`tools/statement-collector-child/`) & `docs/child-theme-customization-guide.md`
+- [ ] Phase 7 & 8: Authoritative Design Tokens & Global Customizer Design Options System
+- [ ] Phase 9: Design Settings Export / Import JSON with schema & nonce validation
+- [ ] Phase 10: Lightweight Page-Level Design Meta Overrides (layout, header, footer, title)
+- [ ] Phase 11: Elementor Theme Location compatibility (`header`, `footer`, `single`, `archive`) & page templates
+- [ ] Phase 12: Gutenberg / Block Editor supports, theme.json palette, and editorial block patterns
+- [ ] Phase 13, 14, 15: WooCommerce 11.0.1 template audit, Woo Blocks styling, and HPOS audit
+- [ ] Phase 16, 17, 18, 19, 20: SEO, Forms, Cache layers, CSS & JS scoping/namespacing audit
+- [ ] Phase 21 & 22: Statement Admin Setup / Health Screen (`Appearance -> Statement`) with safe setup actions
+- [ ] Phase 23-42: Visual Perfection across all 14 screenshot issues (Mobile shop titles, card density, drop typography, desktop spacing, PDP gallery & summary, Add-to-Bag black CTA, Woo notices, breadcrumbs, shop title, journal editorial cards, archive historical presentation, mobile drawer typography, footer refinement, checkout polish)
+- [ ] Phase 43-50: Responsive Matrix (320px–1920px), Tablet QA, Admin Bar fix, Accessibility, Performance & Image optimization
+- [ ] Phase 51-55: Admin control, Core/Theme boundary, `docs/plugin-compatibility-matrix.md`, `docs/theme-customization-guide.md`, `docs/theme-setup-guide.md`
+- [ ] Phase 56-60: Visual preview inspection, zero public test content leak automated tests
+- [ ] Phase 61-68: Version bumps (Theme `0.13.0-rc.9`, Core `0.13.0-rc.12`, Demo `0.2.2`, Child `0.1.0`), testing, packaging, multi-step commits & push
+- [ ] Phase 69: Atomic mutation verification (strictly zero live mutations)
+
 ## VISUAL SPRINT 04 — COMPLETE (2026-08-17)
 
 Status: complete (Theme Candidate 0.13.0-rc.8 + Core Plugin Candidate 0.13.0-rc.11 + Client Demo 0.2.1 + Fixtures 0.3.3 ready for deployment; ZERO live mutations executed)
@@ -427,3 +453,44 @@ Status: started (2026-08-16)
 
 - [x] Content Layer Architecture & Slots: Created `docs/m16-production-content-layer.md` defining slot mapping for root hero, showcase loop, brand manifesto, archive intro, craft PDP tabs, and footer link map.
 - [ ] Production Cutover Execution: Awaiting operator execution of post-RC automatic backup verification, Jetpack scan, fixture cleanup, and Drop 001 product import.
+
+## Visual Sprint 01–04 — Client Demo & Luxury Refinements
+
+Status: complete (2026-08-17)
+
+- [x] WhatsApp Brand Asset Audit & Packaging Section: Curated brand objects into luxury presentation.
+- [x] Client Demo Tool v0.2.2: Deterministic demo seeder with collision prevention and manifest-driven rollback.
+- [x] Core Marketing Signup Security & Hardening: 3-mode consent event capture, fail-closed rate limiting, encrypted storage (Core `0.13.0-rc.11`).
+- [x] Privileged Lifecycle Override Service: Safe transition engine with stock checks, future DropConfig requirements, and audit log.
+- [x] Contemporary Typography System: Modern sans (`Inter`) baseline with editorial serif accents.
+- [x] Bespoke Hero Slider: Touch-swipe, autoplay, accessible Vanilla JS slider with Customizer integration.
+- [x] Editorial About & Contact Pages: 4-pillar craft showcase and client support interfaces.
+
+## Visual Sprint 05 — Extensibility & Premium Finish Mega Sprint
+
+Status: complete (2026-08-18)
+
+- [x] Phase 0 — Baseline & Git Checkout Verification: Zero uncommitted changes, synchronized with `origin main`.
+- [x] Phase 1 — Premium WordPress Theme Architecture Study: Authored `docs/premium-theme-architecture-study.md`.
+- [x] Phase 2 — Core QA Fixture Isolation Fix: Implemented `Visibility::is_fixture_product()` and patched `PublicApi::get_archive_products()`, `get_past_drops()`, `is_past_drop()`, `get_current_drop()`, `get_live_products_for_drop()` to never leak `_statement_fixture = 1`, `TEST-*` SKUs, or `TEST —*` titles into public catalog/archive while strictly protecting `_statement_client_demo = 1` products. Promoted Core to `0.13.0-rc.12`.
+- [x] Phase 4 — Theme Modular Refactoring: Split theme into `inc/setup.php`, `inc/design-tokens.php`, `inc/hooks.php`, `inc/page-meta.php`, `inc/customizer.php`, `inc/compatibility/*`, `inc/admin/*`. Maintained minimal `functions.php` bootstrap under 25 lines with zero raw `add_action` calls. Promoted Theme to `0.13.0-rc.9`.
+- [x] Phase 5 — Public Extension API Reference: Implemented canonical layout action hooks and filter hooks. Authored `docs/theme-hooks-reference.md`.
+- [x] Phase 6 — Starter Child Theme Package: Built `tools/statement-collector-child/` with upgrade-safe parent stylesheet inheritance, custom functions template, and authored `docs/child-theme-customization-guide.md`.
+- [x] Phase 7 & 8 — Design Tokens & Global Customizer: Connected CSS custom properties (`--statement-color-*`, `--statement-container-*`, etc.) to Customizer settings across Global, Header, Shop & Catalog, and Homepage Hero Slider with strict sanitization.
+- [x] Phase 9 — Options Export / Import: Built `inc/admin/options-export.php` with nonce verification, `manage_options` capability check, and automated pre-import backup.
+- [x] Phase 10 — Page-Level Meta Overrides: Added meta box controls for layout width (Default/Contained/Wide/Full Bleed), Header style (Default/Transparent/Hidden), Footer toggle, and Title toggle.
+- [x] Phase 11 — Elementor Theme Locations: Registered Elementor Theme Location API (`header`, `footer`, `single`, `archive`) in `inc/compatibility/elementor.php`.
+- [x] Phase 12 — Gutenberg Block Patterns: Registered curated luxury block patterns (Hero, Split Story, Editorial Grid, Newsletter) and `statement-luxury` pattern category in `inc/compatibility/gutenberg.php`.
+- [x] Phase 13, 14, 15 — WooCommerce Compatibility, Blocks & HPOS: Declared HPOS compatibility in `inc/compatibility/woocommerce.php` and added scoped Cart/Checkout block styles in `assets/css/woo-blocks.css`.
+- [x] Phase 16–22 — Plugin Compatibility, Admin Setup Screen & Diagnostics: Built adapters for `seo.php`, `jetpack.php`, `forms.php`, `caching.php`, `health.php`, and `setup-screen.php`. Authored `docs/plugin-compatibility-matrix.md` and `docs/theme-setup-guide.md`.
+- [x] Phase 26, 35, 39 — Visual QA Refinements: Restyled buttons to pure Ink, scaled mobile navigation drawer typography, restyled WooCommerce notices and breadcrumbs, and converted Journal index to an editorial article grid.
+- [x] Phase 56–68 — Automated Testing & Release Packaging:
+  - 138 Node integration tests across 19 suites pass 100% green.
+  - 40 PHP tests across all functional modules pass 100% green.
+  - `verify-foundation.mjs` and `verify-git-runtime-tracking.mjs` pass 100% green.
+  - Generated and verified release packages in `dist/`:
+    - `statement-collector-theme-0.13.0-rc.9.zip` (SHA-256: `b8538b62479f66bdd354ef81bf528112013d9662ff0a7c7e44e540a307035fe8`)
+    - `statement-collector-core-0.13.0-rc.12.zip` (SHA-256: `eca4187a22523ff1a6cead9811892dd6d88fbb1d289b528f93cd3d77ced0c562`)
+    - `statement-client-demo-0.2.2.zip` (SHA-256: `c3bb867f88a9d4b2914451fcc6868e29f247b1f3c2ae530a1811ebcf14b087ca`)
+    - `statement-collector-child-0.1.0.zip` (SHA-256: `a5c06bcd04fab5d994c740dbf4f71872c6639167b500de97a2e46af892dcf47d`)
+
