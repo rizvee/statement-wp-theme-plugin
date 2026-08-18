@@ -96,12 +96,12 @@ Updated: 2026-08-19
 
 `https://mystatement.store/` is hosted on WordPress.com Atomic. Core `0.13.0-rc.13`, Theme `0.13.0-rc.12`, Client Demo `0.2.4`, and Fixtures `0.3.3` are active on Atomic, with seeded client demo content (Drop ID: 1377, 2 Variable Products, real client media set). ZERO live mutations executed from workspace.
 
-- **Theme Candidate**: `statement-collector-theme-0.13.0-rc.13.zip` (20,859,095 bytes, SHA-256: `a24560514cefeefcd3abd7cb2fa140be28444897bfd2211df37d040b3a24e444`)
-- **Core Candidate**: `statement-collector-core-0.13.0-rc.13.zip` (78,247 bytes, SHA-256: `ecc4f701c6b8ac0099186be4b0a320abd51d677059d1dff8b5958b4dd01ae58f`)
-- **Client Demo Candidate**: `statement-client-demo-0.2.5.zip` (20,784,007 bytes, SHA-256: `d159166cdb35c6906b6a46dc14b3f5ed89528725fabbe382f19a9ca1d01a025d`)
-- **Child Theme Candidate**: `statement-collector-child-0.1.0.zip` (1,444 bytes, SHA-256: `4b6cec4eb112450861ed3305ff3fd4695ce68da71c507a2b3e2fcc09f57dfe5e`)
+- **Theme Candidate**: `statement-collector-theme-0.13.0-rc.14.zip` (24,877,361 bytes, SHA-256: `6c1ff95001e682d997a5f3835893bab17473bc6e4f262ebe97e968d48af0254d`)
+- **Core Candidate**: `statement-collector-core-0.13.0-rc.13.zip` (78,247 bytes, SHA-256: `b67fe93da1d24b1c24b2a496a57e2d69a43600132a3742e9dcbb70442754297b`)
+- **Client Demo Candidate**: `statement-client-demo-0.2.6.zip` (24,801,802 bytes, SHA-256: `61250647633bc02a5d0d0fdb12e5e3fe3374dde274927ec893cf3ba19e2932e0`)
+- **Child Theme Candidate**: `statement-collector-child-0.1.0.zip` (1,444 bytes, SHA-256: `d340b45c3a8d2eb4c82306596a63bc2d068998728fcceda3d7abdce9410fd2b9`)
 - **Fixture Candidate**: `statement-integration-fixtures-0.3.3.zip` (27,311 bytes, SHA-256: `97fbb481613fc619434e87b5d81fb3815ab7b690bd2d1e80e94dbf547ec70850`)
 
 ## Verification
 
-M1–M19 Node structural tests (144 subtests across 20 suites pass 100% clean), PHP lint (119 PHP files), `verify-foundation.mjs`, `verify-git-runtime-tracking.mjs`, all 42 PHP test suites, theme package verifier (`statement-collector-theme-0.13.0-rc.13.zip`), core plugin package verifier (`statement-collector-core-0.13.0-rc.13.zip`), client demo package verifier (`statement-client-demo-0.2.5.zip`), child theme package verifier (`statement-collector-child-0.1.0.zip`), and master `packageAll` manifest generation pass cleanly with 100% green status.
+M1–M19 and Visual Sprint 07 Node structural tests (149 subtests across 22 suites pass 100% clean), PHP lint (120 PHP files), `verify-foundation.mjs`, `verify-git-runtime-tracking.mjs`, all 42 PHP test suites, theme package verifier (`statement-collector-theme-0.13.0-rc.14.zip`), core plugin package verifier (`statement-collector-core-0.13.0-rc.13.zip`), client demo package verifier (`statement-client-demo-0.2.6.zip`), child theme package verifier (`statement-collector-child-0.1.0.zip`), and master `packageAll` manifest generation pass cleanly with 100% green status.

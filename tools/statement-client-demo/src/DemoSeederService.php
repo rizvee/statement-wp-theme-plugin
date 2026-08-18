@@ -400,6 +400,9 @@ final class DemoSeederService {
 			$demo_dir    = defined( 'STATEMENT_CLIENT_DEMO_DIR' ) ? STATEMENT_CLIENT_DEMO_DIR : dirname( __DIR__ );
 			$source_file = $demo_dir . '/assets/images/' . $asset['file'];
 			if ( ! file_exists( $source_file ) ) {
+				$source_file = $demo_dir . '/assets/video/' . $asset['file'];
+			}
+			if ( ! file_exists( $source_file ) ) {
 				$report['errors'][] = "Source asset not found: {$asset['file']}";
 				continue;
 			}

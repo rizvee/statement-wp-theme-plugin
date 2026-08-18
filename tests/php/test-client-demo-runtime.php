@@ -400,9 +400,9 @@ assert_runtime( '295.00' === ( $var_s['_price'] ?? '' ), 'Variation S Price must
 assert_runtime( 'STMT-CD-D001-MJ-M' === ( $var_m['_sku'] ?? '' ), 'Variation M SKU must match STMT-CD-D001-MJ-M' );
 assert_runtime( 'STMT-CD-D001-MJ-L' === ( $var_l['_sku'] ?? '' ), 'Variation L SKU must match STMT-CD-D001-MJ-L' );
 
-// TEST 8: Verify Hero Slider Theme Mods (Image-First Defaults)
-assert_runtime( '' === MockWpStore::$theme_mods['statement_hero_slide_1_eyebrow'], 'Slide 1 eyebrow must be empty for image-first' );
-assert_runtime( '' === MockWpStore::$theme_mods['statement_hero_slide_1_heading'], 'Slide 1 heading must be empty for image-first' );
+// TEST 8: Verify Hero Slider Theme Mods (Sprint 07 Editorial Defaults)
+assert_runtime( 'DROP 001' === MockWpStore::$theme_mods['statement_hero_slide_1_eyebrow'], 'Slide 1 eyebrow must be DROP 001' );
+assert_runtime( '' === MockWpStore::$theme_mods['statement_hero_slide_1_heading'], 'Slide 1 heading must be empty' );
 assert_runtime( (int) MockWpStore::$theme_mods['statement_hero_slide_1_image'] > 0, 'Slide 1 image must be valid attachment ID' );
 
 // TEST 9: Idempotency (Second Seed Execution)
