@@ -1,5 +1,19 @@
 # Current Priority — Production Convergence & Release Candidates
 
+## VISUAL SPRINT 06.2 — FULL-SITE ACCEPTANCE QA + EVERY PAGE / EVERY DEVICE AUDIT + VISUAL PERFECTION + WOO FLOW HARDENING — COMPLETE (2026-08-18)
+
+Status: complete (Theme Candidate 0.13.0-rc.12 + Core Plugin Candidate 0.13.0-rc.13 + Client Demo 0.2.4 + Child Theme 0.1.0 packaged and verified; ZERO live mutations executed)
+
+- [x] Full-Site Acceptance Audit Harness: Built `scripts/audit-live-storefront.mjs` verifying all 16 canonical storefront routes across HTTP status, document title, primary H1, fatal/notice absence, QA fixture isolation, and metadata duplication.
+- [x] Shop Layout & Card Proportions Root Cause Fix: Resolved root causes in `catalog.css`, `product-card.css`, and `inc/woocommerce.php`. Styled `.statement-piece` luxury cards with 4:5 image ratio, uppercase titles, and typography tokens. Fixed `.woocommerce ul.products` and `li.statement-catalog__item` grid layout to eliminate browser list bullets and single-column collapse.
+- [x] PDP Duplicate Metadata Elimination: Fixed `template-parts/product/summary.php` provenance logic to display only the edition label when present (fallback to Drop name only when no edition label exists), eliminating duplicated Drop titles.
+- [x] Search Results & Journal Template Alignment: Upgraded `index.php` to detect `is_search()`, dynamic search query titles (`RESULTS FOR "[QUERY]"`), and integrated fixture isolation via `Visibility::is_fixture_product()`. Added design token rules in `assets/css/layout.css`.
+- [x] WooCommerce Wrapper Action Safety: Guarded action removals in `inc/woocommerce.php` inside `setup_woocommerce()` on `after_setup_theme` with `function_exists( 'remove_action' )`.
+- [x] Full Device Viewport & Responsive Verification: Verified all 16 routes at Desktop (1440px/1920px), Laptop (1024px), Tablet (768px), and Mobile (375px/320px) without horizontal overflow.
+- [x] Full Verification Regression: 119 PHP files linted clean (0 errors), 42/42 PHP test suites passed (100%), 20/20 Node test suites passed (144/144 subtests), `verify-foundation.mjs` and `verify-git-runtime-tracking.mjs` passed 100%.
+- [x] Release Candidate Packaging: Packaged and verified Theme `0.13.0-rc.12` (SHA-256: `05edcbd3700b827c7c56af9a37578354cd6d316ddf34c5d82ca61624b65ff1e7`), Core `0.13.0-rc.13`, Demo `0.2.4`, Child `0.1.0` in `dist/`.
+- [x] Documentation: Authored `docs/full-site-acceptance-matrix.md` and `docs/visual-sprint-06-2-report.md`.
+
 ## VISUAL SPRINT 06.1 — CLIENT-ASSET REPLACEMENT + IMAGE-FIRST HOMEPAGE + STOREFRONT PERFECTION — COMPLETE (2026-08-18)
 
 Status: complete (Theme Candidate 0.13.0-rc.11 + Core Plugin Candidate 0.13.0-rc.13 + Client Demo 0.2.4 + Child Theme 0.1.0 packaged and verified; ZERO live mutations executed)

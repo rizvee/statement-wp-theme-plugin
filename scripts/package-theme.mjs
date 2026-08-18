@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.13.0-rc.11';
+const defaultVersion = '0.13.0-rc.12';
 
 export const approvedThemeFiles = [
   'style.css',

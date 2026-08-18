@@ -9,7 +9,7 @@ import { verifyPackage } from './verify-package.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const coreVersion = '0.13.0-rc.13';
-const themeVersion = '0.13.0-rc.11';
+const themeVersion = '0.13.0-rc.12';
 const childVersion = '0.1.0';
 const demoVersion = '0.2.4';
 const pluginVersion = '0.13.0-rc.13';

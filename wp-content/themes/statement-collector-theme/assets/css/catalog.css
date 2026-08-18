@@ -3,12 +3,14 @@
 	padding-block: clamp(3rem, 6vw, 7rem) clamp(5rem, 8vw, 9rem);
 }
 
-.statement-catalog__header {
-	margin-block-end: clamp(3rem, 5vw, 5.5rem);
+.statement-catalog__header,
+.woocommerce-products-header {
+	margin-block-end: clamp(2.5rem, 5vw, 4.5rem);
 	max-inline-size: 50rem;
 }
 
-.statement-catalog__title {
+.statement-catalog__title,
+.woocommerce-products-header__title.page-title {
 	margin: 0 0 var(--wp--preset--spacing--30);
 	font-family: var(--wp--preset--font-family--display);
 	font-size: clamp(2.5rem, 1.8rem + 3.5vw, 5rem);
@@ -18,29 +20,67 @@
 	text-transform: uppercase;
 }
 
-.statement-catalog__description {
+.statement-catalog__description,
+.woocommerce-products-header .page-description {
 	margin: 0;
 	color: var(--wp--preset--color--soft-graphite);
 	font-size: clamp(1rem, 0.95rem + 0.2vw, 1.125rem);
 	line-height: 1.6;
 }
 
-.statement-collection-grid {
+.statement-collection-grid,
+.woocommerce ul.products,
+ul.products {
 	display: grid;
 	grid-template-columns: 1fr;
 	gap: clamp(2.5rem, 5vw, 5rem) clamp(1.5rem, 3vw, 3.5rem);
+	list-style: none;
+	margin: 0;
+	padding: 0;
 }
 
 @media (min-width: 40rem) {
-	.statement-collection-grid {
+	.statement-collection-grid,
+	.woocommerce ul.products,
+	ul.products {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
 
 @media (min-width: 64rem) {
-	.statement-collection-grid {
+	.statement-collection-grid,
+	.woocommerce ul.products,
+	ul.products {
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
+}
+
+.woocommerce ul.products li.product,
+ul.products li.statement-catalog__item,
+li.statement-catalog__item {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.woocommerce-breadcrumb {
+	margin-block-end: clamp(1.5rem, 3vw, 2.5rem);
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--soft-graphite);
+}
+
+.woocommerce-breadcrumb a {
+	color: var(--wp--preset--color--soft-graphite);
+	text-decoration: none;
+	transition: color 200ms ease;
+}
+
+.woocommerce-breadcrumb a:hover {
+	color: var(--wp--preset--color--near-black);
 }
 
 .statement-catalog__empty,

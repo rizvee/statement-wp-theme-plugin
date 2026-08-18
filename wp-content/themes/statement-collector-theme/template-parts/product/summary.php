@@ -21,13 +21,12 @@ $is_terminal    = in_array( $state, array( 'SOLD_OUT', 'ARCHIVED' ), true );
 ?>
 <section class="statement-product__summary" aria-labelledby="statement-product-title">
 	<div class="statement-product__summary-inner statement-stack">
-		<?php if ( is_object( $drop ) || '' !== $edition_label ) : ?>
+		<?php if ( '' !== $edition_label || ( is_object( $drop ) && isset( $drop->name ) ) ) : ?>
 			<p class="statement-product__provenance">
-				<?php if ( is_object( $drop ) && isset( $drop->name ) ) : ?>
-					<span><?php echo esc_html( $drop->name ); ?></span>
-				<?php endif; ?>
 				<?php if ( '' !== $edition_label ) : ?>
 					<span><?php echo esc_html( $edition_label ); ?></span>
+				<?php elseif ( is_object( $drop ) && isset( $drop->name ) ) : ?>
+					<span><?php echo esc_html( $drop->name ); ?></span>
 				<?php endif; ?>
 			</p>
 		<?php endif; ?>
