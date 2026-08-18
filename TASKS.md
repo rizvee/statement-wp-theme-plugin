@@ -1,5 +1,20 @@
 # Current Priority — Production Convergence & Release Candidates
 
+## VISUAL SPRINT 07 — NEW ASSET INGESTION + HERO REBUILD + IA SIMPLIFICATION + PRODUCT MEDIA CORRECTION + COMPLETE QA — COMPLETE (2026-08-19)
+
+Status: complete (Theme Candidate 0.13.0-rc.14 + Core Plugin Candidate 0.13.0-rc.13 + Client Demo 0.2.6 + Child Theme 0.1.0 packaged and verified; ZERO live mutations executed)
+
+- [x] Client New Asset Ingestion & Forensic Classification: Ingested all raw client assets from `new assets/`, extracted authentic transparent brand logo (`statement-logo.png`), normalized 3 wide 1920×1080 desktop campaign photographs, normalized 720×1280 mobile portrait video (`statement-hero-mobile-monogram.mp4`), normalized 5 Monogram Jacket WebP assets, and corrected 6 Panelled Hood Jacket WebP assets. Synchronized to both theme and demo plugin asset trees.
+- [x] Authentic Statement Brand Logo & Header Integration: Upgraded `render_site_brand()` in `inc/navigation.php` to render `statement-logo.png` with graceful fallback and `custom_logo` support. Styled `.statement-brand-logo` in `assets/css/header.css` with responsive clamps across 320px–1920px viewports. Omitted Journal from desktop, mobile drawer, and footer navigation menus.
+- [x] Cinematic Hero Slider Rebuild: Rebuilt `template-parts/home/hero.php` with wide 1920×1080 high-fashion campaign photography and 720×1280 mobile portrait video. Set viewport-aware hero height (`clamp(34rem, 78svh, 54rem)`) and composition-aware focal alignments. Upgraded `hero-slider.js` with full HTML5 video lifecycle management, `prefers-reduced-motion` compliance, and visibility change handling.
+- [x] Strict 5-Part Homepage Hierarchy: Streamlined `front-page.php` into a strict 5-part luxury hierarchy (Site Header -> Hero Slider -> Drop 001 with 2 side-by-side product cards -> Editorial Drops Directory -> Minimal Footer). Eliminated separate "Current Pieces" heading and redundant product grids.
+- [x] Editorial Drops Directory: Created `template-parts/home/drops-list.php` and upgraded `page-drops.php` with text-first editorial directory format listing Drop 001 (active link) and upcoming drops (Drop 002, Drop 003 with `UPCOMING` badges).
+- [x] Text-Only About & Contact Pages: Rebuilt `page-about.php` as pure typography layout without images, with em-dashes removed and natural punctuation restored. Rebuilt `page-contact.php` as minimal text-only layout with confirmed email (`info@mystatement.store`), Instagram (`@statement.au`), and configurable Facebook channel.
+- [x] Product Media & Metadata Remediation: Completely eradicated "black-monogram-jacket" defect from Panelled Hood Jacket metadata. Ingested normalized WebP product photography suites. Added size **XL** (S, M, L, XL) with SKU `STMT-CD-D001-PHJ-XL` across seeder and size guide.
+- [x] PDP Conversion Polish & Noticeable Size Guide: Prominent `SIZE GUIDE ↗` trigger button in `template-parts/product/size-guide.php` with CM table (S, M, L, XL) and touch target >= 44px on mobile.
+- [x] Automated Test Suites & Packaging: Created `tests/visual-sprint-07.test.mjs` (5/5 passed), verified all 120 PHP files with PHP lint, passed PHP unit tests, passed all Node test suites, packaged single-root ZIPs in `dist/` with SHA-256 manifest: Theme `0.13.0-rc.14`, Demo `0.2.6`, Core `0.13.0-rc.13`, Child `0.1.0`.
+- [x] Documentation: Authored `docs/visual-sprint-07-release-notes.md`, `docs/statement-new-assets-sprint-07.md`, `docs/client-feedback-2026-08-18.md`, and updated `docs/full-site-acceptance-matrix.md`.
+
 ## VISUAL SPRINT 06.3 — POST-DEPLOYMENT LIVE ACCEPTANCE + FULL SITE VISUAL REPAIR + CONTENT/OWNERSHIP CONSISTENCY + COMMERCE QA — COMPLETE (2026-08-18)
 
 Status: complete (Theme Candidate 0.13.0-rc.13 + Core Plugin Candidate 0.13.0-rc.13 + Client Demo 0.2.5 + Child Theme 0.1.0 packaged and verified; ZERO live mutations executed)

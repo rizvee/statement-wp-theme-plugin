@@ -34,10 +34,12 @@
 	min-inline-size: 0;
 }
 
+.statement-brand-link,
 .statement-brand .custom-logo-link,
 .statement-brand__fallback {
 	display: inline-flex;
 	align-items: center;
+	justify-content: center;
 	color: var(--wp--preset--color--near-black);
 	font-family: var(--wp--preset--font-family--ui);
 	font-size: clamp(0.9375rem, 0.85rem + 0.3vw, 1.1875rem);
@@ -50,14 +52,24 @@
 	transition: opacity 250ms ease;
 }
 
+.statement-brand-link:hover,
 .statement-brand .custom-logo-link:hover,
 .statement-brand__fallback:hover {
 	opacity: 0.8;
 }
 
+.statement-brand-logo,
 .statement-brand .custom-logo {
-	max-block-size: 2.25rem;
+	display: block;
+	max-block-size: clamp(1.875rem, 1.5rem + 1vw, 2.5rem);
+	max-inline-size: clamp(7.5rem, 6rem + 5vw, 12.5rem);
 	inline-size: auto;
+	block-size: auto;
+	object-fit: contain;
+}
+
+.statement-brand-wordmark {
+	letter-spacing: 0.28em;
 }
 
 .statement-primary-navigation {

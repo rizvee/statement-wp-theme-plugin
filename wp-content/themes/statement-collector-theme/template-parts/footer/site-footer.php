@@ -35,8 +35,8 @@ $account_url = \Statement\Collector\Theme\get_account_url();
 					<?php if ( null !== $account_url ) : ?>
 						<li><a href="<?php echo esc_url( $account_url ); ?>"><?php esc_html_e( 'ACCOUNT', 'statement-collector-theme' ); ?></a></li>
 					<?php endif; ?>
-					<li><a href="<?php echo esc_url( home_url( '/about/' ) ); ?>"><?php esc_html_e( 'ABOUT', 'statement-collector-theme' ); ?></a></li>
-					<li><a href="<?php echo esc_url( home_url( '/journal/' ) ); ?>"><?php esc_html_e( 'JOURNAL', 'statement-collector-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( \Statement\Collector\Theme\get_about_url() ); ?>"><?php esc_html_e( 'ABOUT', 'statement-collector-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( \Statement\Collector\Theme\get_contact_url() ); ?>"><?php esc_html_e( 'CONTACT', 'statement-collector-theme' ); ?></a></li>
 				</ul>
 			<?php endif; ?>
 		</nav>

@@ -18,14 +18,17 @@ $slides = array();
 for ( $i = 1; $i <= 6; $i++ ) {
 	$img_id    = get_theme_mod( "statement_hero_slide_{$i}_image", '' );
 	$mob_id    = get_theme_mod( "statement_hero_slide_{$i}_mobile_image", '' );
+	$mob_vid   = get_theme_mod( "statement_hero_slide_{$i}_mobile_video", '' );
+	$poster_id = get_theme_mod( "statement_hero_slide_{$i}_video_poster", '' );
 	$eyebrow   = get_theme_mod( "statement_hero_slide_{$i}_eyebrow", '' );
 	$heading   = get_theme_mod( "statement_hero_slide_{$i}_heading", '' );
 	$link      = get_theme_mod( "statement_hero_slide_{$i}_link", '' );
 	$cta       = get_theme_mod( "statement_hero_slide_{$i}_cta", '' );
 	$focal     = get_theme_mod( "statement_hero_slide_{$i}_focal", 'center 20%' );
 
-	$img_url = ( 1 === $i && ! empty( $featured_url ) && empty( $img_id ) ) ? $featured_url : '';
-	$mob_url = '';
+	$img_url    = ( 1 === $i && ! empty( $featured_url ) && empty( $img_id ) ) ? $featured_url : '';
+	$mob_url    = '';
+	$poster_url = '';
 
 	if ( ! empty( $img_id ) && is_numeric( $img_id ) ) {
 		$img_url = wp_get_attachment_image_url( (int) $img_id, 'full' );
@@ -33,73 +36,64 @@ for ( $i = 1; $i <= 6; $i++ ) {
 	if ( ! empty( $mob_id ) && is_numeric( $mob_id ) ) {
 		$mob_url = wp_get_attachment_image_url( (int) $mob_id, 'full' );
 	}
+	if ( ! empty( $poster_id ) && is_numeric( $poster_id ) ) {
+		$poster_url = wp_get_attachment_image_url( (int) $poster_id, 'full' );
+	}
 
 	if ( ! empty( $img_url ) ) {
 		$slides[] = array(
 			'image'        => $img_url,
 			'mobile_image' => $mob_url,
+			'mobile_video' => $mob_vid,
+			'poster'       => $poster_url,
 			'eyebrow'      => $eyebrow,
 			'heading'      => $heading,
 			'link'         => ! empty( $link ) ? $link : $shop_url,
 			'cta'          => ! empty( $cta ) ? $cta : __( 'EXPLORE RELEASE', 'statement-collector-theme' ),
 			'focal'        => $focal,
-			'alt'          => ! empty( $heading ) ? $heading : __( 'Statement Editorial Campaign', 'statement-collector-theme' ),
+			'alt'          => ! empty( $heading ) ? $heading : __( 'Statement Campaign Editorial', 'statement-collector-theme' ),
 		);
 	}
 }
 
-// Curated default image-first slides using new client Drive photography
+// Curated default high-fashion wide campaign slides & mobile video
 if ( empty( $slides ) ) {
 	$slides = array(
 		array(
-			'image'        => $theme_uri . '/assets/images/statement-hero-slide-monogram-01.jpg',
-			'mobile_image' => '',
-			'eyebrow'      => '',
+			'image'        => $theme_uri . '/assets/images/statement-hero-slide-monogram-arch.jpg',
+			'mobile_image' => $theme_uri . '/assets/images/statement-monogram-jacket-model-front.webp',
+			'mobile_video' => $theme_uri . '/assets/video/statement-hero-mobile-monogram.mp4',
+			'poster'       => $theme_uri . '/assets/images/statement-monogram-jacket-model-front.webp',
+			'eyebrow'      => 'DROP 001',
 			'heading'      => '',
 			'link'         => $shop_url,
-			'cta'          => '',
+			'cta'          => __( 'EXPLORE RELEASE', 'statement-collector-theme' ),
 			'focal'        => 'center 20%',
-			'alt'          => __( 'Statement Monogram Jacquard Campaign Editorial', 'statement-collector-theme' ),
+			'alt'          => __( 'Statement Monogram Jacquard Jacket Architectural Campaign', 'statement-collector-theme' ),
 		),
 		array(
-			'image'        => $theme_uri . '/assets/images/statement-panelled-hood-jacket-front.jpg',
-			'mobile_image' => '',
-			'eyebrow'      => '',
+			'image'        => $theme_uri . '/assets/images/statement-hero-slide-monogram-golden.jpg',
+			'mobile_image' => $theme_uri . '/assets/images/statement-monogram-jacket-product-front.webp',
+			'mobile_video' => '',
+			'poster'       => '',
+			'eyebrow'      => 'MONOGRAM STUDY',
 			'heading'      => '',
 			'link'         => $shop_url,
-			'cta'          => '',
+			'cta'          => __( 'EXPLORE RELEASE', 'statement-collector-theme' ),
 			'focal'        => 'center 20%',
-			'alt'          => __( 'Statement Panelled Hood Jacket Studio Cut', 'statement-collector-theme' ),
+			'alt'          => __( 'Statement Monogram Jacquard Jacket Golden Light Campaign', 'statement-collector-theme' ),
 		),
 		array(
-			'image'        => $theme_uri . '/assets/images/statement-monogram-jacket-front.jpg',
-			'mobile_image' => '',
-			'eyebrow'      => '',
-			'heading'      => '',
-			'link'         => $shop_url,
-			'cta'          => '',
-			'focal'        => 'center 20%',
-			'alt'          => __( 'Statement Monogram Jacquard Jacket Studio Cut', 'statement-collector-theme' ),
-		),
-		array(
-			'image'        => $theme_uri . '/assets/images/statement-hero-slide-hood-01.jpg',
-			'mobile_image' => '',
-			'eyebrow'      => '',
+			'image'        => $theme_uri . '/assets/images/statement-hero-slide-hood-arch.jpg',
+			'mobile_image' => $theme_uri . '/assets/images/statement-panelled-hood-jacket-model-front.webp',
+			'mobile_video' => '',
+			'poster'       => '',
+			'eyebrow'      => 'DROP 001',
 			'heading'      => '',
 			'link'         => $drop_url,
-			'cta'          => '',
+			'cta'          => __( 'EXPLORE RELEASE', 'statement-collector-theme' ),
 			'focal'        => 'center 25%',
-			'alt'          => __( 'Statement Panelled Hood Campaign Atmosphere', 'statement-collector-theme' ),
-		),
-		array(
-			'image'        => $theme_uri . '/assets/images/statement-hero-slide-monogram-02.jpg',
-			'mobile_image' => '',
-			'eyebrow'      => '',
-			'heading'      => '',
-			'link'         => $shop_url,
-			'cta'          => '',
-			'focal'        => 'center 25%',
-			'alt'          => __( 'Statement Architectural Lookbook Study', 'statement-collector-theme' ),
+			'alt'          => __( 'Statement Panelled Hood Jacket Architectural Space Campaign', 'statement-collector-theme' ),
 		),
 	);
 }
@@ -114,10 +108,11 @@ $total_slides = count( $slides );
 	<div class="statement-hero-slider__track">
 		<?php foreach ( $slides as $idx => $slide ) : ?>
 			<?php
-			$is_first    = ( 0 === $idx );
-			$slide_num   = $idx + 1;
-			$has_content = ( ! empty( $slide['heading'] ) || ! empty( $slide['eyebrow'] ) || ( ! empty( $slide['link'] ) && ! empty( $slide['cta'] ) ) );
-			$aria_label  = sprintf( __( 'Slide %1$d of %2$d', 'statement-collector-theme' ), $slide_num, $total_slides );
+			$is_first     = ( 0 === $idx );
+			$slide_num    = $idx + 1;
+			$has_video    = ! empty( $slide['mobile_video'] );
+			$has_content  = ( ! empty( $slide['heading'] ) || ! empty( $slide['eyebrow'] ) || ( ! empty( $slide['link'] ) && ! empty( $slide['cta'] ) ) );
+			$aria_label   = sprintf( __( 'Slide %1$d of %2$d', 'statement-collector-theme' ), $slide_num, $total_slides );
 			if ( ! empty( $slide['heading'] ) ) {
 				$aria_label .= ': ' . esc_attr( $slide['heading'] );
 			}
@@ -130,17 +125,43 @@ $total_slides = count( $slides );
 				 tabindex="<?php echo $is_first ? '0' : '-1'; ?>">
 
 				<div class="statement-hero-slide__media">
-					<picture>
-						<?php if ( ! empty( $slide['mobile_image'] ) ) : ?>
-							<source media="(max-width: 640px)" srcset="<?php echo esc_url( $slide['mobile_image'] ); ?>">
-						<?php endif; ?>
-						<img src="<?php echo esc_url( $slide['image'] ); ?>"
-							 alt="<?php echo esc_attr( $slide['alt'] ); ?>"
-							 class="statement-hero-slide__image"
-							 loading="<?php echo $is_first ? 'eager' : 'lazy'; ?>"
-							 fetchpriority="<?php echo $is_first ? 'high' : 'auto'; ?>"
-							 style="object-position: <?php echo esc_attr( $slide['focal'] ); ?>;" />
-					</picture>
+					<?php if ( $has_video ) : ?>
+						<!-- Desktop Wide Image -->
+						<picture class="statement-hero-slide__picture statement-hero-slide__desktop-media">
+							<img src="<?php echo esc_url( $slide['image'] ); ?>"
+								 alt="<?php echo esc_attr( $slide['alt'] ); ?>"
+								 class="statement-hero-slide__image"
+								 loading="<?php echo $is_first ? 'eager' : 'lazy'; ?>"
+								 fetchpriority="<?php echo $is_first ? 'high' : 'auto'; ?>"
+								 style="object-position: <?php echo esc_attr( $slide['focal'] ); ?>;" />
+						</picture>
+
+						<!-- Mobile Video with Poster Fallback -->
+						<div class="statement-hero-slide__mobile-video statement-hero-slide__mobile-media">
+							<video class="statement-hero-slide__video"
+								   poster="<?php echo esc_url( ! empty( $slide['poster'] ) ? $slide['poster'] : ( ! empty( $slide['mobile_image'] ) ? $slide['mobile_image'] : $slide['image'] ) ); ?>"
+								   playsinline
+								   muted
+								   loop
+								   autoplay
+								   preload="metadata"
+								   aria-hidden="true">
+								<source src="<?php echo esc_url( $slide['mobile_video'] ); ?>" type="video/mp4">
+							</video>
+						</div>
+					<?php else : ?>
+						<picture class="statement-hero-slide__picture">
+							<?php if ( ! empty( $slide['mobile_image'] ) ) : ?>
+								<source media="(max-width: 767px)" srcset="<?php echo esc_url( $slide['mobile_image'] ); ?>">
+							<?php endif; ?>
+							<img src="<?php echo esc_url( $slide['image'] ); ?>"
+								 alt="<?php echo esc_attr( $slide['alt'] ); ?>"
+								 class="statement-hero-slide__image"
+								 loading="<?php echo $is_first ? 'eager' : 'lazy'; ?>"
+								 fetchpriority="<?php echo $is_first ? 'high' : 'auto'; ?>"
+								 style="object-position: <?php echo esc_attr( $slide['focal'] ); ?>;" />
+						</picture>
+					<?php endif; ?>
 					<div class="statement-hero-slide__overlay" aria-hidden="true"></div>
 				</div>
 

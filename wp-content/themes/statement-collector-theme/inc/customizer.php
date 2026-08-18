@@ -179,6 +179,25 @@ function customize_register( \WP_Customize_Manager $wp_customize ): void {
 		)
 	);
 
+	// Facebook URL
+	$wp_customize->add_setting(
+		'statement_facebook_url',
+		array(
+			'default'           => '',
+			'sanitize_callback' => 'esc_url_raw',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'statement_facebook_url',
+		array(
+			'label'       => __( 'Facebook Page URL', 'statement-collector-theme' ),
+			'description' => __( 'Optional. Rendered on the Contact page when configured.', 'statement-collector-theme' ),
+			'section'     => 'statement_global_section',
+			'type'        => 'url',
+		)
+	);
+
 	// ==========================================
 	// SECTION 2: HEADER & NAVIGATION
 	// ==========================================
@@ -413,6 +432,46 @@ function customize_register( \WP_Customize_Manager $wp_customize ): void {
 			)
 		);
 
+		// Slide Mobile Video (URL or attachment)
+		$wp_customize->add_setting(
+			"statement_hero_slide_{$i}_mobile_video",
+			array(
+				'default'           => '',
+				'sanitize_callback' => 'esc_url_raw',
+				'transport'         => 'refresh',
+			)
+		);
+		$wp_customize->add_control(
+			"statement_hero_slide_{$i}_mobile_video",
+			array(
+				'label'       => sprintf( __( 'Slide %d: Mobile Video URL (Optional MP4)', 'statement-collector-theme' ), $i ),
+				'description' => __( 'Portrait MP4 video URL played on mobile devices.', 'statement-collector-theme' ),
+				'section'     => 'statement_hero_slider',
+				'type'        => 'url',
+			)
+		);
+
+		// Slide Video Poster
+		$wp_customize->add_setting(
+			"statement_hero_slide_{$i}_video_poster",
+			array(
+				'default'           => '',
+				'sanitize_callback' => 'absint',
+				'transport'         => 'refresh',
+			)
+		);
+		$wp_customize->add_control(
+			new \WP_Customize_Media_Control(
+				$wp_customize,
+				"statement_hero_slide_{$i}_video_poster",
+				array(
+					'label'       => sprintf( __( 'Slide %d: Video Poster Image (Optional)', 'statement-collector-theme' ), $i ),
+					'section'     => 'statement_hero_slider',
+					'mime_type'   => 'image',
+				)
+			)
+		);
+
 		// Slide Eyebrow
 		$wp_customize->add_setting(
 			"statement_hero_slide_{$i}_eyebrow",
@@ -489,7 +548,7 @@ function customize_register( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting(
 			"statement_hero_slide_{$i}_focal",
 			array(
-				'default'           => 'center center',
+				'default'           => 'center 20%',
 				'sanitize_callback' => 'sanitize_text_field',
 				'transport'         => 'refresh',
 			)
@@ -498,7 +557,7 @@ function customize_register( \WP_Customize_Manager $wp_customize ): void {
 			"statement_hero_slide_{$i}_focal",
 			array(
 				'label'       => sprintf( __( 'Slide %d: Focal Position', 'statement-collector-theme' ), $i ),
-				'description' => __( 'CSS object-position (e.g. "center 25%")', 'statement-collector-theme' ),
+				'description' => __( 'CSS object-position (e.g. "center 20%")', 'statement-collector-theme' ),
 				'section'     => 'statement_hero_slider',
 				'type'        => 'text',
 			)

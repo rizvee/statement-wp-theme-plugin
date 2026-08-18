@@ -6,15 +6,15 @@ import test from 'node:test';
 const root = resolve(import.meta.dirname, '..');
 const themeDir = resolve(root, 'wp-content', 'themes', 'statement-collector-theme');
 
-test('M14 Storefront Hardening: Theme Version & Constant Invariants (0.13.0-rc.13)', () => {
+test('M14 Storefront Hardening: Theme Version & Constant Invariants (0.13.0-rc.14)', () => {
   const styleCss = readFileSync(resolve(themeDir, 'style.css'), 'utf8');
   const functionsPhp = readFileSync(resolve(themeDir, 'functions.php'), 'utf8');
 
-  assert.match(styleCss, /Version:\s*0\.13\.0-rc\.13/i, 'style.css must specify Version: 0.13.0-rc.13');
+  assert.match(styleCss, /Version:\s*0\.13\.0-rc\.14/i, 'style.css must specify Version: 0.13.0-rc.14');
   assert.match(
     functionsPhp,
-    /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.13['"]\s*\);/,
-    'functions.php must define STATEMENT_COLLECTOR_THEME_VERSION 0.13.0-rc.13'
+    /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.14['"]\s*\);/,
+    'functions.php must define STATEMENT_COLLECTOR_THEME_VERSION 0.13.0-rc.14'
   );
 });
 
@@ -106,7 +106,7 @@ test('M14 Storefront Hardening: Homepage LIVE-only Release Contract', () => {
   // Verify template structure
   assert.ok(frontPage.includes('template-parts/home/hero'), 'front-page.php includes hero template');
   assert.ok(frontPage.includes('template-parts/home/active-drop'), 'front-page.php includes active-drop template');
-  assert.ok(frontPage.includes('template-parts/home/products'), 'front-page.php includes products template');
+  assert.ok(frontPage.includes('template-parts/home/drops-list'), 'front-page.php includes drops-list template');
   assert.ok(frontPage.includes('template-parts/home/email-capture'), 'front-page.php includes email-capture template');
 
   // Verify home CSS defines editorial hero and grid

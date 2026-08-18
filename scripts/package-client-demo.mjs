@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.2.5';
+const defaultVersion = '0.2.6';
 
 export const approvedDemoFiles = [
   'statement-client-demo.php',
@@ -13,6 +13,22 @@ export const approvedDemoFiles = [
   'src/OwnershipClassifier.php',
   'src/DemoSeederService.php',
   'src/ManifestService.php',
+  'assets/images/statement-logo.png',
+  'assets/images/statement-hero-slide-monogram-arch.jpg',
+  'assets/images/statement-hero-slide-monogram-golden.jpg',
+  'assets/images/statement-hero-slide-hood-arch.jpg',
+  'assets/video/statement-hero-mobile-monogram.mp4',
+  'assets/images/statement-monogram-jacket-model-front.webp',
+  'assets/images/statement-monogram-jacket-product-front.webp',
+  'assets/images/statement-monogram-jacket-model-side.webp',
+  'assets/images/statement-monogram-jacket-model-back.webp',
+  'assets/images/statement-monogram-jacket-product-front-02.webp',
+  'assets/images/statement-panelled-hood-jacket-model-front.webp',
+  'assets/images/statement-panelled-hood-jacket-product-front.webp',
+  'assets/images/statement-panelled-hood-jacket-model-side.webp',
+  'assets/images/statement-panelled-hood-jacket-product-front-02.webp',
+  'assets/images/statement-panelled-hood-jacket-branding-detail.webp',
+  'assets/images/statement-panelled-hood-jacket-product-front-04.webp',
   'assets/images/statement-monogram-jacket-front.jpg',
   'assets/images/statement-monogram-jacket-back.jpg',
   'assets/images/statement-monogram-jacket-side.jpg',

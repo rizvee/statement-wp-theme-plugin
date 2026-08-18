@@ -11,7 +11,8 @@ defined( 'ABSPATH' ) || exit;
 			id="statement-size-guide-open"
 			aria-haspopup="dialog"
 			aria-controls="statement-size-guide-dialog">
-		<?php esc_html_e( 'SIZE GUIDE', 'statement-collector-theme' ); ?>
+		<span><?php esc_html_e( 'SIZE GUIDE', 'statement-collector-theme' ); ?></span>
+		<span aria-hidden="true" class="statement-size-guide-trigger__arrow">&nearr;</span>
 	</button>
 
 	<dialog id="statement-size-guide-dialog" class="statement-size-guide-dialog" aria-labelledby="statement-size-guide-title">
@@ -56,6 +57,12 @@ defined( 'ABSPATH' ) || exit;
 							<td>62 cm</td>
 							<td>71 cm</td>
 							<td>67 cm</td>
+						</tr>
+						<tr>
+							<td><strong>XL</strong></td>
+							<td>65 cm</td>
+							<td>73 cm</td>
+							<td>68.5 cm</td>
 						</tr>
 					</tbody>
 				</table>

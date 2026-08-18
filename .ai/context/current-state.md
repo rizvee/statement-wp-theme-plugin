@@ -1,6 +1,14 @@
 # Current State
 
-Updated: 2026-08-18
+Updated: 2026-08-19
+
+## Active Release Candidates
+
+- Theme: `0.13.0-rc.14` (`wp-content/themes/statement-collector-theme/style.css`, `functions.php`, `inc/setup.php`)
+- Core Plugin: `0.13.0-rc.13` (`wp-content/plugins/statement-collector-core/statement-collector-core.php`)
+- Client Demo Plugin: `0.2.6` (`tools/statement-client-demo/statement-client-demo.php`, `src/AdminPage.php`)
+- Child Theme Starter: `0.1.0` (`tools/statement-collector-child/style.css`)
+- Visual Sprint 07: COMPLETE (Authentic Brand Logo, 1920x1080 Desktop Campaign Slider, 720x1280 Mobile MP4 Hero Video, Strict 5-Part Homepage Hierarchy, Text-First Editorial Drops Directory, Text-Only About & Contact Pages, WebP Photography Packages, Panelled Hood Jacket XL Variation + Metadata Fix, Size Guide Polish).
 
 ## Repository
 

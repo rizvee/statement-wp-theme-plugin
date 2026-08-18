@@ -19,6 +19,7 @@ $drop_url     = get_home_drop_url( $release_data['drop'] );
 ?>
 <main id="primary" class="statement-home">
 	<?php
+	// 1. Cinematic Responsive Campaign Hero Slider
 	get_template_part(
 		'template-parts/home/hero',
 		null,
@@ -29,6 +30,7 @@ $drop_url     = get_home_drop_url( $release_data['drop'] );
 		)
 	);
 
+	// 2. Current Release (Drop 001) + 2 Product Cards Side-by-Side
 	if ( null !== $release_data['drop'] ) {
 		get_template_part(
 			'template-parts/home/active-drop',
@@ -36,22 +38,23 @@ $drop_url     = get_home_drop_url( $release_data['drop'] );
 			array(
 				'drop'     => $release_data['drop'],
 				'drop_url' => $drop_url,
-			)
-		);
-	}
-
-	if ( ! empty( $release_data['products'] ) ) {
-		get_template_part(
-			'template-parts/home/products',
-			null,
-			array(
-				'drop'     => $release_data['drop'],
 				'products' => $release_data['products'],
 			)
 		);
 	}
 
-	$show_access = (bool) get_theme_mod( 'statement_home_show_access_capture', get_theme_mod( 'statement_enable_email_capture', false ) );
+	// 3. Editorial Text-First Drops & Upcoming Drops Directory
+	get_template_part(
+		'template-parts/home/drops-list',
+		null,
+		array(
+			'drop'     => $release_data['drop'],
+			'drop_url' => $drop_url,
+		)
+	);
+
+	// Optional Access Capture (disabled by default per client feedback)
+	$show_access = (bool) get_theme_mod( 'statement_home_show_access_capture', false );
 	if ( $show_access ) {
 		get_template_part( 'template-parts/home/email-capture' );
 	}

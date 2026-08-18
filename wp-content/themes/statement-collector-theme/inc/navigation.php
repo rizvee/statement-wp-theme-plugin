@@ -84,10 +84,11 @@ function get_contact_url(): string {
 }
 
 /**
- * Return the Statement Journal/Editorial URL.
+ * Return configured Facebook page URL if present.
  */
-function get_journal_url(): string {
-	return home_url( '/journal/' );
+function get_facebook_url(): ?string {
+	$fb = get_theme_mod( 'statement_facebook_url', get_option( 'statement_facebook_url', '' ) );
+	return ( is_string( $fb ) && '' !== trim( $fb ) ) ? trim( $fb ) : null;
 }
 
 /**
@@ -144,7 +145,6 @@ function render_mobile_primary_navigation(): void {
 				<li><a href="<?php echo esc_url( get_archive_url() ); ?>"><?php esc_html_e( 'ARCHIVE', 'statement-collector-theme' ); ?></a></li>
 				<li><a href="<?php echo esc_url( get_about_url() ); ?>"><?php esc_html_e( 'ABOUT', 'statement-collector-theme' ); ?></a></li>
 				<li><a href="<?php echo esc_url( get_contact_url() ); ?>"><?php esc_html_e( 'CONTACT', 'statement-collector-theme' ); ?></a></li>
-				<li><a href="<?php echo esc_url( get_journal_url() ); ?>"><?php esc_html_e( 'JOURNAL', 'statement-collector-theme' ); ?></a></li>
 				<?php if ( null !== get_account_url() ) : ?>
 					<li><a href="<?php echo esc_url( get_account_url() ); ?>"><?php esc_html_e( 'ACCOUNT', 'statement-collector-theme' ); ?></a></li>
 				<?php endif; ?>
@@ -155,19 +155,32 @@ function render_mobile_primary_navigation(): void {
 }
 
 /**
- * Render site brand wordmark. Enforces clean letter-spaced typography without white raster rectangles.
+ * Render site brand logo with authentic Statement brand logo and custom_logo support.
  */
 function render_site_brand(): void {
 	$site_name   = get_bloginfo( 'name' );
 	$brand_label = '' !== trim( (string) $site_name ) ? trim( (string) $site_name ) : __( 'STATEMENT', 'statement-collector-theme' );
 
-	if ( function_exists( 'has_custom_logo' ) && has_custom_logo() && apply_filters( 'statement_use_custom_logo', false ) ) {
+	if ( function_exists( 'has_custom_logo' ) && has_custom_logo() ) {
 		the_custom_logo();
 	} else {
-		?>
-		<a class="statement-brand-link" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" aria-label="<?php echo esc_attr( $brand_label ); ?>">
-			<span class="statement-brand-wordmark"><?php echo esc_html( $brand_label ); ?></span>
-		</a>
-		<?php
+		$theme_logo_path = get_template_directory() . '/assets/images/statement-logo.png';
+		$theme_logo_uri  = get_template_directory_uri() . '/assets/images/statement-logo.png';
+
+		$logo_url = apply_filters( 'statement_theme_logo_url', $theme_logo_uri );
+
+		if ( file_exists( $theme_logo_path ) || ( is_string( $logo_url ) && '' !== $logo_url ) ) {
+			?>
+			<a class="statement-brand-link" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" aria-label="<?php echo esc_attr( $brand_label ); ?>">
+				<img class="statement-brand-logo" src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $brand_label ); ?>" width="250" height="80" />
+			</a>
+			<?php
+		} else {
+			?>
+			<a class="statement-brand-link" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" aria-label="<?php echo esc_attr( $brand_label ); ?>">
+				<span class="statement-brand-wordmark"><?php echo esc_html( $brand_label ); ?></span>
+			</a>
+			<?php
+		}
 	}
 }

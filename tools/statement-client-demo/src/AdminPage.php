@@ -96,7 +96,7 @@ final class AdminPage {
 			: DemoSeederService::dry_run();
 		?>
 		<div class="wrap statement-client-demo-admin" style="max-width: 1100px;">
-			<h1><?php esc_html_e( 'Statement — Client Demo Seeder & Importer (v0.2.4)', 'statement-client-demo' ); ?></h1>
+			<h1><?php esc_html_e( 'Statement — Client Demo Seeder & Importer (v0.2.6)', 'statement-client-demo' ); ?></h1>
 			<p class="description">
 				<?php esc_html_e( 'Manage real Statement brand media, Drop 001, variable products (S/M/L), and light-first editorial pages with strict ownership safety.', 'statement-client-demo' ); ?>
 			</p>

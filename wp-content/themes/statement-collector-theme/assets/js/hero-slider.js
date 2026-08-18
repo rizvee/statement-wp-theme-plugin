@@ -6,6 +6,7 @@
  * - Touch swipe gestures (pointer/touch)
  * - Keyboard navigation (Left/Right arrows)
  * - Autoplay with pause on hover/focus and Page Visibility API
+ * - Mobile HTML5 Video support (autoplay, muted, loop, paused when slide inactive)
  * - Respects prefers-reduced-motion media query
  * - Accessible ARIA attributes and live region
  */
@@ -40,6 +41,24 @@
 			counterTotal.textContent = String(slides.length).padStart(2, '0');
 		}
 
+		function syncVideos(activeIndex) {
+			slides.forEach(function (slide, i) {
+				const video = slide.querySelector('video');
+				if (!video) return;
+
+				if (i === activeIndex && !prefersReducedMotion && document.visibilityState !== 'hidden') {
+					const playPromise = video.play();
+					if (playPromise !== undefined) {
+						playPromise.catch(function () {
+							// Autoplay blocked by browser policy; fallback to poster
+						});
+					}
+				} else {
+					video.pause();
+				}
+			});
+		}
+
 		function goToSlide(index) {
 			if (index < 0) {
 				index = slides.length - 1;
@@ -65,6 +84,7 @@
 			});
 
 			currentIndex = index;
+			syncVideos(currentIndex);
 
 			if (counterCurrent) {
 				counterCurrent.textContent = String(currentIndex + 1).padStart(2, '0');
@@ -136,8 +156,10 @@
 		document.addEventListener('visibilitychange', function () {
 			if (document.visibilityState === 'hidden') {
 				stopAutoplay();
+				syncVideos(-1); // Pause all videos
 			} else {
 				startAutoplay();
+				syncVideos(currentIndex);
 			}
 		});
 

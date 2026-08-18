@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.13.0-rc.13';
+const defaultVersion = '0.13.0-rc.14';
 
 export const approvedThemeFiles = [
   'style.css',
@@ -36,6 +36,7 @@ export const approvedThemeFiles = [
   'assets/css/woo-blocks.css',
   'assets/js/navigation.js',
   'assets/js/hero-slider.js',
+  'assets/images/statement-logo.png',
   'assets/images/statement-brand-insignia-vector.jpg',
   'assets/images/statement-brand-insignia-gold.jpg',
   'assets/images/statement-brand-wordmark.jpg',
@@ -44,6 +45,21 @@ export const approvedThemeFiles = [
   'assets/images/statement-crafted-not-mass-made-poster.jpg',
   'assets/images/statement-collector-dust-bag.jpg',
   'assets/images/statement-collector-patch-palm.jpg',
+  'assets/images/statement-hero-slide-monogram-arch.jpg',
+  'assets/images/statement-hero-slide-monogram-golden.jpg',
+  'assets/images/statement-hero-slide-hood-arch.jpg',
+  'assets/video/statement-hero-mobile-monogram.mp4',
+  'assets/images/statement-monogram-jacket-model-front.webp',
+  'assets/images/statement-monogram-jacket-product-front.webp',
+  'assets/images/statement-monogram-jacket-model-side.webp',
+  'assets/images/statement-monogram-jacket-model-back.webp',
+  'assets/images/statement-monogram-jacket-product-front-02.webp',
+  'assets/images/statement-panelled-hood-jacket-model-front.webp',
+  'assets/images/statement-panelled-hood-jacket-product-front.webp',
+  'assets/images/statement-panelled-hood-jacket-model-side.webp',
+  'assets/images/statement-panelled-hood-jacket-product-front-02.webp',
+  'assets/images/statement-panelled-hood-jacket-branding-detail.webp',
+  'assets/images/statement-panelled-hood-jacket-product-front-04.webp',
   'assets/images/statement-monogram-jacket-front.jpg',
   'assets/images/statement-monogram-jacket-back.jpg',
   'assets/images/statement-monogram-jacket-side.jpg',
@@ -90,6 +106,7 @@ export const approvedThemeFiles = [
   'template-parts/footer/site-footer.php',
   'template-parts/home/hero.php',
   'template-parts/home/active-drop.php',
+  'template-parts/home/drops-list.php',
   'template-parts/home/editorial.php',
   'template-parts/home/lookbook.php',
   'template-parts/home/products.php',

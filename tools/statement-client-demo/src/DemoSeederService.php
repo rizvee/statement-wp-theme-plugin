@@ -19,6 +19,7 @@ final class DemoSeederService {
 	public const SKU_P2_S = 'STMT-CD-D001-PHJ-S';
 	public const SKU_P2_M = 'STMT-CD-D001-PHJ-M';
 	public const SKU_P2_L = 'STMT-CD-D001-PHJ-L';
+	public const SKU_P2_XL = 'STMT-CD-D001-PHJ-XL';
 
 	/**
 	 * Run preflight diagnostics to verify ownership integrity and collision safety.
@@ -129,7 +130,7 @@ final class DemoSeederService {
 				'title'      => 'Panelled Hood Jacket',
 				'slug'       => 'panelled-hood-jacket',
 				'sku'        => self::SKU_P2,
-				'type'       => 'variable (S, M, L)',
+				'type'       => 'variable (S, M, L, XL)',
 				'demo_price' => 'AUD 275.00',
 				'status'     => is_object( $prod2 ) ? "Existing (ID: {$prod2->get_id()})" : 'Ready to create (Owned)',
 			),
@@ -452,12 +453,11 @@ final class DemoSeederService {
 		$term_name = 'Drop 001 — Monogram Study';
 
 		$term = function_exists( 'get_term_by' ) ? get_term_by( 'slug', $slug, Taxonomy::KEY ) : null;
+		$term_id = 0;
 		if ( is_object( $term ) && isset( $term->term_id ) ) {
 			update_term_meta( (int) $term->term_id, '_statement_client_demo', 1 );
-			return (int) $term->term_id;
-		}
-
-		if ( function_exists( 'wp_insert_term' ) ) {
+			$term_id = (int) $term->term_id;
+		} elseif ( function_exists( 'wp_insert_term' ) ) {
 			$created = wp_insert_term(
 				$term_name,
 				Taxonomy::KEY,
@@ -470,11 +470,24 @@ final class DemoSeederService {
 			if ( is_array( $created ) && isset( $created['term_id'] ) ) {
 				$term_id = (int) $created['term_id'];
 				update_term_meta( $term_id, '_statement_client_demo', 1 );
-				return $term_id;
 			}
 		}
 
-		return 0;
+		// Seed Upcoming Drops (Drop 002, Drop 003) for directory completeness
+		if ( function_exists( 'wp_insert_term' ) && function_exists( 'get_term_by' ) ) {
+			foreach ( array( 'drop-002' => 'Drop 002', 'drop-003' => 'Drop 003' ) as $u_slug => $u_name ) {
+				$u_term = get_term_by( 'slug', $u_slug, Taxonomy::KEY );
+				if ( ! is_object( $u_term ) ) {
+					$u_res = wp_insert_term( $u_name, Taxonomy::KEY, array( 'slug' => $u_slug ) );
+					if ( is_array( $u_res ) && isset( $u_res['term_id'] ) ) {
+						update_term_meta( (int) $u_res['term_id'], '_statement_client_demo', 1 );
+						update_term_meta( (int) $u_res['term_id'], '_statement_release_state', 'UPCOMING' );
+					}
+				}
+			}
+		}
+
+		return $term_id;
 	}
 
 	/**
@@ -494,11 +507,10 @@ final class DemoSeederService {
 		$p1_feat  = $media['monogram_front'] ?? 0;
 		$p1_gall  = array_filter(
 			array(
-				$media['monogram_back'] ?? 0,
+				$media['monogram_product_front'] ?? 0,
 				$media['monogram_side'] ?? 0,
-				$media['monogram_collar'] ?? 0,
-				$media['monogram_concrete'] ?? 0,
-				$media['monogram_slate'] ?? 0,
+				$media['monogram_back'] ?? 0,
+				$media['monogram_detail'] ?? 0,
 			)
 		);
 
@@ -532,11 +544,11 @@ final class DemoSeederService {
 		$p2_feat  = $media['hood_front'] ?? 0;
 		$p2_gall  = array_filter(
 			array(
+				$media['hood_product_front'] ?? 0,
 				$media['hood_side'] ?? 0,
-				$media['hood_back'] ?? 0,
-				$media['hood_embroidery'] ?? 0,
-				$media['hood_cathedral'] ?? 0,
-				$media['hood_night'] ?? 0,
+				$media['hood_detail_front'] ?? 0,
+				$media['hood_branding'] ?? 0,
+				$media['hood_highres'] ?? 0,
 			)
 		);
 
@@ -556,6 +568,7 @@ final class DemoSeederService {
 					array( 'size' => 'S', 'sku' => self::SKU_P2_S, 'stock' => 4 ),
 					array( 'size' => 'M', 'sku' => self::SKU_P2_M, 'stock' => 4 ),
 					array( 'size' => 'L', 'sku' => self::SKU_P2_L, 'stock' => 4 ),
+					array( 'size' => 'XL', 'sku' => self::SKU_P2_XL, 'stock' => 4 ),
 				),
 			),
 			$hashes,
@@ -600,11 +613,10 @@ final class DemoSeederService {
 				$p1_feat = $imported_media['monogram_front'] ?? 0;
 				$p1_gall = array_filter(
 					array(
-						$imported_media['monogram_back'] ?? 0,
+						$imported_media['monogram_product_front'] ?? 0,
 						$imported_media['monogram_side'] ?? 0,
-						$imported_media['monogram_collar'] ?? 0,
-						$imported_media['monogram_concrete'] ?? 0,
-						$imported_media['monogram_slate'] ?? 0,
+						$imported_media['monogram_back'] ?? 0,
+						$imported_media['monogram_detail'] ?? 0,
 					)
 				);
 
@@ -633,11 +645,11 @@ final class DemoSeederService {
 				$p2_feat = $imported_media['hood_front'] ?? 0;
 				$p2_gall = array_filter(
 					array(
+						$imported_media['hood_product_front'] ?? 0,
 						$imported_media['hood_side'] ?? 0,
-						$imported_media['hood_back'] ?? 0,
-						$imported_media['hood_embroidery'] ?? 0,
-						$imported_media['hood_cathedral'] ?? 0,
-						$imported_media['hood_night'] ?? 0,
+						$imported_media['hood_detail_front'] ?? 0,
+						$imported_media['hood_branding'] ?? 0,
+						$imported_media['hood_highres'] ?? 0,
 					)
 				);
 
@@ -711,10 +723,14 @@ final class DemoSeederService {
 			$product->set_gallery_image_ids( $spec['gallery_ids'] );
 		}
 
-		// Setup Size Attribute
+		// Setup Size Attribute dynamically from variations
+		$sizes = array_unique( array_column( $spec['variations'], 'size' ) );
+		if ( empty( $sizes ) ) {
+			$sizes = array( 'S', 'M', 'L' );
+		}
 		$attribute = new \WC_Product_Attribute();
 		$attribute->set_name( 'Size' );
-		$attribute->set_options( array( 'S', 'M', 'L' ) );
+		$attribute->set_options( $sizes );
 		$attribute->set_position( 0 );
 		$attribute->set_visible( true );
 		$attribute->set_variation( true );
@@ -792,7 +808,7 @@ final class DemoSeederService {
 			'Statement Home',
 			'',
 			'default',
-			$media['monogram_front'] ?? 0
+			$media['monogram_hero_arch'] ?? ( $media['monogram_front'] ?? 0 )
 		);
 
 		// Drops Page
@@ -804,23 +820,24 @@ final class DemoSeederService {
 			$media['hood_front'] ?? 0
 		);
 
-		// About Page
-		$about_content = "<p class=\"statement-lead\">Statement approaches clothing as objects of identity rather than volume-driven basics.</p>\n<p>Each release is developed as an isolated study in form, fabric, and surface geometry.</p>";
+		// About Page (Text Only - Zero em dashes)
+		$about_content = "<p class=\"statement-lead\">At Statement Collector's Piece, we believe clothing should be more than something you wear. It should make a statement, tell a story, and become something worth collecting.</p>\n<p>Born in Australia, our brand was created for people who value individuality over trends. Every piece is thoughtfully designed using premium materials, with a focus on comfort, craftsmanship, and timeless style. We choose quality over quantity, creating garments that are made to be worn, appreciated, and remembered.</p>\n<p>What truly sets us apart is our commitment to exclusivity. Many of our collections are released in strictly limited quantities, with selected designs individually numbered. Once a collection sells out, it is permanently retired and will never be reproduced. Owning one means owning a genuine collector's piece.</p>\n<p>We are also committed to making better choices for the future. Wherever possible, we use responsibly sourced and organic materials, creating clothing that not only looks exceptional but is made with greater respect for people and the planet.</p>\n<p>We're not here to chase fast fashion. We're here to create garments with meaning. Pieces that stand apart from the ordinary and become part of your personal story.</p>";
 		$pages['about'] = self::create_or_update_page(
 			'about',
 			'About',
 			$about_content,
 			'page-about.php',
-			$media['patch_palm'] ?? 0
+			0
 		);
 
-		// Contact Page
+		// Contact Page (Text Only - info@mystatement.store, @statement.au)
+		$contact_content = "<p class=\"statement-lead\">For orders, sizing guidance, press and general enquiries:</p>\n<p><strong>EMAIL:</strong> <a href=\"mailto:info@mystatement.store\">info@mystatement.store</a></p>\n<p><strong>INSTAGRAM:</strong> <a href=\"https://instagram.com/statement.au\" target=\"_blank\" rel=\"noopener noreferrer\">@statement.au &rarr;</a></p>";
 		$pages['contact'] = self::create_or_update_page(
 			'contact',
 			'Contact',
-			'<p class=\"statement-lead\">For product, order, press or general enquiries.</p>',
+			$contact_content,
 			'page-contact.php',
-			$media['wordmark'] ?? 0
+			0
 		);
 
 		// Journal Index Page
@@ -846,12 +863,12 @@ final class DemoSeederService {
 		$posts = array();
 
 		// Post 01: STUDY & FORM
-		$p1_content = "<p class=\"statement-lead\">Monogram Study — Drop 001 exploring repeat surface pattern, structured wool weights, and sharp silhouette lines.</p>";
+		$p1_content = "<p class=\"statement-lead\">Monogram Study: Drop 001 exploring repeat surface pattern, structured wool weights, and sharp silhouette lines.</p>";
 		$post1_id = self::create_or_update_post(
 			'study-and-form-monogram-study',
 			'STUDY & FORM — MONOGRAM STUDY',
 			$p1_content,
-			$media['monogram_concrete'] ?? 0
+			$media['monogram_product_front'] ?? 0
 		);
 		$posts['study_and_form'] = $post1_id;
 
@@ -881,36 +898,31 @@ final class DemoSeederService {
 
 		$slider_defaults = array(
 			1 => array(
-				'image'   => $media['monogram_front'] ?? 0,
-				'eyebrow' => '',
-				'heading' => '',
-				'link'    => function_exists( 'home_url' ) ? home_url( '/shop/' ) : '/shop/',
-				'cta'     => '',
-				'focal'   => 'center 20%',
+				'image'        => $media['monogram_hero_arch'] ?? 0,
+				'mobile_image' => $media['monogram_front'] ?? 0,
+				'eyebrow'      => 'DROP 001',
+				'heading'      => '',
+				'link'         => function_exists( 'home_url' ) ? home_url( '/shop/' ) : '/shop/',
+				'cta'          => 'EXPLORE RELEASE',
+				'focal'        => 'center 20%',
 			),
 			2 => array(
-				'image'   => $media['hood_front'] ?? 0,
-				'eyebrow' => '',
-				'heading' => '',
-				'link'    => function_exists( 'home_url' ) ? home_url( '/shop/' ) : '/shop/',
-				'cta'     => '',
-				'focal'   => 'center 20%',
+				'image'        => $media['monogram_hero_golden'] ?? 0,
+				'mobile_image' => $media['monogram_product_front'] ?? 0,
+				'eyebrow'      => 'MONOGRAM STUDY',
+				'heading'      => '',
+				'link'         => function_exists( 'home_url' ) ? home_url( '/shop/' ) : '/shop/',
+				'cta'          => 'EXPLORE RELEASE',
+				'focal'        => 'center 20%',
 			),
 			3 => array(
-				'image'   => $media['monogram_side'] ?? 0,
-				'eyebrow' => '',
-				'heading' => '',
-				'link'    => function_exists( 'home_url' ) ? home_url( '/drops/' ) : '/drops/',
-				'cta'     => '',
-				'focal'   => 'center 25%',
-			),
-			4 => array(
-				'image'   => $media['hood_side'] ?? 0,
-				'eyebrow' => '',
-				'heading' => '',
-				'link'    => function_exists( 'home_url' ) ? home_url( '/drops/' ) : '/drops/',
-				'cta'     => '',
-				'focal'   => 'center 25%',
+				'image'        => $media['hood_hero_arch'] ?? 0,
+				'mobile_image' => $media['hood_front'] ?? 0,
+				'eyebrow'      => 'DROP 001',
+				'heading'      => '',
+				'link'         => function_exists( 'home_url' ) ? home_url( '/drops/' ) : '/drops/',
+				'cta'          => 'EXPLORE RELEASE',
+				'focal'        => 'center 25%',
 			),
 		);
 
@@ -919,12 +931,19 @@ final class DemoSeederService {
 			if ( $defaults['image'] > 0 ) {
 				set_theme_mod( "statement_hero_slide_{$index}_image", $defaults['image'] );
 			}
+			if ( ! empty( $defaults['mobile_image'] ) ) {
+				set_theme_mod( "statement_hero_slide_{$index}_mobile_image", $defaults['mobile_image'] );
+			}
 			set_theme_mod( "statement_hero_slide_{$index}_eyebrow", $defaults['eyebrow'] );
 			set_theme_mod( "statement_hero_slide_{$index}_heading", $defaults['heading'] );
 			set_theme_mod( "statement_hero_slide_{$index}_link", $defaults['link'] );
 			set_theme_mod( "statement_hero_slide_{$index}_cta", $defaults['cta'] );
 			set_theme_mod( "statement_hero_slide_{$index}_focal", $defaults['focal'] );
 			$seeded_count++;
+		}
+
+		if ( isset( $media_map['brand_logo'] ) && $media_map['brand_logo'] > 0 ) {
+			set_theme_mod( 'custom_logo', (int) $media_map['brand_logo'] );
 		}
 
 		$report['slider'] = array(
