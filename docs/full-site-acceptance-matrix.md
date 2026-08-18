@@ -1,9 +1,9 @@
 # Full-Site Acceptance Matrix & Device Verification
 
 **Project:** Statement Collector's Piece (`mystatement.store`)
-**Sprint:** 06.2 Full-Site Acceptance QA & Visual Perfection
+**Sprint:** 06.3 Post-Deployment Live Acceptance QA & Visual Refinement
 **Baseline Date:** August 18, 2026
-**Artifact Status:** Theme `0.13.0-rc.12` | Core `0.13.0-rc.13` | Client Demo `0.2.4` | Child Theme `0.1.0`
+**Artifact Status:** Theme `0.13.0-rc.13` | Core `0.13.0-rc.13` | Client Demo `0.2.5` | Child Theme `0.1.0`
 
 ---
 

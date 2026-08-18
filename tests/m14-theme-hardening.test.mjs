@@ -6,15 +6,15 @@ import test from 'node:test';
 const root = resolve(import.meta.dirname, '..');
 const themeDir = resolve(root, 'wp-content', 'themes', 'statement-collector-theme');
 
-test('M14 Storefront Hardening: Theme Version & Constant Invariants (0.13.0-rc.12)', () => {
+test('M14 Storefront Hardening: Theme Version & Constant Invariants (0.13.0-rc.13)', () => {
   const styleCss = readFileSync(resolve(themeDir, 'style.css'), 'utf8');
   const functionsPhp = readFileSync(resolve(themeDir, 'functions.php'), 'utf8');
 
-  assert.match(styleCss, /Version:\s*0\.13\.0-rc\.12/i, 'style.css must specify Version: 0.13.0-rc.12');
+  assert.match(styleCss, /Version:\s*0\.13\.0-rc\.13/i, 'style.css must specify Version: 0.13.0-rc.13');
   assert.match(
     functionsPhp,
-    /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.12['"]\s*\);/,
-    'functions.php must define STATEMENT_COLLECTOR_THEME_VERSION 0.13.0-rc.12'
+    /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.13['"]\s*\);/,
+    'functions.php must define STATEMENT_COLLECTOR_THEME_VERSION 0.13.0-rc.13'
   );
 });
 

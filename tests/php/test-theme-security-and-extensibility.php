@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', __DIR__ . '/' );
 }
 
-define( 'STATEMENT_COLLECTOR_THEME_VERSION', '0.13.0-rc.12' );
+define( 'STATEMENT_COLLECTOR_THEME_VERSION', '0.13.0-rc.13' );
 define( 'STATEMENT_COLLECTOR_THEME_PATH', $root . '/wp-content/themes/statement-collector-theme/' );
 define( 'STATEMENT_COLLECTOR_THEME_FILE', STATEMENT_COLLECTOR_THEME_PATH . 'functions.php' );
 

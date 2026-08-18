@@ -1,5 +1,20 @@
 # Current Priority — Production Convergence & Release Candidates
 
+## VISUAL SPRINT 06.3 — POST-DEPLOYMENT LIVE ACCEPTANCE + FULL SITE VISUAL REPAIR + CONTENT/OWNERSHIP CONSISTENCY + COMMERCE QA — COMPLETE (2026-08-18)
+
+Status: complete (Theme Candidate 0.13.0-rc.13 + Core Plugin Candidate 0.13.0-rc.13 + Client Demo 0.2.5 + Child Theme 0.1.0 packaged and verified; ZERO live mutations executed)
+
+- [x] Live Frontend Acceptance Audit: Executed automated 16-route live storefront auditor against `https://mystatement.store/` (`16 PASSED, 0 DEFECTS OUT OF 16 ROUTES`). Captured Chrome DevTools visual snapshots across desktop and mobile viewports for Home, Shop, Drops, Drop 001, Monogram PDP, Panelled Hood PDP, Archive, About, Contact, Journal, Cart, Checkout, My Account, and Search.
+- [x] Shop 2-Product Centered Editorial Composition: Implemented `:has(> :nth-child(2):last-child)` and `.columns-2` rules in `catalog.css` ensuring 2-product catalogs format as a centered, high-impact fashion editorial spread (`max-width: 58rem; margin: 0 auto;`) rather than stretching or clinging to the left edge of a 3/4-column track.
+- [x] Breadcrumb Suppression by Default: Suppressed raw WooCommerce breadcrumbs by default on Shop and PDP pages across both PHP wrapper hooks (`remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 )` in `inc/woocommerce.php`) and theme CSS (`display: none;`).
+- [x] PDP Image Zoom Refinement: Upgraded `.woocommerce-product-gallery__trigger` with minimal circular glass badge styling on desktop and suppressed it on mobile touch devices (`@media (max-width: 48rem)`) to protect native swipe interactions.
+- [x] Product Card Framing: Set `object-position: center 20%` on fashion product cards to ensure proper framing of full-body studio and campaign photography.
+- [x] Notice Token Standardization: Replaced raw hex codes in `woo-blocks.css` with canonical theme design tokens (`--wp--preset--color--warm-white`, `--wp--preset--color--near-black`, `--wp--preset--color--border-grey`).
+- [x] Journal Seeder Cleanup & Archive Routing: Cleaned up Journal page seeding in `DemoSeederService.php` to prevent assigning placeholder logo thumbnails, and ensured `page_for_posts` directs `/journal/` to the canonical `index.php` editorial grid.
+- [x] Full Verification Regression: 119 PHP files linted clean (0 errors), 42/42 PHP test suites passed (100%), 20/20 Node test suites passed (144/144 subtests), `verify-foundation.mjs` and `verify-git-runtime-tracking.mjs` passed 100%.
+- [x] Release Candidate Packaging: Packaged Theme `0.13.0-rc.13` (SHA-256: `a24560514cefeefcd3abd7cb2fa140be28444897bfd2211df37d040b3a24e444`), Core `0.13.0-rc.13`, Demo `0.2.5` (SHA-256: `d159166cdb35c6906b6a46dc14b3f5ed89528725fabbe382f19a9ca1d01a025d`), Child `0.1.0` in `dist/`.
+- [x] Documentation: Authored `docs/visual-sprint-06-3-post-deployment-acceptance.md` and updated `docs/full-site-acceptance-matrix.md`.
+
 ## VISUAL SPRINT 06.2 — FULL-SITE ACCEPTANCE QA + EVERY PAGE / EVERY DEVICE AUDIT + VISUAL PERFECTION + WOO FLOW HARDENING — COMPLETE (2026-08-18)
 
 Status: complete (Theme Candidate 0.13.0-rc.12 + Core Plugin Candidate 0.13.0-rc.13 + Client Demo 0.2.4 + Child Theme 0.1.0 packaged and verified; ZERO live mutations executed)

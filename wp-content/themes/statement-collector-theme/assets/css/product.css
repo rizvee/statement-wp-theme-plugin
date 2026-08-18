@@ -466,16 +466,22 @@ table.variations select:focus {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	background: rgba(255, 255, 255, 0.85);
-	backdrop-filter: blur(4px);
+	background: var(--wp--preset--color--warm-white);
 	border: 1px solid var(--wp--preset--color--border-grey);
 	color: var(--wp--preset--color--near-black);
 	text-decoration: none;
-	transition: background-color 200ms ease;
+	transition: background-color 200ms ease, transform 200ms ease;
 }
 
 .woocommerce-product-gallery .woocommerce-product-gallery__trigger:hover {
-	background: var(--wp--preset--color--warm-white);
+	background: var(--wp--preset--color--gallery-ivory);
+	transform: scale(1.05);
+}
+
+@media (max-width: 48rem) {
+	.woocommerce-product-gallery .woocommerce-product-gallery__trigger {
+		display: none !important;
+	}
 }
 
 .woocommerce-product-gallery ol.flex-control-nav.flex-control-thumbs {

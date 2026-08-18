@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.2.4';
+const defaultVersion = '0.2.5';
 
 export const approvedDemoFiles = [
   'statement-client-demo.php',

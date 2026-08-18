@@ -216,6 +216,10 @@ final class DemoSeederService {
 				self::switch_front_page( $pages['statement_home'], $report );
 			}
 
+			if ( isset( $pages['journal'] ) && $pages['journal'] > 0 && function_exists( 'update_option' ) ) {
+				update_option( 'page_for_posts', (int) $pages['journal'] );
+			}
+
 			// 8. Save Manifest v2
 			$manifest_data = array(
 				'manifest_version' => '2.0',
@@ -825,7 +829,7 @@ final class DemoSeederService {
 			'Journal',
 			'',
 			'default',
-			$media['insignia_vector'] ?? 0
+			0
 		);
 
 		$report['pages'] = $pages;
