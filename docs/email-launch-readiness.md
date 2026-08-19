@@ -14,7 +14,7 @@ Statement operates two distinct email layers:
 | --- | --- | --- | --- | --- |
 | **Private Access Granted** | `EmailAccessGranted::trigger()` | Granted Collector | `Your Private Access to {Drop Name}` | Contains single-use return link; zero public product facts before authorization |
 | **Private Access Return Link** | Self-serve return gate request | Granted Collector | `Your Return Access Link for {Drop Name}` | Single-use token created in `wp_statement_access_tokens`; valid until drop closes or expires |
-| **Private Access Reminder** | Action Scheduler (`statement_private_access_send_reminder`) | Consented Collector | `Reminder: {Drop Name} Access Closing Soon` | Sent only if active marketing consent exists; auto-cancelled upon Add to Bag |
+| **Private Access Reminder** | Action Scheduler (`statement_private_access_reminder_action`) | Consented Collector | `Reminder: {Drop Name} Access Closing Soon` | Sent only if active marketing consent exists; auto-cancelled upon Add to Bag |
 | **Marketing Consent Withdrawal** | Action Scheduler / Token link | Collector | `Subscription Preferences Updated` | Confirms marketing opt-out while preserving underlying access grant |
 | **Order Processing (Thank You)** | WooCommerce Payment Complete | Customer | `Your Statement Order #{order_id} is Confirmed` | Enriched with M12 frozen provenance table (Edition, Drop, Release State); no internal tokens or secrets |
 | **Order Completed (Shipped)** | WooCommerce Order Status -> Completed | Customer | `Your Statement Collector's Piece Has Shipped` | Includes Australia Post tracking link and delivery details |
@@ -26,7 +26,7 @@ Statement operates two distinct email layers:
 ## 3. Email Privacy & Unsubscribe Separation Invariant
 
 1. **Transactional Boundary**: Access links and Order confirmation emails are strictly operational/transactional and do NOT require marketing consent.
-2. **Marketing Boundary**: Reminder emails require explicit, affirmative marketing consent recorded in `wp_statement_marketing_consents`.
+2. **Marketing Boundary**: Reminder emails require explicit, affirmative marketing consent recorded in `wp_statement_consent_events`.
 3. **Unsubscribe Isolation**: Clicking unsubscribe withdraws marketing consent immediately without revoking private drop access or suppressing order confirmation receipts.
 4. **Secret Scrubbing**: Emails NEVER contain database hashes, grant IDs, secret tokens, or internal meta keys. Return tokens use one-time cryptographic values consumed on first use.
 

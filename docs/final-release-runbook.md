@@ -11,7 +11,7 @@ This document specifies the exact sequential cutover procedure to transition the
 ```
 Step 1: M13 Runtime Verification Closeout
    ↓
-Step 2: Verify Fresh Automatic VaultPress Backup (Post-dating Final QA)
+Step 2: Verify Fresh Automatic Jetpack / WordPress.com Backup Restore Point (Post-dating Final QA)
    ↓
 Step 3: Trigger & Confirm Clean Jetpack Security Scan
    ↓
@@ -46,9 +46,9 @@ Step 15: Enable Public Indexing & Launch Private Access Gate
 
 ### Stage 1: Backup & Security Verification
 1. **Automatic Backup Verification**:
-   - In WordPress.com Hosting Dashboard / VaultPress Backups: Confirm an automatic point-in-time backup exists with a timestamp **after** the latest RC deployment and final QA mutations.
+   - In WordPress.com Dashboard -> Jetpack -> Backup: Confirm an automatic point-in-time restore point exists with a timestamp **after** the latest RC deployment and final QA mutations. Record the backup timestamp and confirm rollback readiness.
 2. **Fresh Security Scan**:
-   - In Jetpack -> Security / VaultPress: Trigger a fresh scan and confirm zero threats post-dating current release candidates.
+   - In Jetpack -> Security: Trigger a fresh scan and confirm zero threats post-dating current release candidates.
 
 ### Stage 2: Fixture Uninstallation & Legacy Cleanup
 1. **Purge Test Data**:
