@@ -1,7 +1,7 @@
 <?php
 /**
  * Template Name: About Statement
- * Description: Pure editorial typography narrative for Statement Collector's Piece (Text Only).
+ * Description: Pure typographic editorial narrative for Statement Collector's Piece (Text Only).
  */
 
 namespace Statement\Collector\Theme;
@@ -10,52 +10,94 @@ defined( 'ABSPATH' ) || exit;
 
 get_header();
 ?>
-<main id="primary" class="statement-about-page statement-container--narrow">
-	<article class="statement-about-prose">
-		<header class="statement-about-header">
-			<span class="statement-eyebrow"><?php esc_html_e( 'ABOUT US', 'statement-collector-theme' ); ?></span>
-			<h1 class="statement-about-header__title"><?php esc_html_e( 'STATEMENT COLLECTOR\'S PIECE', 'statement-collector-theme' ); ?></h1>
-		</header>
-
-		<div class="statement-about-body">
-			<?php if ( have_posts() ) : ?>
-				<?php while ( have_posts() ) : the_post(); ?>
-					<?php
-					$content = get_the_content();
-					if ( ! empty( trim( (string) $content ) ) ) :
-						the_content();
-					else :
-					?>
-						<p class="statement-about-lead">
-							<?php esc_html_e( 'At Statement Collector\'s Piece, we believe clothing should be more than something you wear. It should make a statement, tell a story, and become something worth collecting.', 'statement-collector-theme' ); ?>
-						</p>
-
-						<p>
-							<?php esc_html_e( 'Born in Australia, our brand was created for people who value individuality over trends. Every piece is thoughtfully designed using premium materials, with a focus on comfort, craftsmanship, and timeless style. We choose quality over quantity, creating garments that are made to be worn, appreciated, and remembered.', 'statement-collector-theme' ); ?>
-						</p>
-
-						<p>
-							<?php esc_html_e( 'What truly sets us apart is our commitment to exclusivity. Many of our collections are released in strictly limited quantities, with selected designs individually numbered. Once a collection sells out, it is permanently retired and will never be reproduced. Owning one means owning a genuine collector\'s piece.', 'statement-collector-theme' ); ?>
-						</p>
-
-						<p>
-							<?php esc_html_e( 'We are also committed to making better choices for the future. Wherever possible, we use responsibly sourced and organic materials, creating clothing that not only looks exceptional but is made with greater respect for people and the planet.', 'statement-collector-theme' ); ?>
-						</p>
-
-						<p>
-							<?php esc_html_e( 'We\'re not here to chase fast fashion. We\'re here to create garments with meaning. Pieces that stand apart from the ordinary and become part of your personal story.', 'statement-collector-theme' ); ?>
-						</p>
-
-						<blockquote class="statement-about-quote">
-							<p><?php esc_html_e( 'Crafted. Limited. Never Restocked.', 'statement-collector-theme' ); ?></p>
-						</blockquote>
-					<?php
-					endif;
-					?>
-				<?php endwhile; ?>
-			<?php endif; ?>
+<main id="primary" class="statement-about-document statement-container--editorial">
+	<!-- Editorial Top Bar -->
+	<header class="statement-about-document__header">
+		<div class="statement-about-document__meta">
+			<span class="statement-meta-code"><?php esc_html_e( 'STATEMENT / THE HOUSE', 'statement-collector-theme' ); ?></span>
+			<span class="statement-meta-code"><?php esc_html_e( 'FOUNDED 2026', 'statement-collector-theme' ); ?></span>
 		</div>
-	</article>
+		<h1 class="statement-about-document__title"><?php esc_html_e( 'ABOUT STATEMENT', 'statement-collector-theme' ); ?></h1>
+	</header>
+
+	<div class="statement-drop-divider"></div>
+
+	<!-- Monolithic Opening Pull Quote -->
+	<section class="statement-about-lead-block">
+		<p class="statement-about-lead-quote">
+			<?php esc_html_e( 'Clothing should be more than something you wear. It should make a statement, tell a story, and become something worth collecting.', 'statement-collector-theme' ); ?>
+		</p>
+	</section>
+
+	<div class="statement-drop-divider"></div>
+
+	<!-- 12-Column Asymmetric Narrative Sections -->
+	<div class="statement-about-narrative">
+		<!-- Section 01: Philosophy -->
+		<section class="statement-narrative-row">
+			<div class="statement-narrative-rail">
+				<span class="statement-rail-index">01</span>
+				<span class="statement-rail-title"><?php esc_html_e( 'PHILOSOPHY', 'statement-collector-theme' ); ?></span>
+			</div>
+			<div class="statement-narrative-content">
+				<p>
+					<?php esc_html_e( 'Born in Australia, our brand was created for individuals who value distinctive identity over transient trends. We reject the cadence of seasonal excess in favor of permanence, sculptural integrity, and quiet confidence.', 'statement-collector-theme' ); ?>
+				</p>
+			</div>
+		</section>
+
+		<div class="statement-drop-divider--subtle"></div>
+
+		<!-- Section 02: Design & Craft -->
+		<section class="statement-narrative-row">
+			<div class="statement-narrative-rail">
+				<span class="statement-rail-index">02</span>
+				<span class="statement-rail-title"><?php esc_html_e( 'CRAFT', 'statement-collector-theme' ); ?></span>
+			</div>
+			<div class="statement-narrative-content">
+				<p>
+					<?php esc_html_e( 'Every piece is developed around tactile surfaces, custom jacquards, and structured tailoring. We choose rigorous quality over volume, engineering garments designed to be worn, appreciated, and permanently remembered.', 'statement-collector-theme' ); ?>
+				</p>
+			</div>
+		</section>
+
+		<div class="statement-drop-divider--subtle"></div>
+
+		<!-- Section 03: Exclusivity & Archival Integrity -->
+		<section class="statement-narrative-row">
+			<div class="statement-narrative-rail">
+				<span class="statement-rail-index">03</span>
+				<span class="statement-rail-title"><?php esc_html_e( 'EXCLUSIVITY', 'statement-collector-theme' ); ?></span>
+			</div>
+			<div class="statement-narrative-content">
+				<p>
+					<?php esc_html_e( 'What defines Statement is our unwavering commitment to scarcity. Releases occur in limited allocations. Once a drop closes, the edition is permanently sealed into the archive and will never be reproduced.', 'statement-collector-theme' ); ?>
+				</p>
+			</div>
+		</section>
+
+		<div class="statement-drop-divider--subtle"></div>
+
+		<!-- Section 04: Responsibility -->
+		<section class="statement-narrative-row">
+			<div class="statement-narrative-rail">
+				<span class="statement-rail-index">04</span>
+				<span class="statement-rail-title"><?php esc_html_e( 'RESPONSIBILITY', 'statement-collector-theme' ); ?></span>
+			</div>
+			<div class="statement-narrative-content">
+				<p>
+					<?php esc_html_e( 'We make conscious decisions regarding our footprint. Wherever possible, we source responsible fibers and partner with specialized makers who uphold equitable working standards.', 'statement-collector-theme' ); ?>
+				</p>
+			</div>
+		</section>
+	</div>
+
+	<div class="statement-drop-divider"></div>
+
+	<!-- Monolithic Brand Signature Conclusion -->
+	<footer class="statement-about-conclusion">
+		<p class="statement-about-signature"><?php esc_html_e( 'CRAFTED. LIMITED. NEVER RESTOCKED.', 'statement-collector-theme' ); ?></p>
+	</footer>
 </main>
 <?php
 get_footer();

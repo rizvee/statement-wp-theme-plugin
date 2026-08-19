@@ -9,14 +9,14 @@ const root = resolve(import.meta.dirname, '..');
 test('M19 Acceptance Hardening & Production Convergence Suite', async (t) => {
   await t.test('1. Version Synchronization across Core, Theme, Demo, and Child Theme', () => {
     const themeStyle = readFileSync(join(root, 'wp-content/themes/statement-collector-theme/style.css'), 'utf8');
-    assert.match(themeStyle, /Version:\s*0\.13\.0-rc\.15/, 'Theme style.css must be 0.13.0-rc.15');
+    assert.match(themeStyle, /Version:\s*0\.13\.0-rc\.19/, 'Theme style.css must be 0.13.0-rc.19');
 
     const themeFuncs = readFileSync(join(root, 'wp-content/themes/statement-collector-theme/functions.php'), 'utf8');
-    assert.match(themeFuncs, /STATEMENT_COLLECTOR_THEME_VERSION',\s*'0\.13\.0-rc\.15'/, 'Theme functions.php constant must be 0.13.0-rc.15');
+    assert.match(themeFuncs, /STATEMENT_COLLECTOR_THEME_VERSION',\s*'0\.13\.0-rc\.19'/, 'Theme functions.php constant must be 0.13.0-rc.19');
 
     const coreEntry = readFileSync(join(root, 'wp-content/plugins/statement-collector-core/statement-collector-core.php'), 'utf8');
-    assert.match(coreEntry, /Version:\s*0\.13\.0-rc\.13/, 'Core plugin entry header must be 0.13.0-rc.13');
-    assert.match(coreEntry, /STATEMENT_COLLECTOR_CORE_VERSION',\s*'0\.13\.0-rc\.13'/, 'Core plugin constant must be 0.13.0-rc.13');
+    assert.match(coreEntry, /Version:\s*0\.13\.0-rc\.15/, 'Core plugin entry header must be 0.13.0-rc.15');
+    assert.match(coreEntry, /STATEMENT_COLLECTOR_CORE_VERSION',\s*'0\.13\.0-rc\.15'/, 'Core plugin constant must be 0.13.0-rc.15');
 
     const demoEntry = readFileSync(join(root, 'tools/statement-client-demo/statement-client-demo.php'), 'utf8');
     assert.match(demoEntry, /Version:\s*0\.2\.7/, 'Client demo header must be 0.2.7');

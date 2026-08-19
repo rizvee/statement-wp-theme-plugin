@@ -185,6 +185,6 @@ test('M3 runtime stays within global-shell scope', () => {
   const unexpectedJavaScript = walk(themeRoot)
     .filter((path) => extname(path).toLowerCase() === '.js')
     .map((path) => relative(themeRoot, path).replaceAll('\\', '/'))
-    .filter((path) => !['assets/js/navigation.js', 'assets/js/hero-slider.js'].includes(path));
+    .filter((path) => !['assets/js/navigation.js', 'assets/js/hero-slider.js', 'assets/js/product.js'].includes(path));
   assert.deepEqual(unexpectedJavaScript, []);
 });

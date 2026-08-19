@@ -78,13 +78,15 @@ test('metadata centralizes canonical state and edition keys through WooCommerce 
 
 test('product admin uses controlled fields and preserves invalid historical input safely', () => {
   const admin = read('src/Product/Admin.php');
+  const lifecycle = read('src/Admin/LifecycleV2Admin.php');
+  const combined = `${admin}\n${lifecycle}`;
 
   assert.match(admin, /woocommerce_product_options_general_product_data/);
   assert.match(admin, /woocommerce_admin_process_product_object/);
   assert.match(admin, /woocommerce_wp_select\s*\(/);
   assert.match(admin, /woocommerce_wp_text_input\s*\(/);
   assert.match(admin, /statement_collector_drop/);
-  assert.match(admin, /ReleaseState::all\s*\(/);
+  assert.match(combined, /ReleaseState::is_valid\s*\(|ReleaseState::all\s*\(/);
   assert.match(admin, /wp_nonce_field\s*\(/);
   assert.match(admin, /wp_verify_nonce\s*\(/);
   assert.match(admin, /current_user_can\s*\(/);

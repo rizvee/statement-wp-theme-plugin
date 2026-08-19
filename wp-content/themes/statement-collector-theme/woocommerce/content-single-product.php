@@ -23,6 +23,5 @@ if ( post_password_required() ) {
 		<?php get_template_part( 'template-parts/product/gallery' ); ?>
 		<?php get_template_part( 'template-parts/product/summary' ); ?>
 	</div>
-	<?php get_template_part( 'template-parts/product/details' ); ?>
 </article>
 <?php do_action( 'woocommerce_after_single_product' ); ?>

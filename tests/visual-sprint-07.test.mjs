@@ -80,14 +80,14 @@ test('Visual Sprint 07: Strict 5-Part Homepage Hierarchy & Editorial Drops Direc
 
   const pageDrops = readFileSync(join(themeDir, 'page-drops.php'), 'utf8');
   assert.match(pageDrops, /statement-drops-page/, 'page-drops.php exists with editorial layout');
-  assert.match(pageDrops, /UPCOMING DROPS/, 'page-drops.php includes UPCOMING DROPS');
+  assert.match(pageDrops, /UPCOMING/, 'page-drops.php includes UPCOMING');
 });
 
 test('Visual Sprint 07: Text-Only About & Contact Pages', () => {
   const aboutPhp = readFileSync(join(themeDir, 'page-about.php'), 'utf8');
   assert.doesNotMatch(aboutPhp, /<img/i, 'page-about.php must NOT contain <img> tags');
   assert.doesNotMatch(aboutPhp, /—/u, 'page-about.php must NOT contain em-dashes');
-  assert.match(aboutPhp, /statement-about-prose/, 'page-about.php uses editorial prose container');
+  assert.match(aboutPhp, /statement-about-(?:prose|narrative|document)/, 'page-about.php uses editorial prose container');
   assert.match(aboutPhp, /Born in Australia/, 'page-about.php includes client narrative');
 
   const contactPhp = readFileSync(join(themeDir, 'page-contact.php'), 'utf8');

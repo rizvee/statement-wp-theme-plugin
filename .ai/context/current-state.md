@@ -4,10 +4,12 @@ Updated: 2026-08-19
 
 ## Active Release Candidates
 
-- Theme: `0.13.0-rc.17` (`wp-content/themes/statement-collector-theme/style.css`, `functions.php`, `inc/setup.php`)
+- Theme: `0.13.0-rc.19` (`wp-content/themes/statement-collector-theme/style.css`, `functions.php`, `inc/setup.php`)
 - Core Plugin: `0.13.0-rc.15` (`wp-content/plugins/statement-collector-core/statement-collector-core.php`)
 - Client Demo Plugin: `0.2.7` (`tools/statement-client-demo/statement-client-demo.php`, `src/AdminPage.php`)
 - Child Theme Starter: `0.1.0` (`tools/statement-collector-child/style.css`)
+- Visual Sprint 09.1 (Post-Deployment Live Visual Acceptance + Client-Ready Perfection Pass): COMPLETE (Live visual inspection of deployed rc.18 on mystatement.store; diagnosed drop taxonomy title colon parsing, quantity/stock form leakage on luxury PDPs, flexslider thumbnail numbering/overflow blowout, and unverified copy claims; applied surgical source fixes in Drop regex, Contact copy, Product Details care/dispatch notes, and product CSS gallery clipping/form cleanup; promoted Theme to 0.13.0-rc.19; all PHP lints and test suites pass 100%; packaged in dist/ with SHA-256 manifest; ZERO live mutations executed).
+- Visual Sprint 09 (Luxury Art-Direction Rebuild + PDP Experience + Typographic Pages + Global Premiumness Convergence): COMPLETE (Drop page re-architected as a printed luxury Release Document & Collection Register; About page transformed into 100% text-only typographic narrative; Contact page transformed into luxury concierge interface; Single Product Pages rebuilt with 65/35 editorial layout, clean mobile swipe gallery, and hairline disclosure accordions; Theme promoted to 0.13.0-rc.18; all PHP lints and test suites pass 100%; packaged in dist/ with SHA-256 manifest).
 - Sprint 08.1 (Atomic Runtime Acceptance + Admin Freedom + Drop/PDP/Account Live QA): COMPLETE (Live verification of Theme 0.13.0-rc.16 and Core 0.13.0-rc.14; confirmed 100% normal WordPress/WooCommerce product saves without lifecycle override blockers in real wp-admin; audited 16 public routes with 15 passing HTTP 200/404; discovered PHP 8.4 TypeError in PublicApi::is_past_drop on taxonomy-statement_drop.php and made is_past_drop accept polymorphic term/ID objects; removed initial width restriction in product.js sticky bar creation; bumped Theme to 0.13.0-rc.17 and Core to 0.13.0-rc.15; verified and packaged all ZIP artifacts in dist/ with SHA-256 manifest).
 
 ## Repository

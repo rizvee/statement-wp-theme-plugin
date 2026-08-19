@@ -1,4 +1,10 @@
 <?php
+/**
+ * Statement Drop Taxonomy Template — Release Document & Collection Register.
+ *
+ * Conceives the Drop page as an editorial release document and collection register
+ * rather than a standard e-commerce archive grid.
+ */
 
 use Statement\Collector\Core\PublicApi;
 
@@ -9,11 +15,13 @@ $drop_name = is_object( $drop ) && isset( $drop->name ) ? (string) $drop->name :
 $drop_desc = is_object( $drop ) && isset( $drop->description ) ? (string) $drop->description : '';
 
 // Parse drop number and title if separated by dash or em-dash
-$drop_number = '';
+$drop_number = '001';
 $drop_title  = $drop_name;
-if ( preg_match( '/^(Drop\s*\d+)\s*[-—–]\s*(.+)$/i', $drop_name, $matches ) ) {
-	$drop_number = trim( $matches[1] );
+if ( preg_match( '/^Drop\s*(\d+)\s*[-—–:]\s*(.+)$/i', $drop_name, $matches ) ) {
+	$drop_number = sprintf( '%03d', (int) $matches[1] );
 	$drop_title  = trim( $matches[2] );
+} elseif ( preg_match( '/^Drop\s*(\d+)/i', $drop_name, $matches ) ) {
+	$drop_number = sprintf( '%03d', (int) $matches[1] );
 }
 
 $term_id = is_object( $drop ) && isset( $drop->term_id ) ? (int) $drop->term_id : 0;
@@ -21,73 +29,109 @@ $is_past = class_exists( PublicApi::class ) && $term_id > 0 ? PublicApi::is_past
 $eyebrow = $is_past ? __( 'RELEASE ARCHIVE', 'statement-collector-theme' ) : __( 'CURRENT RELEASE', 'statement-collector-theme' );
 $status  = $is_past ? __( 'ARCHIVED', 'statement-collector-theme' ) : __( 'AVAILABLE', 'statement-collector-theme' );
 
-if ( ! function_exists( 'woocommerce_product_loop' ) ) {
-	get_header();
-	?>
-	<main id="primary" class="statement-drop-page statement-catalog statement-container--wide">
-		<header class="statement-drop-page__header">
-			<div class="statement-drop-page__meta-row">
-				<span class="statement-eyebrow"><?php echo esc_html( $eyebrow ); ?></span>
-				<span class="statement-badge statement-badge--<?php echo esc_attr( $is_past ? 'archived' : 'live' ); ?>"><?php echo esc_html( $status ); ?></span>
-			</div>
-			<h1 class="statement-drop-page__title">
-				<?php if ( '' !== $drop_number ) : ?>
-					<span class="statement-drop-page__number"><?php echo esc_html( strtoupper( $drop_number ) ); ?></span>
-				<?php endif; ?>
-				<span class="statement-drop-page__name"><?php echo esc_html( strtoupper( $drop_title ) ); ?></span>
-			</h1>
-			<?php if ( '' !== trim( $drop_desc ) ) : ?>
-				<div class="statement-drop-page__description"><?php echo wp_kses_post( wpautop( $drop_desc ) ); ?></div>
-			<?php endif; ?>
-		</header>
-		<?php \Statement\Collector\Theme\render_catalog_empty_state(); ?>
-	</main>
-	<?php
-	get_footer();
-	return;
+// Collect products in this drop
+$products = array();
+if ( have_posts() ) {
+	while ( have_posts() ) {
+		the_post();
+		$p = function_exists( 'wc_get_product' ) ? wc_get_product( get_the_ID() ) : null;
+		if ( $p ) {
+			$products[] = array(
+				'id'        => get_the_ID(),
+				'title'     => get_the_title(),
+				'permalink' => get_permalink(),
+				'price'     => $p->get_price_html(),
+				'image_id'  => $p->get_image_id(),
+				'image_url' => wp_get_attachment_image_url( $p->get_image_id(), 'medium' ),
+				'sku'       => $p->get_sku(),
+			);
+		}
+	}
+	wp_reset_postdata();
 }
 
-get_header( 'shop' );
+$piece_count = sprintf( '%02d', count( $products ) );
 
-do_action( 'woocommerce_before_main_content' );
+get_header( 'shop' );
 ?>
-<div class="statement-drop-page statement-catalog statement-container--wide">
-	<header class="statement-drop-page__header">
-		<div class="statement-drop-page__meta-row">
-			<span class="statement-eyebrow"><?php echo esc_html( $eyebrow ); ?></span>
-			<span class="statement-badge statement-badge--<?php echo esc_attr( $is_past ? 'archived' : 'live' ); ?>"><?php echo esc_html( $status ); ?></span>
+<main id="primary" class="statement-drop-document statement-container--wide">
+	<!-- Top Metadata Bar -->
+	<div class="statement-drop-document__meta-bar">
+		<div class="statement-drop-document__meta-left">
+			<span class="statement-meta-code">DROP / <?php echo esc_html( $drop_number ); ?></span>
 		</div>
-		<h1 class="statement-drop-page__title">
-			<?php if ( '' !== $drop_number ) : ?>
-				<span class="statement-drop-page__number"><?php echo esc_html( strtoupper( $drop_number ) ); ?></span>
-			<?php endif; ?>
-			<span class="statement-drop-page__name"><?php echo esc_html( strtoupper( $drop_title ) ); ?></span>
-		</h1>
-		<?php if ( '' !== trim( $drop_desc ) ) : ?>
-			<div class="statement-drop-page__description"><?php echo wp_kses_post( wpautop( $drop_desc ) ); ?></div>
-		<?php endif; ?>
+		<div class="statement-drop-document__meta-right">
+			<span class="statement-badge statement-badge--<?php echo esc_attr( $is_past ? 'archived' : 'live' ); ?>">
+				<?php echo esc_html( $eyebrow ); ?>
+			</span>
+		</div>
+	</div>
+
+	<!-- Monolithic Title -->
+	<header class="statement-drop-document__header">
+		<h1 class="statement-drop-document__title"><?php echo esc_html( strtoupper( $drop_title ) ); ?></h1>
 	</header>
 
-	<?php if ( woocommerce_product_loop() ) : ?>
-		<?php do_action( 'woocommerce_before_shop_loop' ); ?>
-		<?php woocommerce_product_loop_start(); ?>
-		<?php if ( wc_get_loop_prop( 'total' ) ) : ?>
-			<?php while ( have_posts() ) : ?>
-				<?php
-				the_post();
-				do_action( 'woocommerce_shop_loop' );
-				wc_get_template_part( 'content', 'product' );
-				?>
-			<?php endwhile; ?>
-		<?php endif; ?>
-		<?php woocommerce_product_loop_end(); ?>
-		<?php do_action( 'woocommerce_after_shop_loop' ); ?>
-	<?php else : ?>
-		<?php do_action( 'woocommerce_no_products_found' ); ?>
-	<?php endif; ?>
-</div>
-<?php
-do_action( 'woocommerce_after_main_content' );
-do_action( 'woocommerce_sidebar' );
+	<div class="statement-drop-divider"></div>
 
+	<!-- Two-Column Editorial Overview & Spec Sheet -->
+	<section class="statement-drop-document__overview">
+		<div class="statement-drop-document__narrative">
+			<?php if ( '' !== trim( $drop_desc ) ) : ?>
+				<p class="statement-drop-document__description"><?php echo esc_html( $drop_desc ); ?></p>
+			<?php else : ?>
+				<p class="statement-drop-document__description"><?php esc_html_e( 'A focused study in surface texture, silhouette proportion, and structural wool.', 'statement-collector-theme' ); ?></p>
+			<?php endif; ?>
+		</div>
+		<div class="statement-drop-document__spec">
+			<div class="statement-spec-row">
+				<span class="statement-spec-label"><?php esc_html_e( 'STATUS', 'statement-collector-theme' ); ?></span>
+				<span class="statement-spec-value"><?php echo esc_html( $status ); ?></span>
+			</div>
+			<div class="statement-spec-row">
+				<span class="statement-spec-label"><?php esc_html_e( 'EDITION', 'statement-collector-theme' ); ?></span>
+				<span class="statement-spec-value">DROP <?php echo esc_html( $drop_number ); ?></span>
+			</div>
+			<div class="statement-spec-row">
+				<span class="statement-spec-label"><?php esc_html_e( 'PIECES', 'statement-collector-theme' ); ?></span>
+				<span class="statement-spec-value"><?php echo esc_html( $piece_count ); ?></span>
+			</div>
+		</div>
+	</section>
+
+	<div class="statement-drop-divider"></div>
+
+	<!-- Collection Register -->
+	<section class="statement-drop-document__register" aria-label="<?php esc_attr_e( 'Collection Pieces', 'statement-collector-theme' ); ?>">
+		<header class="statement-register-header">
+			<span class="statement-meta-code"><?php esc_html_e( 'COLLECTION REGISTER', 'statement-collector-theme' ); ?></span>
+		</header>
+
+		<?php if ( ! empty( $products ) ) : ?>
+			<ol class="statement-register-list">
+				<?php foreach ( $products as $index => $item ) : ?>
+					<?php $num = sprintf( '%02d', $index + 1 ); ?>
+					<li class="statement-register-item">
+						<a href="<?php echo esc_url( $item['permalink'] ); ?>" class="statement-register-link">
+							<span class="statement-register-index"><?php echo esc_html( $num ); ?></span>
+							<span class="statement-register-title"><?php echo esc_html( strtoupper( $item['title'] ) ); ?></span>
+							<span class="statement-register-price"><?php echo wp_kses_post( $item['price'] ); ?></span>
+							<span class="statement-register-arrow" aria-hidden="true"><?php esc_html_e( 'VIEW PIECE →', 'statement-collector-theme' ); ?></span>
+							<?php if ( ! empty( $item['image_url'] ) ) : ?>
+								<div class="statement-register-preview" aria-hidden="true">
+									<img src="<?php echo esc_url( $item['image_url'] ); ?>" alt="" loading="lazy" />
+								</div>
+							<?php endif; ?>
+						</a>
+					</li>
+				<?php endforeach; ?>
+			</ol>
+		<?php else : ?>
+			<div class="statement-catalog-empty">
+				<p class="statement-catalog-empty__message"><?php esc_html_e( 'No pieces currently registered in this release.', 'statement-collector-theme' ); ?></p>
+			</div>
+		<?php endif; ?>
+	</section>
+</main>
+<?php
 get_footer( 'shop' );

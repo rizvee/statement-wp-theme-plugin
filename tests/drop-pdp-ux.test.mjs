@@ -13,25 +13,23 @@ test('Drop Page: Luxury Collection & Release Index Architecture', () => {
 
   // 2. Drop template structure
   const dropPhp = readFileSync(join(themeDir, 'taxonomy-statement_drop.php'), 'utf8');
-  assert.match(dropPhp, /class="statement-drop-page statement-catalog statement-container--wide"/, 'Drop template uses wide luxury container');
-  assert.match(dropPhp, /class="statement-drop-page__header"/, 'Drop template renders distinct header');
-  assert.match(dropPhp, /statement-eyebrow/, 'Drop template renders eyebrow');
+  assert.match(dropPhp, /class="statement-drop-document\s+statement-container--wide"/, 'Drop template uses wide luxury document container');
+  assert.match(dropPhp, /class="statement-drop-document__header"/, 'Drop template renders distinct header');
+  assert.match(dropPhp, /statement-meta-code/, 'Drop template renders metadata code');
   assert.match(dropPhp, /CURRENT RELEASE/, 'Drop template renders CURRENT RELEASE');
-  assert.match(dropPhp, /statement-drop-page__title/, 'Drop template renders structured title');
-  assert.match(dropPhp, /statement-drop-page__number/, 'Drop template renders drop numeral');
-  assert.match(dropPhp, /statement-drop-page__name/, 'Drop template renders drop name');
-  assert.match(dropPhp, /woocommerce_product_loop/, 'Drop template renders products loop');
+  assert.match(dropPhp, /statement-drop-document__title/, 'Drop template renders structured title');
+  assert.match(dropPhp, /DROP \//, 'Drop template renders drop numeral');
+  assert.match(dropPhp, /statement-register-list/, 'Drop template renders collection register list');
 
   // 3. Breadcrumb & duplicate title suppression
   assert.doesNotMatch(dropPhp, /woocommerce_breadcrumb/, 'Drop template must not render breadcrumbs');
 
   // 4. Catalog CSS styling
   const catalogCss = readFileSync(join(themeDir, 'assets/css/catalog.css'), 'utf8');
-  assert.match(catalogCss, /\.statement-drop-page__header/, 'catalog.css styles .statement-drop-page__header');
-  assert.match(catalogCss, /\.statement-drop-page__title/, 'catalog.css styles .statement-drop-page__title');
-  assert.match(catalogCss, /\.statement-drop-page__number/, 'catalog.css styles .statement-drop-page__number');
-  assert.match(catalogCss, /\.statement-drop-page__name/, 'catalog.css styles .statement-drop-page__name');
-  assert.match(catalogCss, /\.woocommerce-breadcrumb\s*\{\s*display:\s*none;/, 'catalog.css suppresses breadcrumbs');
+  assert.match(catalogCss, /\.statement-drop-document__header/, 'catalog.css styles .statement-drop-document__header');
+  assert.match(catalogCss, /\.statement-drop-document__title/, 'catalog.css styles .statement-drop-document__title');
+  assert.match(catalogCss, /\.statement-register-list/, 'catalog.css styles .statement-register-list');
+  assert.match(catalogCss, /\.woocommerce-breadcrumb\s*\{\s*display:\s*none/, 'catalog.css suppresses breadcrumbs');
 });
 
 test('Drops Index (/drops/): Editorial Numerals and Text Directory', () => {
@@ -56,7 +54,7 @@ test('Drops Index (/drops/): Editorial Numerals and Text Directory', () => {
 test('Single Product Page (PDP): High-Fashion Layout Proportions and Hierarchy', () => {
   // 1. Gallery to Summary Proportion in CSS
   const productCss = readFileSync(join(themeDir, 'assets/css/product.css'), 'utf8');
-  assert.match(productCss, /grid-template-columns:\s*minmax\(0,\s*1\.5fr\)\s+minmax\(0,\s*1fr\)/, 'product.css sets 60/40 gallery to summary ratio on desktop');
+  assert.match(productCss, /grid-template-columns:\s*minmax\(0,\s*1\.[56]fr\)\s+minmax\(0,\s*1fr\)/, 'product.css sets 60/40 or 65/35 gallery to summary ratio on desktop');
   assert.match(productCss, /position:\s*sticky/, 'product.css makes summary sticky on desktop');
 
   // 2. Summary template hierarchy

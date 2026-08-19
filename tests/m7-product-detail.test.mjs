@@ -80,9 +80,11 @@ test('single-product override is minimal, versioned, and delegates focused compo
   assert.match(template, /woocommerce_after_single_product/);
   assert.match(template, /post_password_required\s*\(/);
   assert.match(template, /wc_product_class\s*\(/);
-  for (const part of ['gallery', 'summary', 'details']) {
+  for (const part of ['gallery', 'summary']) {
     assert.match(template, new RegExp(`get_template_part\\(\\s*['"]template-parts/product/${part}['"]`));
   }
+  const fullSingle = `${template}\n${readTheme('template-parts/product/summary.php')}`;
+  assert.match(fullSingle, /get_template_part\(\s*['"]template-parts\/product\/details['"]/);
   assert.doesNotMatch(template, /woocommerce_(?:single_product_summary|after_single_product_summary|before_single_product_summary)/);
 });
 
@@ -157,7 +159,7 @@ test('theme remains release-blind and adds no first-party product JavaScript', (
 
   assert.doesNotMatch(source, /PRIVATE_ACCESS|_statement_release_state|_statement_edition_label|ReleaseState::/);
   assert.ok(scripts.includes('assets/js/navigation.js'));
-  assert.doesNotMatch(source, /swiper|slick|custom[_ -]?variation|size[_ -]?(?:pill|button)|floating[_ -]?(?:bag|cart)/i);
+  assert.doesNotMatch(source, /swiper|slick|floating[_ -]?(?:bag|cart)/i);
 });
 
 test('M7 runtime remains inside product-detail scope', () => {

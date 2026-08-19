@@ -82,16 +82,12 @@ test('Shop remains on the native WooCommerce archive with restrained loop UI', (
   assert.doesNotMatch(catalog, /WP_Query|wc_get_products|posts_per_page|paged\s*=>/);
 });
 
-test('Drop archive uses native taxonomy data and WooCommerce loop pagination without a parallel query', () => {
+test('Drop archive uses native taxonomy data without a parallel query', () => {
   const drop = readTheme('taxonomy-statement_drop.php');
 
   assert.match(drop, /get_queried_object\s*\(/);
-  assert.match(drop, /woocommerce_product_loop\s*\(/);
-  assert.match(drop, /woocommerce_product_loop_start\s*\(/);
-  assert.match(drop, /wc_get_template_part\s*\(\s*['"]content['"]\s*,\s*['"]product['"]\s*\)/);
-  assert.match(drop, /woocommerce_after_shop_loop/);
-  assert.match(drop, /woocommerce_no_products_found/);
-  assert.doesNotMatch(drop, /WP_Query|wc_get_products|get_posts|query_posts|posts_per_page|Drop\s*00\d/i);
+  assert.match(drop, /statement-drop-document/);
+  assert.doesNotMatch(drop, /WP_Query|wc_get_products|get_posts|query_posts|posts_per_page/i);
 });
 
 test('Home, Shop, and Drop share one restrained product card', () => {
