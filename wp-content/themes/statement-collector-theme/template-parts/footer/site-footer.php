@@ -2,8 +2,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$site_name   = get_bloginfo( 'name' );
-$account_url = \Statement\Collector\Theme\get_account_url();
+$site_name    = get_bloginfo( 'name' );
+$account_url  = \Statement\Collector\Theme\get_account_url();
+$facebook_url = \Statement\Collector\Theme\get_facebook_url();
 ?>
 <footer class="statement-site-footer">
 	<div class="statement-site-footer__inner statement-container--wide">
@@ -45,6 +46,16 @@ $account_url = \Statement\Collector\Theme\get_account_url();
 			<p class="statement-site-footer__copyright">
 				&copy; <?php echo esc_html( wp_date( 'Y' ) ); ?> <?php echo esc_html( $site_name ); ?>
 			</p>
+			<div class="statement-site-footer__socials">
+				<a href="https://instagram.com/statement.au" target="_blank" rel="noopener noreferrer" class="statement-site-footer__social-link">
+					<?php esc_html_e( 'INSTAGRAM', 'statement-collector-theme' ); ?>
+				</a>
+				<?php if ( ! empty( $facebook_url ) ) : ?>
+					<a href="<?php echo esc_url( $facebook_url ); ?>" target="_blank" rel="noopener noreferrer" class="statement-site-footer__social-link">
+						<?php esc_html_e( 'FACEBOOK', 'statement-collector-theme' ); ?>
+					</a>
+				<?php endif; ?>
+			</div>
 		</div>
 	</div>
 </footer>

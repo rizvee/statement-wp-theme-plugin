@@ -4,11 +4,11 @@ Updated: 2026-08-19
 
 ## Active Release Candidates
 
-- Theme: `0.13.0-rc.14` (`wp-content/themes/statement-collector-theme/style.css`, `functions.php`, `inc/setup.php`)
+- Theme: `0.13.0-rc.15` (`wp-content/themes/statement-collector-theme/style.css`, `functions.php`, `inc/setup.php`)
 - Core Plugin: `0.13.0-rc.13` (`wp-content/plugins/statement-collector-core/statement-collector-core.php`)
-- Client Demo Plugin: `0.2.6` (`tools/statement-client-demo/statement-client-demo.php`, `src/AdminPage.php`)
+- Client Demo Plugin: `0.2.7` (`tools/statement-client-demo/statement-client-demo.php`, `src/AdminPage.php`)
 - Child Theme Starter: `0.1.0` (`tools/statement-collector-child/style.css`)
-- Visual Sprint 07: COMPLETE (Authentic Brand Logo, 1920x1080 Desktop Campaign Slider, 720x1280 Mobile MP4 Hero Video, Strict 5-Part Homepage Hierarchy, Text-First Editorial Drops Directory, Text-Only About & Contact Pages, WebP Photography Packages, Panelled Hood Jacket XL Variation + Metadata Fix, Size Guide Polish).
+- Final Convergence Sprint: COMPLETE (Live Storefront 16/16 Route Audit Passed, Admin Bar Sticky Offset Polish, Mobile 2-Column Product Card Stacked Layout, Body Size Guide Nomenclature & Disclaimers, Footer Social Channels, Full Test Battery 42/42 PHP + 149/149 Node Passed, Deterministic Packaging with SHA-256 Manifest).
 
 ## Repository
 

@@ -9,6 +9,17 @@
 	transition: background-color 300ms ease, border-color 300ms ease;
 }
 
+/* WordPress Admin Bar Compatibility */
+.admin-bar .statement-site-header {
+	inset-block-start: 32px;
+}
+
+@media screen and (max-width: 782px) {
+	.admin-bar .statement-site-header {
+		inset-block-start: 46px;
+	}
+}
+
 .statement-site-header__desktop,
 .statement-site-header__mobile {
 	min-block-size: clamp(4.25rem, 3.75rem + 1vw, 5.25rem);

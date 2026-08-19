@@ -63,6 +63,11 @@
 .statement-site-footer__bottom {
 	border-block-start: 1px solid var(--wp--preset--color--border-grey);
 	padding-block-start: var(--wp--preset--spacing--30);
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
 }
 
 .statement-site-footer__copyright {
@@ -71,6 +76,27 @@
 	font-family: var(--wp--preset--font-family--ui);
 	font-size: 0.75rem;
 	letter-spacing: 0.08em;
+}
+
+.statement-site-footer__socials {
+	display: flex;
+	align-items: center;
+	gap: 1.5rem;
+}
+
+.statement-site-footer__social-link {
+	color: var(--wp--preset--color--soft-graphite);
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.16em;
+	text-decoration: none;
+	text-transform: uppercase;
+	transition: color 250ms ease;
+}
+
+.statement-site-footer__social-link:hover {
+	color: var(--wp--preset--color--near-black);
 }
 
 @media (min-width: 48rem) {

@@ -1,5 +1,18 @@
 # Current Priority — Production Convergence & Release Candidates
 
+## FINAL CONVERGENCE SPRINT — LIVE STOREFRONT ACCEPTANCE + MOBILE 2-PRODUCT GRID + BODY SIZE GUIDE + FOOTER SOCIALS + RELEASE PACKAGING — COMPLETE (2026-08-19)
+
+Status: complete (Theme Candidate 0.13.0-rc.15 + Core Plugin Candidate 0.13.0-rc.13 + Client Demo 0.2.7 + Child Theme 0.1.0 packaged and verified; ZERO live mutations executed)
+
+- [x] Live Frontend 16-Route Audit: Executed automated 16-route live storefront auditor against `https://mystatement.store/` (`16 PASSED, 0 DEFECTS OUT OF 16 ROUTES`) verifying HTTP 200, semantic titles, zero PHP fatals/notices, clean QA fixture isolation, and brand slogan consistency.
+- [x] WordPress Admin Bar Sticky Header Offset: Added top offsets in `assets/css/header.css` (`32px` on desktop, `46px` on mobile) when `.admin-bar` is present on `body`, eliminating layout jump and header overlap for logged-in administrators.
+- [x] Mobile 2-Column Side-by-Side Product Grid Polish: Updated `assets/css/product-card.css` with stacked title and price typography below 32rem (`@media (max-width: 32rem)`), enabling generous margins and zero text collision across mobile viewports (320px–430px). Updated `assets/css/home.css` and `assets/css/catalog.css` to render 2 side-by-side columns on mobile devices.
+- [x] Size Guide Nomenclature & Disclaimers: Updated `template-parts/product/size-guide.php` with title `BODY SIZE GUIDE`, explicit explanatory disclaimer ("Body measurements are provided as a general fit guide. Garment measurements may vary by piece. Measurements in centimeters (CM)."), and standardized body measurement ranges for S, M, L, XL (`CHEST (CM)`, `WAIST (CM)`, `HEIGHT (CM)`).
+- [x] Footer Social Channel Links: Added `Instagram @statement.au` (`https://instagram.com/statement.au`) and configurable `Facebook` channel links to `template-parts/footer/site-footer.php` with uppercase styling in `assets/css/footer.css`.
+- [x] Version Synchronization & Hardening: Promoted Theme to `0.13.0-rc.15` and Client Demo to `0.2.7`. Verified Core `0.13.0-rc.13` and Child Theme `0.1.0`.
+- [x] Comprehensive Test Battery: 120/120 PHP files linted clean (100%), 42/42 PHP unit test suites passed (100%), 22/22 Node test suites passed (149/149 subtests, 100%), `verify-foundation.mjs` and `verify-git-runtime-tracking.mjs` passed 100%.
+- [x] Deterministic Packaging & Verification: Built single-root ZIP distribution packages in `dist/` with SHA-256 checksums and verified manifest: Theme `0.13.0-rc.15` (`statement-collector-theme-0.13.0-rc.15.zip`), Client Demo `0.2.7` (`statement-client-demo-0.2.7.zip`), Core `0.13.0-rc.13` (`statement-collector-core-0.13.0-rc.13.zip`), Child `0.1.0` (`statement-collector-child-0.1.0.zip`).
+
 ## VISUAL SPRINT 07 — NEW ASSET INGESTION + HERO REBUILD + IA SIMPLIFICATION + PRODUCT MEDIA CORRECTION + COMPLETE QA — COMPLETE (2026-08-19)
 
 Status: complete (Theme Candidate 0.13.0-rc.14 + Core Plugin Candidate 0.13.0-rc.13 + Client Demo 0.2.6 + Child Theme 0.1.0 packaged and verified; ZERO live mutations executed)

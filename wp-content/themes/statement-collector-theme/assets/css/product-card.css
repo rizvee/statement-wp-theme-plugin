@@ -122,6 +122,26 @@
 	gap: 0.5rem;
 }
 
+@media (max-width: 32rem) {
+	.statement-card__header-row,
+	.statement-piece__header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.25rem;
+	}
+
+	.statement-card__title,
+	.statement-piece__name {
+		font-size: 0.8125rem;
+		line-height: 1.25;
+	}
+
+	.statement-card__price,
+	.statement-piece__price {
+		font-size: 0.8125rem;
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.statement-card__media img,
 	.statement-piece__media img,
