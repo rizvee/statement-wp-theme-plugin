@@ -58,35 +58,20 @@ final class Admin {
 			}
 		}
 
-		$assigned = wp_get_object_terms( $product->get_id(), Taxonomy::KEY, array( 'fields' => 'ids' ) );
+		$assigned      = wp_get_object_terms( $product->get_id(), Taxonomy::KEY, array( 'fields' => 'ids' ) );
+		$drop_id       = ! empty( $assigned ) && ! is_wp_error( $assigned ) ? (string) reset( $assigned ) : '';
 		$current_state = Metadata::get_release_state( $product );
-		$states        = array();
-		foreach ( ReleaseState::all() as $st ) {
-			if ( ReleaseState::can_transition( $current_state, $st ) ) {
-				$states[ $st ] = $st;
-			}
-		}
 
 		echo '<div class="options_group statement-collector-product-data">';
 		wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
 		woocommerce_wp_select(
 			array(
 				'id'          => self::DROP_FIELD,
-				'label'       => __( 'Drop', 'statement-collector-core' ),
-				'description' => __( 'Assign one historical Statement Drop.', 'statement-collector-core' ),
+				'label'       => __( 'Drop Assignment', 'statement-collector-core' ),
+				'description' => __( 'Assign one Statement Drop (locked after release to preserve provenance).', 'statement-collector-core' ),
 				'desc_tip'    => true,
 				'options'     => $drop_options,
 				'value'       => $drop_id,
-			)
-		);
-		woocommerce_wp_select(
-			array(
-				'id'          => Metadata::RELEASE_STATE_KEY,
-				'label'       => __( 'Release State', 'statement-collector-core' ),
-				'description' => __( 'Release states move forward only.', 'statement-collector-core' ),
-				'desc_tip'    => true,
-				'options'     => $states,
-				'value'       => $current_state,
 			)
 		);
 		woocommerce_wp_text_input(

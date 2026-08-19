@@ -30,6 +30,20 @@ final class LifecycleV2Admin {
 		self::$booted = true;
 		add_action( 'admin_post_statement_override_lifecycle', array( self::class, 'handle_lifecycle_override' ) );
 		add_action( 'add_meta_boxes', array( self::class, 'add_product_lifecycle_meta_box' ) );
+		add_action( 'admin_notices', array( self::class, 'render_admin_notices' ) );
+	}
+
+	/**
+	 * Render dismissible admin notices after lifecycle update.
+	 */
+	public static function render_admin_notices(): void {
+		if ( ! empty( $_GET['statement_lifecycle_updated'] ) ) {
+			?>
+			<div class="notice notice-success is-dismissible">
+				<p><strong><?php esc_html_e( 'Statement Release Lifecycle updated successfully.', 'statement-collector-core' ); ?></strong></p>
+			</div>
+			<?php
+		}
 	}
 
 	/**
@@ -49,6 +63,9 @@ final class LifecycleV2Admin {
 	/**
 	 * Render lifecycle status and override controls in product editor.
 	 *
+	 * Note: NO nested <form> is used here. Normal product editing and save_post
+	 * remain 100% decoupled from privileged lifecycle state overrides.
+	 *
 	 * @param \WP_Post $post Current post object.
 	 */
 	public static function render_meta_box( $post ): void {
@@ -65,67 +82,197 @@ final class LifecycleV2Admin {
 		$drop       = class_exists( PublicApi::class ) ? PublicApi::get_drop( $product ) : null;
 		$drop_name  = is_object( $drop ) && isset( $drop->name ) ? $drop->name : __( 'None', 'statement-collector-core' );
 
+		// Resolve commerce status
+		$commerce_status = __( 'Available', 'statement-collector-core' );
+		if ( ReleaseState::ARCHIVED === $state ) {
+			$commerce_status = __( 'Archived (Locked)', 'statement-collector-core' );
+		} elseif ( ReleaseState::SOLD_OUT === $state ) {
+			$commerce_status = __( 'Sold Out (Locked)', 'statement-collector-core' );
+		} elseif ( ReleaseState::PRIVATE_ACCESS === $state ) {
+			$commerce_status = __( 'Private Access Only', 'statement-collector-core' );
+		} elseif ( ReleaseState::UPCOMING === $state ) {
+			$commerce_status = __( 'Upcoming (Not Released)', 'statement-collector-core' );
+		} elseif ( $stock_qty <= 0 ) {
+			$commerce_status = __( 'Out of Stock', 'statement-collector-core' );
+		}
+
 		// Resolve context-aware allowed target states
 		$allowed_options = self::get_context_allowed_options( $state );
 
+		$nonce_value = function_exists( 'wp_create_nonce' ) ? wp_create_nonce( self::NONCE_ACTION ) : '';
+
 		?>
-		<div class="statement-lifecycle-box" style="padding: 6px 0;">
-			<p>
-				<strong><?php esc_html_e( 'Current Lifecycle State:', 'statement-collector-core' ); ?></strong><br>
-				<span class="badge" style="display:inline-block; padding: 3px 8px; background: #23282d; color: #fff; border-radius: 3px; font-weight: 600; margin-top: 4px;">
-					<?php echo esc_html( strtoupper( $state ) ); ?>
-				</span>
-			</p>
-			<p>
-				<strong><?php esc_html_e( 'Available Stock:', 'statement-collector-core' ); ?></strong>
-				<span><?php echo esc_html( (string) $stock_qty ); ?></span>
-			</p>
-			<p>
-				<strong><?php esc_html_e( 'Assigned Drop:', 'statement-collector-core' ); ?></strong>
-				<span><?php echo esc_html( $drop_name ); ?></span>
-			</p>
-			<hr style="margin: 12px 0; border: 0; border-top: 1px solid #ddd;">
+		<div class="statement-lifecycle-box" style="padding: 4px 0;">
+			<h4 style="margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #1d2327;">
+				<?php esc_html_e( 'STATEMENT RELEASE', 'statement-collector-core' ); ?>
+			</h4>
 
-			<p><strong><?php esc_html_e( 'Privileged Lifecycle Override', 'statement-collector-core' ); ?></strong></p>
+			<table style="width: 100%; font-size: 12px; line-height: 1.6; border-collapse: collapse; margin-bottom: 8px;">
+				<tr>
+					<td style="padding: 2px 0; color: #646970; width: 45%;"><strong><?php esc_html_e( 'State:', 'statement-collector-core' ); ?></strong></td>
+					<td style="padding: 2px 0;">
+						<span class="badge" style="display:inline-block; padding: 2px 7px; background: #1d2327; color: #fff; border-radius: 3px; font-weight: 600; font-size: 11px;">
+							<?php echo esc_html( strtoupper( $state ) ); ?>
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td style="padding: 2px 0; color: #646970;"><strong><?php esc_html_e( 'Drop:', 'statement-collector-core' ); ?></strong></td>
+					<td style="padding: 2px 0; font-weight: 500;"><?php echo esc_html( $drop_name ); ?></td>
+				</tr>
+				<tr>
+					<td style="padding: 2px 0; color: #646970;"><strong><?php esc_html_e( 'Commerce:', 'statement-collector-core' ); ?></strong></td>
+					<td style="padding: 2px 0;"><?php echo esc_html( $commerce_status ); ?></td>
+				</tr>
+				<tr>
+					<td style="padding: 2px 0; color: #646970;"><strong><?php esc_html_e( 'Woo Stock:', 'statement-collector-core' ); ?></strong></td>
+					<td style="padding: 2px 0; font-weight: 600;"><?php echo esc_html( (string) $stock_qty ); ?></td>
+				</tr>
+			</table>
 
-			<?php if ( ReleaseState::ARCHIVED === $state ) : ?>
-				<div style="background: #fff8e5; border-left: 4px solid #ffb900; padding: 8px; margin-bottom: 10px; font-size: 12px;">
-					<strong><?php esc_html_e( 'Caution:', 'statement-collector-core' ); ?></strong>
-					<?php esc_html_e( 'This piece is ARCHIVED. Reopening is a high-impact historical action requiring available inventory and a mandatory reason.', 'statement-collector-core' ); ?>
+			<hr style="margin: 12px 0; border: 0; border-top: 1px solid #dcdcde;">
+
+			<h4 style="margin: 0 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #1d2327;">
+				<?php esc_html_e( 'RELEASE MANAGEMENT', 'statement-collector-core' ); ?>
+			</h4>
+			<p style="margin: 0 0 10px; font-size: 11px; color: #646970; font-style: italic;">
+				<?php esc_html_e( 'Normal product editing above does not change the Statement release state.', 'statement-collector-core' ); ?>
+			</p>
+
+			<div style="background: #f6f7f7; border: 1px solid #c3c4c7; padding: 10px; border-radius: 4px; margin-top: 8px;">
+				<p style="margin: 0 0 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #d63638;">
+					<?php esc_html_e( 'PRIVILEGED OVERRIDE', 'statement-collector-core' ); ?>
+				</p>
+
+				<?php if ( ReleaseState::ARCHIVED === $state ) : ?>
+					<div style="background: #fff8e5; border-left: 4px solid #dba617; padding: 6px 8px; margin-bottom: 10px; font-size: 11px; line-height: 1.4;">
+						<strong><?php esc_html_e( 'Notice:', 'statement-collector-core' ); ?></strong>
+						<?php esc_html_e( 'This piece is ARCHIVED. Reopening requires available inventory and a mandatory audit reason.', 'statement-collector-core' ); ?>
+					</div>
+				<?php endif; ?>
+
+				<!-- Detached override inputs: NO nested form, NO required attribute blocking #post save -->
+				<div class="statement-override-control-group">
+					<p style="margin: 0 0 8px;">
+						<label for="statement_target_state" style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 2px;">
+							<?php esc_html_e( 'Change Release State:', 'statement-collector-core' ); ?>
+						</label>
+						<select id="statement_target_state" name="statement_target_state" style="width: 100%; max-width: 100%;">
+							<option value=""><?php esc_html_e( '— Select Action —', 'statement-collector-core' ); ?></option>
+							<?php foreach ( $allowed_options as $target_val => $label ) : ?>
+								<option value="<?php echo esc_attr( $target_val ); ?>"><?php echo esc_html( $label ); ?></option>
+							<?php endforeach; ?>
+						</select>
+					</p>
+
+					<p style="margin: 0 0 8px;">
+						<label for="statement_override_reason" style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 2px;">
+							<?php esc_html_e( 'Reason / Audit Note:', 'statement-collector-core' ); ?>
+						</label>
+						<textarea id="statement_override_reason" name="statement_override_reason" rows="2" style="width: 100%; max-width: 100%; font-size: 12px;" placeholder="<?php esc_attr_e( 'e.g. Added inventory / editorial reopen', 'statement-collector-core' ); ?>"></textarea>
+					</p>
+
+					<p style="margin: 0 0 10px;">
+						<label style="font-size: 11px; display: flex; align-items: flex-start; gap: 6px; cursor: pointer; color: #1d2327;">
+							<input type="checkbox" id="statement_confirm_override" name="statement_confirm_override" value="1" style="margin-top: 2px;">
+							<span><?php esc_html_e( 'I understand this changes release lifecycle', 'statement-collector-core' ); ?></span>
+						</label>
+					</p>
+
+					<div id="statement_lifecycle_error_msg" style="display: none; background: #fcf0f1; border-left: 3px solid #d63638; padding: 6px 8px; margin-bottom: 8px; font-size: 11px; color: #d63638; line-height: 1.4;"></div>
+
+					<button type="button" id="statement_apply_override_btn" class="button button-secondary" style="width: 100%; text-align: center;">
+						<?php esc_html_e( 'APPLY RELEASE CHANGE', 'statement-collector-core' ); ?>
+					</button>
+
+					<input type="hidden" id="statement_lifecycle_product_id" value="<?php echo esc_attr( (string) $product_id ); ?>">
+					<input type="hidden" id="statement_lifecycle_nonce" value="<?php echo esc_attr( $nonce_value ); ?>">
+					<input type="hidden" id="statement_lifecycle_post_url" value="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				</div>
-			<?php endif; ?>
+			</div>
 
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-				<input type="hidden" name="action" value="statement_override_lifecycle">
-				<input type="hidden" name="product_id" value="<?php echo esc_attr( (string) $product_id ); ?>">
-				<?php wp_nonce_field( self::NONCE_ACTION, 'statement_lifecycle_nonce' ); ?>
+			<script>
+			(function() {
+				var btn = document.getElementById('statement_apply_override_btn');
+				if (!btn) return;
 
-				<p>
-					<label for="statement_target_state"><strong><?php esc_html_e( 'Target Action:', 'statement-collector-core' ); ?></strong></label>
-					<select name="target_state" id="statement_target_state" style="width: 100%; margin-top: 4px;" required>
-						<option value=""><?php esc_html_e( '— Select Action —', 'statement-collector-core' ); ?></option>
-						<?php foreach ( $allowed_options as $target_val => $label ) : ?>
-							<option value="<?php echo esc_attr( $target_val ); ?>"><?php echo esc_html( $label ); ?></option>
-						<?php endforeach; ?>
-					</select>
-				</p>
+				btn.addEventListener('click', function(e) {
+					e.preventDefault();
+					var targetSelect = document.getElementById('statement_target_state');
+					var reasonInput = document.getElementById('statement_override_reason');
+					var confirmBox = document.getElementById('statement_confirm_override');
+					var errorBox = document.getElementById('statement_lifecycle_error_msg');
+					var productId = document.getElementById('statement_lifecycle_product_id');
+					var nonce = document.getElementById('statement_lifecycle_nonce');
+					var postUrl = document.getElementById('statement_lifecycle_post_url');
 
-				<p>
-					<label for="statement_override_reason"><strong><?php esc_html_e( 'Reason / Audit Note:', 'statement-collector-core' ); ?></strong></label>
-					<input type="text" name="override_reason" id="statement_override_reason" style="width: 100%; margin-top: 4px;" placeholder="<?php esc_attr_e( 'e.g. Added inventory / editorial reopen', 'statement-collector-core' ); ?>" required>
-				</p>
+					if (errorBox) {
+						errorBox.style.display = 'none';
+						errorBox.textContent = '';
+					}
 
-				<p>
-					<label style="font-size: 12px; display: block; margin-top: 8px;">
-						<input type="checkbox" name="confirm_override" value="1" required>
-						<?php esc_html_e( 'Confirm explicit state override', 'statement-collector-core' ); ?>
-					</label>
-				</p>
+					var targetState = targetSelect ? targetSelect.value.trim() : '';
+					var reason = reasonInput ? reasonInput.value.trim() : '';
+					var confirmed = confirmBox ? confirmBox.checked : false;
 
-				<button type="submit" class="button button-primary" style="width: 100%; margin-top: 6px;">
-					<?php esc_html_e( 'Apply Override', 'statement-collector-core' ); ?>
-				</button>
-			</form>
+					if (!targetState) {
+						if (errorBox) {
+							errorBox.textContent = 'Please select a target action.';
+							errorBox.style.display = 'block';
+						}
+						if (targetSelect) targetSelect.focus();
+						return;
+					}
+
+					if (!reason) {
+						if (errorBox) {
+							errorBox.textContent = 'Please enter a reason/audit note for this override.';
+							errorBox.style.display = 'block';
+						}
+						if (reasonInput) reasonInput.focus();
+						return;
+					}
+
+					if (!confirmed) {
+						if (errorBox) {
+							errorBox.textContent = 'Please check the box to confirm this lifecycle change.';
+							errorBox.style.display = 'block';
+						}
+						if (confirmBox) confirmBox.focus();
+						return;
+					}
+
+					// Build and submit detached form directly to admin-post.php
+					var form = document.createElement('form');
+					form.method = 'POST';
+					form.action = postUrl ? postUrl.value : 'admin-post.php';
+
+					var fields = {
+						'action': 'statement_override_lifecycle',
+						'product_id': productId ? productId.value : '',
+						'statement_lifecycle_nonce': nonce ? nonce.value : '',
+						'target_state': targetState,
+						'override_reason': reason,
+						'confirm_override': '1'
+					};
+
+					for (var key in fields) {
+						if (fields.hasOwnProperty(key)) {
+							var hidden = document.createElement('input');
+							hidden.type = 'hidden';
+							hidden.name = key;
+							hidden.value = fields[key];
+							form.appendChild(hidden);
+						}
+					}
+
+					btn.disabled = true;
+					btn.textContent = 'Applying...';
+					document.body.appendChild(form);
+					form.submit();
+				});
+			})();
+			</script>
 		</div>
 		<?php
 	}

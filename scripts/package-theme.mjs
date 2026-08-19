@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.13.0-rc.15';
+const defaultVersion = '0.13.0-rc.16';
 
 export const approvedThemeFiles = [
   'style.css',
@@ -33,9 +33,11 @@ export const approvedThemeFiles = [
   'assets/css/product.css',
   'assets/css/cart.css',
   'assets/css/checkout.css',
+  'assets/css/account.css',
   'assets/css/woo-blocks.css',
   'assets/js/navigation.js',
   'assets/js/hero-slider.js',
+  'assets/js/product.js',
   'assets/images/statement-logo.png',
   'assets/images/statement-brand-insignia-vector.jpg',
   'assets/images/statement-brand-insignia-gold.jpg',

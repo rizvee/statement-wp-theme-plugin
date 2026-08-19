@@ -1,5 +1,21 @@
 # Current Priority — Production Convergence & Release Candidates
 
+## SPRINT 08 — ADMIN FREEDOM + CORE LIFECYCLE UX REPAIR + DROP PAGE + PDP + ACCOUNT/LOGIN PERFECTION — COMPLETE (2026-08-19)
+
+Status: complete (Theme Candidate 0.13.0-rc.16 + Core Plugin Candidate 0.13.0-rc.14 + Client Demo 0.2.7 + Child Theme 0.1.0 packaged and verified; ZERO live mutations executed)
+
+- [x] Product Editing Interference Decoupling: Repaired `LifecycleV2Admin.php` to remove nested `<form>` tag and eliminated HTML5 `required` attributes from override fields. Normal WooCommerce product saving (title, price, stock, description, attributes, variations) is 100% decoupled from lifecycle overrides.
+- [x] Detached Override Submissions: Implemented dynamic detached DOM form builder in JavaScript to submit privileged overrides directly to `admin-post.php` without interacting with `#post`.
+- [x] Drop Assignment Admin UX: Repaired `$drop_id` resolution and streamlined General Product Data fields in `Product/Admin.php`.
+- [x] Drop 001 Page Rework (`taxonomy-statement_drop.php`): Luxury editorial release index, 2-piece side-by-side spread, `CURRENT RELEASE` eyebrow, `DROP 001` / `MONOGRAM STUDY` display typography, zero breadcrumbs, no fake dates or totals, responsive mobile stack.
+- [x] Drops Index (`page-drops.php`): Formatted editorial numerals (`01`, `02`, `03`), `VIEW RELEASE →` CTA, `UPCOMING` badges for Drop 002 and Drop 003.
+- [x] Single Product Page (PDP) & Variations: 60/40 desktop layout ratio (`1.5fr` / `1fr`), S/M/L/XL luxury variation buttons bidirectional-synced with WooCommerce native selects, Panelled Hood XL variation support (`STMT-CD-D001-PHJ-XL`).
+- [x] Body Size Guide: "BODY SIZE GUIDE" dialog with CM table (S, M, L, XL) and verified disclaimer ("Body measurements are provided as a general fit guide. Garment measurements may vary by piece. Measurements in centimeters (CM).").
+- [x] Mobile Sticky Add to Bag: IntersectionObserver-driven sticky Add to Bag bar on mobile viewports (< 768px) with price, CTA button, and safe-area inset padding.
+- [x] Account & Login Flow: Created dedicated `assets/css/account.css` with centered authentication card, 3.25rem inputs, 3.5rem full-width CTA buttons, lost password styling, logged-in dashboard tabs, monochrome notices, and mobile stacked orders table.
+- [x] Comprehensive Test Battery: Created `tests/php/test-admin-product-edit-lifecycle.php`, `tests/drop-pdp-ux.test.mjs`, `tests/account-ui.test.mjs`. All 120 PHP files linted clean, all 43 PHP test suites passed (100%), all Node test suites passed, `verify-foundation.mjs` and `verify-git-runtime-tracking.mjs` passed 100%.
+- [x] Deterministic Packaging & Verification: Generated verified ZIP distributions in `dist/` with SHA-256 manifest: Theme `0.13.0-rc.16`, Core `0.13.0-rc.14`, Demo `0.2.7`, Child `0.1.0`.
+
 ## FINAL CONVERGENCE SPRINT — LIVE STOREFRONT ACCEPTANCE + MOBILE 2-PRODUCT GRID + BODY SIZE GUIDE + FOOTER SOCIALS + RELEASE PACKAGING — COMPLETE (2026-08-19)
 
 Status: complete (Theme Candidate 0.13.0-rc.15 + Core Plugin Candidate 0.13.0-rc.13 + Client Demo 0.2.7 + Child Theme 0.1.0 packaged and verified; ZERO live mutations executed)

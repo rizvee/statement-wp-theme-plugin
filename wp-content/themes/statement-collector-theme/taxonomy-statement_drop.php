@@ -1,17 +1,42 @@
 <?php
 
+use Statement\Collector\Core\PublicApi;
+
 defined( 'ABSPATH' ) || exit;
 
 $drop = get_queried_object();
+$drop_name = is_object( $drop ) && isset( $drop->name ) ? (string) $drop->name : '';
+$drop_desc = is_object( $drop ) && isset( $drop->description ) ? (string) $drop->description : '';
+
+// Parse drop number and title if separated by dash or em-dash
+$drop_number = '';
+$drop_title  = $drop_name;
+if ( preg_match( '/^(Drop\s*\d+)\s*[-—–]\s*(.+)$/i', $drop_name, $matches ) ) {
+	$drop_number = trim( $matches[1] );
+	$drop_title  = trim( $matches[2] );
+}
+
+$is_past = class_exists( PublicApi::class ) && is_object( $drop ) ? PublicApi::is_past_drop( $drop ) : false;
+$eyebrow = $is_past ? __( 'RELEASE ARCHIVE', 'statement-collector-theme' ) : __( 'CURRENT RELEASE', 'statement-collector-theme' );
+$status  = $is_past ? __( 'ARCHIVED', 'statement-collector-theme' ) : __( 'AVAILABLE', 'statement-collector-theme' );
 
 if ( ! function_exists( 'woocommerce_product_loop' ) ) {
 	get_header();
 	?>
-	<main id="primary" class="statement-catalog statement-container--wide">
-		<header class="statement-catalog__header">
-			<h1><?php echo isset( $drop->name ) ? esc_html( $drop->name ) : ''; ?></h1>
-			<?php if ( isset( $drop->description ) && '' !== trim( (string) $drop->description ) ) : ?>
-				<div class="statement-catalog__description"><?php echo wp_kses_post( wpautop( $drop->description ) ); ?></div>
+	<main id="primary" class="statement-drop-page statement-catalog statement-container--wide">
+		<header class="statement-drop-page__header">
+			<div class="statement-drop-page__meta-row">
+				<span class="statement-eyebrow"><?php echo esc_html( $eyebrow ); ?></span>
+				<span class="statement-badge statement-badge--<?php echo esc_attr( $is_past ? 'archived' : 'live' ); ?>"><?php echo esc_html( $status ); ?></span>
+			</div>
+			<h1 class="statement-drop-page__title">
+				<?php if ( '' !== $drop_number ) : ?>
+					<span class="statement-drop-page__number"><?php echo esc_html( strtoupper( $drop_number ) ); ?></span>
+				<?php endif; ?>
+				<span class="statement-drop-page__name"><?php echo esc_html( strtoupper( $drop_title ) ); ?></span>
+			</h1>
+			<?php if ( '' !== trim( $drop_desc ) ) : ?>
+				<div class="statement-drop-page__description"><?php echo wp_kses_post( wpautop( $drop_desc ) ); ?></div>
 			<?php endif; ?>
 		</header>
 		<?php \Statement\Collector\Theme\render_catalog_empty_state(); ?>
@@ -25,11 +50,20 @@ get_header( 'shop' );
 
 do_action( 'woocommerce_before_main_content' );
 ?>
-<div class="statement-catalog statement-container--wide">
-	<header class="statement-catalog__header">
-		<h1><?php echo isset( $drop->name ) ? esc_html( $drop->name ) : ''; ?></h1>
-		<?php if ( isset( $drop->description ) && '' !== trim( (string) $drop->description ) ) : ?>
-			<div class="statement-catalog__description"><?php echo wp_kses_post( wpautop( $drop->description ) ); ?></div>
+<div class="statement-drop-page statement-catalog statement-container--wide">
+	<header class="statement-drop-page__header">
+		<div class="statement-drop-page__meta-row">
+			<span class="statement-eyebrow"><?php echo esc_html( $eyebrow ); ?></span>
+			<span class="statement-badge statement-badge--<?php echo esc_attr( $is_past ? 'archived' : 'live' ); ?>"><?php echo esc_html( $status ); ?></span>
+		</div>
+		<h1 class="statement-drop-page__title">
+			<?php if ( '' !== $drop_number ) : ?>
+				<span class="statement-drop-page__number"><?php echo esc_html( strtoupper( $drop_number ) ); ?></span>
+			<?php endif; ?>
+			<span class="statement-drop-page__name"><?php echo esc_html( strtoupper( $drop_title ) ); ?></span>
+		</h1>
+		<?php if ( '' !== trim( $drop_desc ) ) : ?>
+			<div class="statement-drop-page__description"><?php echo wp_kses_post( wpautop( $drop_desc ) ); ?></div>
 		<?php endif; ?>
 	</header>
 

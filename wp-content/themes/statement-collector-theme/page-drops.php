@@ -37,12 +37,13 @@ $current_desc = is_object( $current_drop ) && ! empty( $current_drop->descriptio
 
 	<div class="statement-home-drops-directory__lists">
 		<div class="statement-home-drops-group">
-			<h2 class="statement-home-drops-group__label"><?php esc_html_e( 'CURRENT RELEASE', 'statement-collector-theme' ); ?></h2>
+			<h2 class="statement-home-drops-group__label"><?php esc_html_e( 'CURRENT', 'statement-collector-theme' ); ?></h2>
 			<ul class="statement-editorial-drops-list">
 				<li class="statement-editorial-drops-list__item statement-editorial-drops-list__item--active">
 					<a href="<?php echo esc_url( $drop_url ); ?>" class="statement-editorial-drops-list__link">
-						<span class="statement-editorial-drops-list__name"><?php echo esc_html( $current_name ); ?></span>
-						<span class="statement-editorial-drops-list__arrow" aria-hidden="true">&rarr;</span>
+						<span class="statement-editorial-drops-list__index">01</span>
+						<span class="statement-editorial-drops-list__name"><?php echo esc_html( preg_replace( '/^Drop\s*\d+\s*[-—–]\s*/i', '', $current_name ) ); ?></span>
+						<span class="statement-editorial-drops-list__arrow" aria-hidden="true"><?php esc_html_e( 'VIEW RELEASE →', 'statement-collector-theme' ); ?></span>
 					</a>
 				</li>
 			</ul>
@@ -52,17 +53,19 @@ $current_desc = is_object( $current_drop ) && ! empty( $current_drop->descriptio
 		</div>
 
 		<div class="statement-home-drops-group">
-			<h2 class="statement-home-drops-group__label"><?php esc_html_e( 'UPCOMING DROPS', 'statement-collector-theme' ); ?></h2>
+			<h2 class="statement-home-drops-group__label"><?php esc_html_e( 'UPCOMING', 'statement-collector-theme' ); ?></h2>
 			<ul class="statement-editorial-drops-list">
 				<li class="statement-editorial-drops-list__item statement-editorial-drops-list__item--upcoming">
 					<div class="statement-editorial-drops-list__static">
-						<span class="statement-editorial-drops-list__name"><?php esc_html_e( 'Drop 002', 'statement-collector-theme' ); ?></span>
+						<span class="statement-editorial-drops-list__index">02</span>
+						<span class="statement-editorial-drops-list__name"><?php esc_html_e( 'DROP 002', 'statement-collector-theme' ); ?></span>
 						<span class="statement-badge statement-badge--upcoming"><?php esc_html_e( 'UPCOMING', 'statement-collector-theme' ); ?></span>
 					</div>
 				</li>
 				<li class="statement-editorial-drops-list__item statement-editorial-drops-list__item--upcoming">
 					<div class="statement-editorial-drops-list__static">
-						<span class="statement-editorial-drops-list__name"><?php esc_html_e( 'Drop 003', 'statement-collector-theme' ); ?></span>
+						<span class="statement-editorial-drops-list__index">03</span>
+						<span class="statement-editorial-drops-list__name"><?php esc_html_e( 'DROP 003', 'statement-collector-theme' ); ?></span>
 						<span class="statement-badge statement-badge--upcoming"><?php esc_html_e( 'UPCOMING', 'statement-collector-theme' ); ?></span>
 					</div>
 				</li>
@@ -71,9 +74,9 @@ $current_desc = is_object( $current_drop ) && ! empty( $current_drop->descriptio
 
 		<?php if ( ! empty( $past_drops ) ) : ?>
 			<div class="statement-home-drops-group">
-				<h2 class="statement-home-drops-group__label"><?php esc_html_e( 'PAST RELEASES (ARCHIVE)', 'statement-collector-theme' ); ?></h2>
+				<h2 class="statement-home-drops-group__label"><?php esc_html_e( 'PAST RELEASES', 'statement-collector-theme' ); ?></h2>
 				<ul class="statement-editorial-drops-list">
-					<?php foreach ( $past_drops as $past_drop ) : ?>
+					<?php foreach ( $past_drops as $i => $past_drop ) : ?>
 						<li class="statement-editorial-drops-list__item">
 							<a href="<?php echo esc_url( get_term_link( $past_drop ) ); ?>" class="statement-editorial-drops-list__link">
 								<span class="statement-editorial-drops-list__name"><?php echo esc_html( $past_drop->name ); ?></span>

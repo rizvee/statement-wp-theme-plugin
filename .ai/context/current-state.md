@@ -4,11 +4,11 @@ Updated: 2026-08-19
 
 ## Active Release Candidates
 
-- Theme: `0.13.0-rc.15` (`wp-content/themes/statement-collector-theme/style.css`, `functions.php`, `inc/setup.php`)
-- Core Plugin: `0.13.0-rc.13` (`wp-content/plugins/statement-collector-core/statement-collector-core.php`)
+- Theme: `0.13.0-rc.16` (`wp-content/themes/statement-collector-theme/style.css`, `functions.php`, `inc/setup.php`)
+- Core Plugin: `0.13.0-rc.14` (`wp-content/plugins/statement-collector-core/statement-collector-core.php`)
 - Client Demo Plugin: `0.2.7` (`tools/statement-client-demo/statement-client-demo.php`, `src/AdminPage.php`)
 - Child Theme Starter: `0.1.0` (`tools/statement-collector-child/style.css`)
-- Final Convergence Sprint: COMPLETE (Live Storefront 16/16 Route Audit Passed, Admin Bar Sticky Offset Polish, Mobile 2-Column Product Card Stacked Layout, Body Size Guide Nomenclature & Disclaimers, Footer Social Channels, Full Test Battery 42/42 PHP + 149/149 Node Passed, Deterministic Packaging with SHA-256 Manifest).
+- Sprint 08 (Admin Freedom + Core Lifecycle UX Repair + Frontend Perfection): COMPLETE (Decoupled normal WooCommerce product saves from lifecycle overrides, removed nested forms and required attributes from LifecycleV2Admin, luxury Drop 001 collection spread, Drops editorial index, PDP 60/40 layout, S/M/L/XL luxury variation buttons synced to WooCommerce, Body Size Guide, mobile sticky Add to Bag, dedicated account.css for login/lost-password/dashboard, full PHP and Node test battery passed, deterministic packaging in dist/ with SHA-256 manifest).
 
 ## Repository
 
