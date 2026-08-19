@@ -1,5 +1,25 @@
 # Current Priority — Production Convergence & Release Candidates
 
+## SPRINT 08.1 — ATOMIC RUNTIME ACCEPTANCE + ADMIN FREEDOM + DROP/PDP/ACCOUNT LIVE QA — COMPLETE (2026-08-19)
+
+Status: complete (Theme Candidate 0.13.0-rc.17 + Core Plugin Candidate 0.13.0-rc.15 + Client Demo 0.2.7 + Child Theme 0.1.0 packaged and verified; ZERO destructive live mutations executed)
+
+- [x] Live Component Version Verification: Verified `https://mystatement.store/` live versions; confirmed Theme `0.13.0-rc.16`, Core `0.13.0-rc.14`, WooCommerce active, currency AUD (`$`).
+- [x] Product Edit Admin Freedom Live Verification: Tested in real authenticated `wp-admin` on `post.php` (Post 271 Panelled Hood Jacket and Post 213 Monogram Jacquard Jacket); confirmed `#post` has 0 nested forms, override fields have 0 required attributes, `document.getElementById('post').checkValidity()` returns `true`, clicking "Update" produces "Product updated. View Product" with zero validation blocking or override prompt popups, and release state remains intact (`LIVE`).
+- [x] Drop Page Live Audit: Audited `/drops/` (H1 `DROPS`, `01`, `02`, `03` editorial list, `UPCOMING` badges, `VIEW RELEASE →` link, 0 overflow across 11 viewports 320px–1920px). Audited canonical Drop 001 taxonomy URL (`/drop/drop-001-monogram-study/`); detected PHP 8.4 TypeError on live (`PublicApi::is_past_drop( int $term_id )` receiving `WP_Term` object).
+- [x] Proven Defect Remediations:
+  - Polymorphic `PublicApi::is_past_drop( $term_or_id )` in Core (`src/PublicApi.php`) accepting `int|\WP_Term|object|mixed` term ID or object.
+  - Safe term ID resolution in Theme (`taxonomy-statement_drop.php`) using `$drop->term_id ?? 0`.
+  - Mobile Sticky Bar lifecycle in Theme (`assets/js/product.js`): removed initial width constraint on creation to allow responsive CSS `@media (max-width: 48rem)` and `IntersectionObserver` to govern visibility seamlessly across device rotation and resizing.
+- [x] Monogram PDP & Panelled Hood PDP Live Visual QA: Audited both PDPs on live; verified 60/40 desktop layout, gallery images, price (`$310.00` and `$275.00`), provenance line, S/M/L/XL luxury variation buttons with two-way native select synchronization, and `addBtn` states.
+- [x] Body Size Guide Live QA: Verified `BODY SIZE GUIDE` accessible dialog with CM table (S, M, L, XL), disclaimer, open/close button interactions, backdrop dismiss, and zero viewport overflow at 320px.
+- [x] Mobile Sticky Add to Bag Bar Live QA: Verified `<div class="statement-mobile-sticky-bar">` appears when native CTA is scrolled out of viewport, shows correct piece price, and triggers WooCommerce Add to Bag.
+- [x] Account / Login / Lost Password Live QA: Audited `/my-account/` and `/my-account/lost-password/`; confirmed `account.css` styling applied (3.25rem inputs, 52px computed height, full-width CTA buttons, monochrome notices, dashboard navigation tabs, orders empty state).
+- [x] Cart + Checkout Regression: Verified Add to Bag for Panelled Hood XL, Cart line item rendering, subtotal/total calculation (`$275.00` + `$10.00` flat rate = `$285.00 AUD`), Proceed to Checkout navigation, guest checkout contact/shipping form presence.
+- [x] Header / Nav / Footer Regression: Verified authentic transparent Statement logo, desktop nav, mobile drawer, Account link, Bag count sync, search modal, footer channels (`@statement.au`), and absence of Journal from public menus.
+- [x] 16-Route Live Acceptance Matrix: Executed automated live storefront auditor (`node scripts/audit-live-storefront.mjs`); 15/16 routes passed HTTP 200/404; single defect on Drop 001 taxonomy resolved in local candidate.
+- [x] Candidate Bump & Deterministic Packaging: Promoted Theme to `0.13.0-rc.17` and Core to `0.13.0-rc.15`. Built single-root ZIP distributions in `dist/` with SHA-256 manifest. All 120 PHP files linted clean (100%), all 43 PHP unit tests passed (100%), all Node test suites passed, `verify-foundation.mjs` and `verify-git-runtime-tracking.mjs` passed 100%.
+
 ## SPRINT 08 — ADMIN FREEDOM + CORE LIFECYCLE UX REPAIR + DROP PAGE + PDP + ACCOUNT/LOGIN PERFECTION — COMPLETE (2026-08-19)
 
 Status: complete (Theme Candidate 0.13.0-rc.16 + Core Plugin Candidate 0.13.0-rc.14 + Client Demo 0.2.7 + Child Theme 0.1.0 packaged and verified; ZERO live mutations executed)

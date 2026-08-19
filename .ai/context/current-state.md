@@ -4,11 +4,11 @@ Updated: 2026-08-19
 
 ## Active Release Candidates
 
-- Theme: `0.13.0-rc.16` (`wp-content/themes/statement-collector-theme/style.css`, `functions.php`, `inc/setup.php`)
-- Core Plugin: `0.13.0-rc.14` (`wp-content/plugins/statement-collector-core/statement-collector-core.php`)
+- Theme: `0.13.0-rc.17` (`wp-content/themes/statement-collector-theme/style.css`, `functions.php`, `inc/setup.php`)
+- Core Plugin: `0.13.0-rc.15` (`wp-content/plugins/statement-collector-core/statement-collector-core.php`)
 - Client Demo Plugin: `0.2.7` (`tools/statement-client-demo/statement-client-demo.php`, `src/AdminPage.php`)
 - Child Theme Starter: `0.1.0` (`tools/statement-collector-child/style.css`)
-- Sprint 08 (Admin Freedom + Core Lifecycle UX Repair + Frontend Perfection): COMPLETE (Decoupled normal WooCommerce product saves from lifecycle overrides, removed nested forms and required attributes from LifecycleV2Admin, luxury Drop 001 collection spread, Drops editorial index, PDP 60/40 layout, S/M/L/XL luxury variation buttons synced to WooCommerce, Body Size Guide, mobile sticky Add to Bag, dedicated account.css for login/lost-password/dashboard, full PHP and Node test battery passed, deterministic packaging in dist/ with SHA-256 manifest).
+- Sprint 08.1 (Atomic Runtime Acceptance + Admin Freedom + Drop/PDP/Account Live QA): COMPLETE (Live verification of Theme 0.13.0-rc.16 and Core 0.13.0-rc.14; confirmed 100% normal WordPress/WooCommerce product saves without lifecycle override blockers in real wp-admin; audited 16 public routes with 15 passing HTTP 200/404; discovered PHP 8.4 TypeError in PublicApi::is_past_drop on taxonomy-statement_drop.php and made is_past_drop accept polymorphic term/ID objects; removed initial width restriction in product.js sticky bar creation; bumped Theme to 0.13.0-rc.17 and Core to 0.13.0-rc.15; verified and packaged all ZIP artifacts in dist/ with SHA-256 manifest).
 
 ## Repository
 

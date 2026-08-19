@@ -154,9 +154,10 @@ final class PublicApi {
 	/**
 	 * Whether a Drop taxonomy term is a Past Drop (contains ONLY ARCHIVED pieces and at least one ARCHIVED piece, excluding QA fixtures).
 	 *
-	 * @param int $term_id Drop term ID.
+	 * @param int|\WP_Term|object|mixed $term_or_id Drop term ID or term object.
 	 */
-	public static function is_past_drop( int $term_id ): bool {
+	public static function is_past_drop( $term_or_id ): bool {
+		$term_id = is_object( $term_or_id ) && isset( $term_or_id->term_id ) ? (int) $term_or_id->term_id : (int) $term_or_id;
 		if ( $term_id < 1 || ! function_exists( 'get_posts' ) ) {
 			return false;
 		}

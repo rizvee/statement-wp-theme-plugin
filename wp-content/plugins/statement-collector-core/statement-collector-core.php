@@ -2,7 +2,7 @@
 /*
 Plugin Name: Statement Collector Core
 Description: Durable domain foundation for Statement Collector's Piece.
-Version: 0.13.0-rc.14
+Version: 0.13.0-rc.15
 Text Domain: statement-collector-core
 */
 
@@ -10,7 +10,7 @@ namespace Statement\Collector\Core;
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'STATEMENT_COLLECTOR_CORE_VERSION', '0.13.0-rc.14' );
+define( 'STATEMENT_COLLECTOR_CORE_VERSION', '0.13.0-rc.15' );
 define( 'STATEMENT_COLLECTOR_CORE_FILE', __FILE__ );
 
 require_once __DIR__ . '/src/Release/ReleaseState.php';

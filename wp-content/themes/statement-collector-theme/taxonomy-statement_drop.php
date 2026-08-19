@@ -16,7 +16,8 @@ if ( preg_match( '/^(Drop\s*\d+)\s*[-—–]\s*(.+)$/i', $drop_name, $matches ) 
 	$drop_title  = trim( $matches[2] );
 }
 
-$is_past = class_exists( PublicApi::class ) && is_object( $drop ) ? PublicApi::is_past_drop( $drop ) : false;
+$term_id = is_object( $drop ) && isset( $drop->term_id ) ? (int) $drop->term_id : 0;
+$is_past = class_exists( PublicApi::class ) && $term_id > 0 ? PublicApi::is_past_drop( $term_id ) : false;
 $eyebrow = $is_past ? __( 'RELEASE ARCHIVE', 'statement-collector-theme' ) : __( 'CURRENT RELEASE', 'statement-collector-theme' );
 $status  = $is_past ? __( 'ARCHIVED', 'statement-collector-theme' ) : __( 'AVAILABLE', 'statement-collector-theme' );
 

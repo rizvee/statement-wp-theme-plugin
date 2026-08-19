@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	// 2. Mobile Sticky Add-to-Bag Bar
 	var mainAddBtn = document.querySelector('.single_add_to_cart_button');
-	if (mainAddBtn && window.innerWidth <= 768) {
+	if (mainAddBtn) {
 		var stickyBar = document.querySelector('.statement-mobile-sticky-bar');
 		if (!stickyBar) {
 			stickyBar = document.createElement('div');
