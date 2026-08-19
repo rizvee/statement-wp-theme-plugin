@@ -66,7 +66,7 @@ test_assert_same( false, class_exists( 'WC_Payment_Gateway' ), 'WC_Payment_Gatew
 require_once $root . '/tools/statement-integration-fixtures/statement-integration-fixtures.php';
 
 test_assert_same( true, defined( 'STATEMENT_INTEGRATION_FIXTURES_VERSION' ), 'Fixture version constant must be defined' );
-test_assert_same( '0.3.3', STATEMENT_INTEGRATION_FIXTURES_VERSION, 'Fixture version must be 0.3.3' );
+test_assert_same( '0.3.4', STATEMENT_INTEGRATION_FIXTURES_VERSION, 'Fixture version must be 0.3.4' );
 test_assert_same( false, class_exists( 'Statement\Integration\Fixtures\StatementQaGateway', false ), 'StatementQaGateway must NOT be loaded on plugin bootstrap without WooCommerce' );
 
 

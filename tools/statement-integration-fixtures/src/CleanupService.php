@@ -85,4 +85,22 @@ class CleanupService {
 			'message' => "Restored WooCommerce currency to '{$previous}'.",
 		);
 	}
+
+	/**
+	 * Perform structured read-only audit of all QA entities across all tables and entity types.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function dry_run(): array {
+		return FinalCleanupService::dry_run();
+	}
+
+	/**
+	 * Execute hardened, deterministic production cleanup.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function final_cleanup(): array {
+		return FinalCleanupService::execute_cleanup();
+	}
 }

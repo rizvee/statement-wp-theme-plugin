@@ -5,7 +5,7 @@ import { dirname, join, resolve } from 'node:path';
 import { lintPhp } from './php-lint.mjs';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.3.3';
+const defaultVersion = '0.3.4';
 
 export const approvedFixtureFiles = [
   'statement-integration-fixtures.php',
@@ -13,6 +13,7 @@ export const approvedFixtureFiles = [
   'src/FixtureService.php',
   'src/PrivateFixtureService.php',
   'src/VerificationService.php',
+  'src/FinalCleanupService.php',
   'src/CleanupService.php',
   'src/StatementQaGateway.php',
   'src/QaTestService.php',

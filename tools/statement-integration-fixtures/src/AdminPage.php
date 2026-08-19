@@ -94,6 +94,22 @@ class AdminPage {
 				} elseif ( 'run_qa_terminal_lifecycle' === $action ) {
 					check_admin_referer( 'statement_fixtures_qa_action' );
 					$result_notice = QaTestService::run_terminal_lifecycle_test();
+				} elseif ( 'final_cleanup_dry_run' === $action ) {
+					check_admin_referer( 'statement_fixtures_final_cleanup' );
+					$dry = FinalCleanupService::dry_run();
+					$result_notice = array(
+						'success' => $dry['success'] && $dry['is_safe_to_execute'],
+						'message' => sprintf(
+							'Final Cleanup Dry-Run: %d entity(s) queued for deletion, %d preserved, %d ambiguity(s). Safe: %s',
+							$dry['total_entities_to_clean'],
+							count( $dry['preserved_entities'] ),
+							count( $dry['ambiguities'] ),
+							$dry['is_safe_to_execute'] ? 'YES' : 'NO'
+						),
+					);
+				} elseif ( 'final_cleanup' === $action ) {
+					check_admin_referer( 'statement_fixtures_final_cleanup' );
+					$result_notice = FinalCleanupService::execute_cleanup();
 				}
 			} catch ( \Throwable $e ) {
 				$result_notice = array(
@@ -571,6 +587,23 @@ class AdminPage {
 					</form>
 				</div>
 			<?php endif; ?>
+
+			<div class="card" style="max-width: 900px; margin-top: 20px; border-left: 4px solid #0073aa;">
+				<h2>6. Final Production Cleanup & Audit</h2>
+				<p>Perform a non-destructive dry-run audit or execute deterministic cleanup across QA products, QA drops, QA orders, and M10 access tables.</p>
+
+				<form method="post" action="" style="display: inline-block; margin-right: 20px;">
+					<?php wp_nonce_field( 'statement_fixtures_final_cleanup' ); ?>
+					<input type="hidden" name="statement_fixtures_action" value="final_cleanup_dry_run">
+					<?php submit_button( 'Run QA Cleanup Dry-Run', 'primary', 'submit_final_cleanup_dry_run', false ); ?>
+				</form>
+
+				<form method="post" action="" style="display: inline-block;" onsubmit="return confirm('WARNING: Are you sure you want to permanently delete all QA products, QA orders, and test access rows? Production pieces (Drop 001, Product 213, Product 271) will be preserved.');">
+					<?php wp_nonce_field( 'statement_fixtures_final_cleanup' ); ?>
+					<input type="hidden" name="statement_fixtures_action" value="final_cleanup">
+					<?php submit_button( 'Execute Final Production Cleanup', 'delete', 'submit_final_cleanup', false ); ?>
+				</form>
+			</div>
 		</div>
 		<?php
 	}
