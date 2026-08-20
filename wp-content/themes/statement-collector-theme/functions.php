@@ -2,7 +2,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'STATEMENT_COLLECTOR_THEME_VERSION', '0.13.0-rc.21' );
+define( 'STATEMENT_COLLECTOR_THEME_VERSION', '0.13.0-rc.22' );
 define( 'STATEMENT_COLLECTOR_THEME_FILE', __FILE__ );
 define( 'STATEMENT_COLLECTOR_THEME_PATH', trailingslashit( get_template_directory() ) );
 

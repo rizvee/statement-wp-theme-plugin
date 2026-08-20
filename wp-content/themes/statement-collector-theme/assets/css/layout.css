@@ -304,3 +304,106 @@
 	text-transform: uppercase;
 	margin: 0;
 }
+
+/* ==========================================================================
+   DROPS DIRECTORY & EDITORIAL RELEASES LIST COMPONENT
+   ========================================================================== */
+
+.statement-drops-page {
+	padding-block: clamp(2.5rem, 2rem + 3vw, 5rem) clamp(4rem, 3rem + 5vw, 8rem);
+}
+
+.statement-drops-page__header {
+	margin-block-end: clamp(2.5rem, 2rem + 3vw, 4.5rem);
+	max-inline-size: 48rem;
+}
+
+.statement-drops-page__title {
+	margin: 0 0 0.75rem;
+	font-family: var(--wp--preset--font-family--ui, sans-serif);
+	font-size: clamp(2.25rem, 1.8rem + 2.5vw, 4rem);
+	font-weight: 500;
+	letter-spacing: -0.02em;
+	text-transform: uppercase;
+}
+
+.statement-drops-page__subtitle {
+	margin: 0;
+	color: var(--wp--preset--color--soft-graphite);
+	font-size: clamp(0.9375rem, 0.9rem + 0.15vw, 1.0625rem);
+	line-height: 1.6;
+}
+
+.statement-home-drops-directory__lists {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(2rem, 3.5vw, 3rem);
+}
+
+.statement-home-drops-group__label {
+	font-family: var(--wp--preset--font-family--ui, sans-serif);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--soft-graphite);
+	margin: 0 0 1rem;
+}
+
+.statement-editorial-drops-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	border-block-start: 1px solid var(--wp--preset--color--border-grey);
+}
+
+.statement-editorial-drops-list__item {
+	border-block-end: 1px solid var(--wp--preset--color--border-grey);
+	list-style: none;
+}
+
+.statement-editorial-drops-list__link,
+.statement-editorial-drops-list__static {
+	display: grid;
+	grid-template-columns: 48px 1fr auto;
+	align-items: center;
+	gap: 1.5rem;
+	padding-block: clamp(1.25rem, 1rem + 0.8vw, 1.875rem);
+	text-decoration: none;
+	color: var(--wp--preset--color--near-black);
+	font-family: var(--wp--preset--font-family--ui, sans-serif);
+	font-size: clamp(1.125rem, 1rem + 0.5vw, 1.5rem);
+	font-weight: 500;
+	letter-spacing: -0.01em;
+	transition: background 200ms ease;
+}
+
+.statement-editorial-drops-list__link:hover {
+	background: color-mix(in srgb, var(--wp--preset--color--gallery-ivory) 40%, transparent);
+}
+
+.statement-editorial-drops-list__index {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	letter-spacing: 0.16em;
+	color: var(--wp--preset--color--soft-graphite);
+}
+
+.statement-editorial-drops-list__name {
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+}
+
+.statement-editorial-drops-list__arrow {
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	transition: transform 200ms ease;
+}
+
+.statement-editorial-drops-list__link:hover .statement-editorial-drops-list__arrow {
+	transform: translateX(4px);
+}

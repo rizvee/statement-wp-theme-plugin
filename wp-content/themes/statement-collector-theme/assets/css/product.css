@@ -576,3 +576,70 @@ table.variations td {
 		cursor: pointer;
 	}
 }
+
+/* ==========================================================================
+   PRODUCT WOOCOMMERCE NOTICES
+   ========================================================================== */
+
+.woocommerce-notices-wrapper {
+	inline-size: 100%;
+	max-inline-size: calc(var(--wp--style--global--wide-size, 1440px) + (2 * 1.5rem));
+	margin-inline: auto;
+	padding-inline: clamp(1rem, 0.8rem + 1vw, 2.5rem);
+}
+
+.woocommerce-notice,
+.woocommerce-message,
+.woocommerce-info,
+.woocommerce-error {
+	padding: 1.125rem 1.5rem !important;
+	margin-block: 1rem 1.5rem !important;
+	background: var(--wp--preset--color--warm-white) !important;
+	border: 1px solid var(--wp--preset--color--border-grey) !important;
+	border-inline-start: 3px solid var(--wp--preset--color--near-black) !important;
+	color: var(--wp--preset--color--near-black) !important;
+	font-family: var(--wp--preset--font-family--ui, sans-serif) !important;
+	font-size: 0.875rem !important;
+	line-height: 1.5 !important;
+	list-style: none !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: space-between !important;
+	flex-wrap: wrap !important;
+	gap: 1rem !important;
+}
+
+.woocommerce-message::before,
+.woocommerce-info::before,
+.woocommerce-error::before {
+	display: none !important;
+}
+
+.woocommerce-message .button,
+.woocommerce-info .button,
+.woocommerce-error .button {
+	margin-inline-start: auto;
+	padding: 0.5rem 1.25rem !important;
+	background: var(--wp--preset--color--near-black) !important;
+	color: var(--wp--preset--color--warm-white) !important;
+	font-family: var(--wp--preset--font-family--ui, sans-serif) !important;
+	font-size: 0.6875rem !important;
+	font-weight: 600 !important;
+	letter-spacing: 0.18em !important;
+	text-transform: uppercase !important;
+	border: 1px solid var(--wp--preset--color--near-black) !important;
+	border-radius: 0 !important;
+	text-decoration: none !important;
+	transition: background-color 200ms ease !important;
+}
+
+.woocommerce-message .button:hover,
+.woocommerce-info .button:hover,
+.woocommerce-error .button:hover {
+	background: var(--wp--preset--color--soft-graphite) !important;
+	opacity: 0.9;
+}
+
+.woocommerce-error {
+	border-inline-start-color: var(--wp--preset--color--ink-navy) !important;
+}

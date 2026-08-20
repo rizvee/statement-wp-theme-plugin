@@ -16,12 +16,12 @@ const fixtureRoot = join(root, 'tools', 'statement-integration-fixtures');
 const demoRoot = join(root, 'tools', 'statement-client-demo');
 
 test('Sprint 10: Version Synchronization & Metadata Integrity', async (t) => {
-	await t.test('Theme is canonical 0.13.0-rc.21', () => {
+	await t.test('Theme is canonical 0.13.0-rc.22', () => {
 		const styleCss = readFileSync(join(themeRoot, 'style.css'), 'utf8');
-		assert.match(styleCss, /Version:\s*0\.13\.0-rc\.21/);
+		assert.match(styleCss, /Version:\s*0\.13\.0-rc\.22/);
 
 		const functionsPhp = readFileSync(join(themeRoot, 'functions.php'), 'utf8');
-		assert.match(functionsPhp, /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.21['"]\s*\);/);
+		assert.match(functionsPhp, /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.22['"]\s*\);/);
 	});
 
 	await t.test('Integration Fixtures is canonical 0.3.5 with dynamic admin heading', () => {
@@ -132,9 +132,9 @@ test('Sprint 10: Text-Only About & Contact Architectural Guarantee', async (t) =
 });
 
 test('Sprint 10: Full Package Orchestration & Single-Root Verifier', () => {
-	const themePkg = packageTheme('0.13.0-rc.21');
+	const themePkg = packageTheme('0.13.0-rc.22');
 	assert.ok(existsSync(themePkg.path));
-	const themeVerify = verifyPackage(themePkg.path, '0.13.0-rc.21');
+	const themeVerify = verifyPackage(themePkg.path, '0.13.0-rc.22');
 	assert.ok(themeVerify.ok, `Theme verification failed: ${themeVerify.errors?.join(', ')}`);
 
 	const pluginPkg = packagePlugin('0.13.0-rc.15');
@@ -151,7 +151,7 @@ test('Sprint 10: Full Package Orchestration & Single-Root Verifier', () => {
 	assert.ok(demoVerify.ok, `Demo verification failed: ${demoVerify.errors?.join(', ')}`);
 
 	const { manifest } = packageAll({ silent: true });
-	assert.equal(manifest.theme.header_version, '0.13.0-rc.21');
+	assert.equal(manifest.theme.header_version, '0.13.0-rc.22');
 	assert.equal(manifest.plugin.header_version, '0.13.0-rc.15');
 	assert.equal(manifest.deployment_authorized, false);
 });

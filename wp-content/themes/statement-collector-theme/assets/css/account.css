@@ -1,7 +1,26 @@
 /* LUXURY STATEMENT ACCOUNT & AUTHENTICATION STYLING */
 
-.woocommerce-account .site-main {
+.woocommerce-account .site-main,
+.woocommerce-account .statement-page {
 	padding-block: clamp(3rem, 6vw, 7rem) clamp(5rem, 8vw, 9rem);
+}
+
+.woocommerce-account .statement-article__header {
+	text-align: center;
+	margin-block-end: clamp(2rem, 3vw, 3rem);
+}
+
+.woocommerce-account .statement-article__title {
+	font-family: var(--wp--preset--font-family--display, serif);
+	font-size: clamp(2.25rem, 1.8rem + 2vw, 3.5rem);
+	font-weight: 400;
+	letter-spacing: -0.02em;
+	text-transform: uppercase;
+	margin: 0;
+}
+
+.woocommerce-account .woocommerce > h2 {
+	display: none;
 }
 
 .statement-account-container {

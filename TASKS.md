@@ -1,5 +1,30 @@
 # Current Priority — Production Convergence & Release Candidates
 
+## VISUAL SIGNOFF EVIDENCE & LUXURY POLISH GATE — COMPLETE (2026-08-20)
+
+Status: complete (Theme Candidate 0.13.0-rc.22 + Core Plugin Candidate 0.13.0-rc.15 + Integration Fixtures 0.3.5 + Client Demo 0.2.7 packaged and verified; ZERO live mutations executed)
+
+- [x] Screenshot-First Visual QA & Defect Discovery across Live Storefront (`https://mystatement.store/`):
+  - Captured full-page desktop (1440x900) and mobile (390x844) screenshots across Home, Shop, Drops, Drop 001, Monogram PDP, Panelled Hood PDP, About, Contact, Account, Cart, and Checkout.
+  - Challenged prior self-awarded 10/10 scores with an adversarial, zero-inflation critical eye.
+- [x] Discovered & Documented Real Visual Defects:
+  - Defect 1: `/drops/` directory (`page-drops.php`) lacked styling due to `home.css` scoping; rendered unstyled browser bullet points (`list-style: disc`).
+  - Defect 2: Inline arrow displaced in `template-parts/home/drops-list.php` due to missing `<span class="statement-editorial-drops-list__index">` spans against 3-column CSS grid.
+  - Defect 3: WooCommerce Block Checkout sidebar had extreme narrow constraint causing aggressive mid-word hyphenation ("Monogr-am Jacquar-d Jacket").
+  - Defect 4: WooCommerce Block Empty Cart displayed generic crying emoji and unstyled rounded buttons.
+  - Defect 5: Single Product Page notices lacked container bounds, flushing hard against viewport edge with unstyled links.
+  - Defect 6: Account page had left-aligned `My account` heading disconnected from centered Login card, plus unstyled password toggle button.
+- [x] Reusable Architectural Theme Fixes:
+  - Unified drops directory and releases list component styles into `assets/css/layout.css` (loaded on all pages).
+  - Added index spans (`01`, `02`, `03`) to `drops-list.php` for robust 3-column layout alignment.
+  - Enhanced `assets/css/woo-blocks.css` with sidebar minimum widths, `hyphens: none !important; word-break: normal !important;`, luxury empty cart typography, and sharp luxury rectangular buttons.
+  - Centered Account headings in `assets/css/account.css` and polished password toggle.
+  - Added global `.woocommerce-notices-wrapper` rules in `assets/css/layout.css` for consistent container padding and luxury typography.
+- [x] Verification, Version Bump & Packaging:
+  - Promoted Theme candidate to `0.13.0-rc.22`.
+  - All 121 PHP files linted clean (100%), all 45 PHP contract tests passed, all Node tests and foundation verification passed 100%.
+  - Rebuilt deterministic package `dist/statement-collector-theme-0.13.0-rc.22.zip` with SHA-256 manifest.
+
 ## SPRINT 10 — OVERNIGHT MASTER SPRINT: MILLION-DOLLAR LUXURY FLAGSHIP STOREFRONT CONVERGENCE — COMPLETE (2026-08-20)
 
 Status: complete (Theme Candidate 0.13.0-rc.20 + Core Plugin Candidate 0.13.0-rc.15 + Integration Fixtures 0.3.5 + Client Demo 0.2.7 packaged and verified; ZERO destructive live mutations executed)

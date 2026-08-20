@@ -8,12 +8,12 @@ import { verifyPackage } from '../scripts/verify-package.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 
-test('M15: Theme 0.13.0-rc.21 metadata and file structure', () => {
+test('M15: Theme 0.13.0-rc.22 metadata and file structure', () => {
   const styleCss = readFileSync(join(root, 'wp-content/themes/statement-collector-theme/style.css'), 'utf8');
-  assert.match(styleCss, /Version:\s*0\.13\.0-rc\.21/);
+  assert.match(styleCss, /Version:\s*0\.13\.0-rc\.22/);
 
   const functionsPhp = readFileSync(join(root, 'wp-content/themes/statement-collector-theme/functions.php'), 'utf8');
-  assert.match(functionsPhp, /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.21['"]\s*\);/);
+  assert.match(functionsPhp, /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.22['"]\s*\);/);
 
   const setupPhp = readFileSync(join(root, 'wp-content/themes/statement-collector-theme/inc/setup.php'), 'utf8');
   assert.match(setupPhp, /function protect_front_page_template/);
@@ -64,13 +64,13 @@ test('M15: Client Demo plugin structure and security invariants', () => {
   assert.match(registryPhp, /statement-panelled-hood-jacket-model-front\.webp/);
 });
 
-test('M15: Package Theme 0.13.0-rc.21 and Client Demo 0.2.7', () => {
-  const themePkg = packageTheme('0.13.0-rc.21');
-  assert.equal(themePkg.version, '0.13.0-rc.21');
+test('M15: Package Theme 0.13.0-rc.22 and Client Demo 0.2.7', () => {
+  const themePkg = packageTheme('0.13.0-rc.22');
+  assert.equal(themePkg.version, '0.13.0-rc.22');
   assert.ok(themePkg.sizeBytes > 0);
   assert.ok(existsSync(themePkg.path));
 
-  const themeVerify = verifyPackage(themePkg.path, '0.13.0-rc.21');
+  const themeVerify = verifyPackage(themePkg.path, '0.13.0-rc.22');
   assert.ok(themeVerify.ok, `Theme package verification failed: ${themeVerify.errors.join(', ')}`);
 
   const demoPkg = packageClientDemo('0.2.7');
