@@ -3,6 +3,15 @@
    Scoped, non-destructive styling for WooCommerce Cart & Checkout Blocks
    ========================================================================== */
 
+/* Expand container width for WooCommerce Cart & Checkout */
+.woocommerce-cart .statement-page,
+.woocommerce-checkout .statement-page,
+.statement-page:has(.wp-block-woocommerce-checkout),
+.statement-page:has(.wp-block-woocommerce-cart),
+.statement-page:has(.woocommerce) {
+	max-inline-size: min(100% - 3rem, 78rem) !important;
+}
+
 .wc-block-components-sidebar,
 .wc-block-components-main {
 	font-family: var(--wp--preset--font-family--ui, inherit);
@@ -15,6 +24,18 @@
 	letter-spacing: -0.01em;
 	text-transform: uppercase;
 	color: var(--wp--preset--color--near-black, #111111);
+}
+
+.wc-block-components-product-name,
+.wc-block-components-order-summary-item__title {
+	word-break: normal !important;
+	overflow-wrap: break-word !important;
+	hyphens: none !important;
+}
+
+.wc-block-components-order-summary-item__description {
+	flex: 1 1 auto !important;
+	min-inline-size: 0 !important;
 }
 
 .wc-block-components-button,
@@ -45,7 +66,7 @@
 	border: 1px solid var(--wp--preset--color--border-grey, #E5E5E0) !important;
 	background: var(--wp--preset--color--warm-white, #FFFFFF) !important;
 	border-radius: 0 !important;
-	padding: 1.5rem !important;
+	padding: clamp(1.5rem, 2.5vw, 2.25rem) !important;
 }
 
 .wc-block-components-text-input input[type="text"],

@@ -9,10 +9,10 @@ const root = resolve(import.meta.dirname, '..');
 test('M19 Acceptance Hardening & Production Convergence Suite', async (t) => {
   await t.test('1. Version Synchronization across Core, Theme, Demo, and Child Theme', () => {
     const themeStyle = readFileSync(join(root, 'wp-content/themes/statement-collector-theme/style.css'), 'utf8');
-    assert.match(themeStyle, /Version:\s*0\.13\.0-rc\.20/, 'Theme style.css must be 0.13.0-rc.20');
+    assert.match(themeStyle, /Version:\s*0\.13\.0-rc\.21/, 'Theme style.css must be 0.13.0-rc.21');
 
     const themeFuncs = readFileSync(join(root, 'wp-content/themes/statement-collector-theme/functions.php'), 'utf8');
-    assert.match(themeFuncs, /STATEMENT_COLLECTOR_THEME_VERSION',\s*'0\.13\.0-rc\.20'/, 'Theme functions.php constant must be 0.13.0-rc.20');
+    assert.match(themeFuncs, /STATEMENT_COLLECTOR_THEME_VERSION',\s*'0\.13\.0-rc\.21'/, 'Theme functions.php constant must be 0.13.0-rc.21');
 
     const coreEntry = readFileSync(join(root, 'wp-content/plugins/statement-collector-core/statement-collector-core.php'), 'utf8');
     assert.match(coreEntry, /Version:\s*0\.13\.0-rc\.15/, 'Core plugin entry header must be 0.13.0-rc.15');

@@ -320,16 +320,19 @@ li.statement-catalog__item {
 }
 
 /* HISTORICAL ARCHIVE PAGE */
-.statement-archive-page {
+.statement-archive-page,
+.statement-archive {
 	padding-block: clamp(2.5rem, 2rem + 3vw, 5rem) clamp(4rem, 3rem + 5vw, 8rem);
 }
 
-.statement-archive-page__header {
+.statement-archive-page__header,
+.statement-archive__header {
 	margin-block-end: clamp(2.5rem, 2rem + 3vw, 4.5rem);
 	max-inline-size: 48rem;
 }
 
-.statement-archive-page__title {
+.statement-archive-page__title,
+.statement-archive__title {
 	margin: 0 0 0.75rem;
 	font-family: var(--wp--preset--font-family--ui, sans-serif);
 	font-size: clamp(2.25rem, 1.8rem + 2.5vw, 4rem);
@@ -338,11 +341,29 @@ li.statement-catalog__item {
 	text-transform: uppercase;
 }
 
-.statement-archive-page__description {
+.statement-archive-page__description,
+.statement-archive__subtitle {
 	margin: 0;
 	color: var(--wp--preset--color--soft-graphite, #55575c);
 	font-size: clamp(0.9375rem, 0.9rem + 0.15vw, 1.0625rem);
 	line-height: 1.6;
+}
+
+.statement-archive__grid,
+.statement-archive-page .statement-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: clamp(1.5rem, 3vw, 4rem) clamp(0.75rem, 2.5vw, 3rem);
+	max-inline-size: 58rem;
+	margin-inline: auto;
+}
+
+@media (max-width: 36rem) {
+	.statement-archive__grid,
+	.statement-archive-page .statement-grid {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
 }
 
 /* PRIVATE ACCESS GATE OVERLAY & PRESENTATION */
