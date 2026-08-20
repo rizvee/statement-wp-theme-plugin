@@ -27,11 +27,28 @@ if ( null === $drop && class_exists( 'Statement\Collector\Core\PublicApi' ) ) {
 
 $drop_name     = is_object( $drop ) && isset( $drop->name ) ? trim( (string) $drop->name ) : '';
 $heading_level = isset( $args['heading_level'] ) && 2 === (int) $args['heading_level'] ? 2 : 3;
-$image_html    = (int) $product->get_image_id() > 0
+$gallery_ids   = method_exists( $product, 'get_gallery_image_ids' ) ? $product->get_gallery_image_ids() : array();
+$secondary_img = '';
+if ( ! empty( $gallery_ids ) ) {
+	$sec_id = reset( $gallery_ids );
+	if ( (int) $sec_id > 0 ) {
+		$secondary_img = wp_get_attachment_image(
+			(int) $sec_id,
+			'large',
+			false,
+			array(
+				'class'   => 'statement-piece__image statement-piece__image--secondary',
+				'loading' => 'lazy',
+			)
+		);
+	}
+}
+
+$image_html = (int) $product->get_image_id() > 0
 	? $product->get_image(
-		'woocommerce_thumbnail',
+		'large',
 		array(
-			'class'   => 'statement-piece__image',
+			'class'   => 'statement-piece__image statement-piece__image--primary',
 			'loading' => 'lazy',
 		)
 	)
@@ -49,6 +66,9 @@ $state = class_exists( 'Statement\Collector\Core\PublicApi' )
 		<span class="statement-piece__media">
 			<?php if ( is_string( $image_html ) && '' !== $image_html ) : ?>
 				<?php echo wp_kses_post( $image_html ); ?>
+				<?php if ( is_string( $secondary_img ) && '' !== $secondary_img ) : ?>
+					<?php echo wp_kses_post( $secondary_img ); ?>
+				<?php endif; ?>
 			<?php else : ?>
 				<span class="statement-piece__empty" aria-hidden="true"></span>
 			<?php endif; ?>

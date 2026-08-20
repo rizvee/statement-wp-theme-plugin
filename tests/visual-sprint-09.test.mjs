@@ -6,12 +6,12 @@ import { join, resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
 const themeRoot = join(root, 'wp-content', 'themes', 'statement-collector-theme');
 
-test('Visual Sprint 09: Theme Candidate Version is bumped to 0.13.0-rc.19', () => {
+test('Visual Sprint 09: Theme Candidate Version is at least 0.13.0-rc.19', () => {
   const styleCss = readFileSync(join(themeRoot, 'style.css'), 'utf8');
-  assert.match(styleCss, /Version:\s*0\.13\.0-rc\.19/);
+  assert.match(styleCss, /Version:\s*0\.13\.0-rc\.(19|20)/);
 
   const functionsPhp = readFileSync(join(themeRoot, 'functions.php'), 'utf8');
-  assert.match(functionsPhp, /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.19['"]\s*\);/);
+  assert.match(functionsPhp, /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.(19|20)['"]\s*\);/);
 });
 
 test('Visual Sprint 09: About Page is 100% Pure Typographic Art Direction (Zero Images)', () => {

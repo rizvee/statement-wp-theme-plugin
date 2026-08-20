@@ -119,6 +119,26 @@
 	color: var(--wp--preset--color--near-black, #0d0f12);
 }
 
+/* Lookbook Pieces Diptych Grid */
+.statement-drop-lookbook {
+	padding-block: clamp(1.5rem, 1rem + 1.5vw, 3rem);
+}
+
+.statement-drop-lookbook__grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: clamp(1rem, 2.5vw, 3.5rem);
+	max-inline-size: 64rem;
+	margin-inline: auto;
+}
+
+@media (max-width: 36rem) {
+	.statement-drop-lookbook__grid {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+}
+
 /* Collection Register Table */
 .statement-drop-document__register {
 	padding-block: clamp(1rem, 0.5rem + 1vw, 2rem) 0;

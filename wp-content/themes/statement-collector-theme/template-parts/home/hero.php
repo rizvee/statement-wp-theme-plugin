@@ -195,13 +195,14 @@ $total_slides = count( $slides );
 
 	<?php if ( $total_slides > 1 ) : ?>
 		<div class="statement-hero-slider__navigation statement-container--wide" aria-label="<?php esc_attr_e( 'Carousel navigation controls', 'statement-collector-theme' ); ?>">
-			<div class="statement-hero-slider__pagination" role="tablist" aria-label="<?php esc_attr_e( 'Slide indicators', 'statement-collector-theme' ); ?>">
+			<div class="statement-hero-slider__rail statement-hero-slider__pagination" role="tablist" aria-label="<?php esc_attr_e( 'Slide indicators', 'statement-collector-theme' ); ?>">
 				<?php for ( $i = 0; $i < $total_slides; $i++ ) : ?>
 					<button type="button"
-							class="statement-hero-slider__dot <?php echo ( 0 === $i ) ? 'is-active' : ''; ?>"
+							class="statement-hero-slider__rail-segment statement-hero-slider__dot <?php echo ( 0 === $i ) ? 'is-active' : ''; ?>"
 							role="tab"
 							aria-selected="<?php echo ( 0 === $i ) ? 'true' : 'false'; ?>"
 							aria-label="<?php echo esc_attr( sprintf( __( 'Go to slide %d', 'statement-collector-theme' ), $i + 1 ) ); ?>">
+						<span class="statement-hero-slider__rail-fill" aria-hidden="true"></span>
 					</button>
 				<?php endfor; ?>
 			</div>

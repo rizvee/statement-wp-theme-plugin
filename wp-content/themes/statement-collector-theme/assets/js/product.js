@@ -1,6 +1,7 @@
 /**
  * Statement Product Page Interactions:
  * - Luxury Size Selector Button synchronization with WooCommerce variations.
+ * - Accessible Size Guide modal handling.
  * - Mobile Sticky Add-to-Bag bar.
  */
 document.addEventListener('DOMContentLoaded', function() {
@@ -77,7 +78,54 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	});
 
-	// 2. Mobile Sticky Add-to-Bag Bar
+	// 2. Size Guide Accessible Modal Management
+	var sizeGuideOpenBtn  = document.getElementById('statement-size-guide-open');
+	var sizeGuideDialog   = document.getElementById('statement-size-guide-dialog');
+	var sizeGuideCloseBtn = document.getElementById('statement-size-guide-close');
+
+	if (sizeGuideOpenBtn && sizeGuideDialog) {
+		function openSizeGuide() {
+			if (typeof sizeGuideDialog.showModal === 'function') {
+				sizeGuideDialog.showModal();
+			} else {
+				sizeGuideDialog.setAttribute('open', 'true');
+			}
+			document.body.classList.add('statement-dialog-open');
+			if (sizeGuideCloseBtn) {
+				sizeGuideCloseBtn.focus();
+			}
+		}
+
+		function closeSizeGuide() {
+			if (typeof sizeGuideDialog.close === 'function') {
+				sizeGuideDialog.close();
+			} else {
+				sizeGuideDialog.removeAttribute('open');
+			}
+			document.body.classList.remove('statement-dialog-open');
+			sizeGuideOpenBtn.focus();
+		}
+
+		sizeGuideOpenBtn.addEventListener('click', openSizeGuide);
+
+		if (sizeGuideCloseBtn) {
+			sizeGuideCloseBtn.addEventListener('click', closeSizeGuide);
+		}
+
+		sizeGuideDialog.addEventListener('click', function(e) {
+			if (e.target === sizeGuideDialog) {
+				closeSizeGuide();
+			}
+		});
+
+		sizeGuideDialog.addEventListener('keydown', function(e) {
+			if (e.key === 'Escape' || e.key === 'Esc') {
+				closeSizeGuide();
+			}
+		});
+	}
+
+	// 3. Mobile Sticky Add-to-Bag Bar
 	var mainAddBtn = document.querySelector('.single_add_to_cart_button');
 	if (mainAddBtn) {
 		var stickyBar = document.querySelector('.statement-mobile-sticky-bar');

@@ -43,6 +43,7 @@ const requiredFiles = [
   'tests/m19-acceptance-hardening.test.mjs',
   'tests/visual-sprint-07.test.mjs',
   'tests/visual-sprint-09.test.mjs',
+  'tests/sprint-10-luxury-convergence.test.mjs',
   'tests/drop-pdp-ux.test.mjs',
   'tests/account-ui.test.mjs',
   'tests/php/test-public-fixture-isolation.php',

@@ -30,13 +30,15 @@ $eyebrow = $is_past ? __( 'RELEASE ARCHIVE', 'statement-collector-theme' ) : __(
 $status  = $is_past ? __( 'ARCHIVED', 'statement-collector-theme' ) : __( 'AVAILABLE', 'statement-collector-theme' );
 
 // Collect products in this drop
-$products = array();
+$products    = array();
+$wc_products = array();
 if ( have_posts() ) {
 	while ( have_posts() ) {
 		the_post();
 		$p = function_exists( 'wc_get_product' ) ? wc_get_product( get_the_ID() ) : null;
 		if ( $p ) {
-			$products[] = array(
+			$wc_products[] = $p;
+			$products[]    = array(
 				'id'        => get_the_ID(),
 				'title'     => get_the_title(),
 				'permalink' => get_permalink(),
@@ -100,6 +102,29 @@ get_header( 'shop' );
 	</section>
 
 	<div class="statement-drop-divider"></div>
+
+	<!-- Lookbook Pieces Diptych Grid -->
+	<?php if ( ! empty( $wc_products ) ) : ?>
+		<section class="statement-drop-lookbook" aria-label="<?php esc_attr_e( 'Release Lookbook Pieces', 'statement-collector-theme' ); ?>">
+			<div class="statement-drop-lookbook__grid">
+				<?php foreach ( $wc_products as $p_obj ) : ?>
+					<?php
+					get_template_part(
+						'template-parts/product/card',
+						null,
+						array(
+							'product'       => $p_obj,
+							'drop'          => $drop,
+							'heading_level' => 2,
+						)
+					);
+					?>
+				<?php endforeach; ?>
+			</div>
+		</section>
+
+		<div class="statement-drop-divider"></div>
+	<?php endif; ?>
 
 	<!-- Collection Register -->
 	<section class="statement-drop-document__register" aria-label="<?php esc_attr_e( 'Collection Pieces', 'statement-collector-theme' ); ?>">

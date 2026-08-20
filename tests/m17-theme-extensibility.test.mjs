@@ -71,9 +71,9 @@ test("M17: Theme modular structure and extension hooks", () => {
 
 	// 5. Theme version bump
 	const themeStyle = fs.readFileSync(path.join(themePath, "style.css"), "utf8");
-	assert.ok(themeStyle.includes("Version: 0.13.0-rc.19"), "Theme style.css is version 0.13.0-rc.19");
+	assert.ok(themeStyle.includes("Version: 0.13.0-rc.20"), "Theme style.css is version 0.13.0-rc.20");
 
 	const functionsPhp = fs.readFileSync(path.join(themePath, "functions.php"), "utf8");
-	assert.ok(functionsPhp.includes("STATEMENT_COLLECTOR_THEME_VERSION', '0.13.0-rc.19'"), "Theme constant is 0.13.0-rc.19");
+	assert.ok(functionsPhp.includes("STATEMENT_COLLECTOR_THEME_VERSION', '0.13.0-rc.20'"), "Theme constant is 0.13.0-rc.20");
 });
 

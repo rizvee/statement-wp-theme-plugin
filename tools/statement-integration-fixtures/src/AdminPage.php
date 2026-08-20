@@ -130,7 +130,7 @@ class AdminPage {
 		$has_active_grants = PrivateFixtureService::has_active_grant_data();
 		?>
 		<div class="wrap">
-			<h1>Statement Integration Fixtures (v0.3.3)</h1>
+			<h1>Statement Integration Fixtures (v<?php echo esc_html( defined( 'STATEMENT_INTEGRATION_FIXTURES_VERSION' ) ? STATEMENT_INTEGRATION_FIXTURES_VERSION : '0.3.5' ); ?>)</h1>
 			<p>Temporary administrator-only runtime fixture tool for Statement Atomic integration testing.</p>
 
 

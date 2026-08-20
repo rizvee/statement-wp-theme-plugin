@@ -1,5 +1,28 @@
 # Current Priority — Production Convergence & Release Candidates
 
+## SPRINT 10 — OVERNIGHT MASTER SPRINT: MILLION-DOLLAR LUXURY FLAGSHIP STOREFRONT CONVERGENCE — COMPLETE (2026-08-20)
+
+Status: complete (Theme Candidate 0.13.0-rc.20 + Core Plugin Candidate 0.13.0-rc.15 + Integration Fixtures 0.3.5 + Client Demo 0.2.7 packaged and verified; ZERO destructive live mutations executed)
+
+- [x] Integration Fixtures Version Anomaly Diagnosis & Resolution (`tools/statement-integration-fixtures/`): Diagnosed root cause of `v0.3.3` display in admin (hardcoded string in `AdminPage.php:133` and `StatementQaGateway.php:23`). Refactored to dynamically render `STATEMENT_INTEGRATION_FIXTURES_VERSION`, bumped canonical version to `0.3.5`, synchronized `package-fixtures.mjs`, `verify-fixture-package.mjs`, and tests (`tests/php/test-fixture-bootstrap.php` and `tests/m13-fixture-seeder.test.mjs`).
+- [x] Signature Hero Redesign (`template-parts/home/hero.php`, `assets/css/home.css`, `assets/js/hero-slider.js`):
+  - Wide 16:9 / 21:9 landscape campaign photography on desktop (`statement-hero-slide-monogram-arch.jpg`, `statement-hero-slide-monogram-golden.jpg`, `statement-hero-slide-hood-arch.jpg`) with calibrated focal-point positioning (`center 20%` / `center 25%`) and viewport clamp (`clamp(34rem, 78svh, 54rem)`).
+  - Art-directed mobile portrait video with inline muted autoplay, poster fallback, and `prefers-reduced-motion` compliance.
+  - Luxury fine-line progress rail (`statement-hero-slider__rail-segment` & `statement-hero-slider__rail-fill`) with 350ms cubic-bezier progress indicator, monospace slide counter (`01 / 03`), and tactile glassmorphic arrow micro-controls.
+- [x] Drop Lookbook & Release Dossier Architecture (`taxonomy-statement_drop.php` & `assets/css/catalog.css`):
+  - Re-architected drop taxonomy into a unified luxury release document: Monolithic masthead, two-column specification sheet (Status, Edition, Pieces), Lookbook Diptych Grid featuring full 4:5 vertical product cards with secondary image hover reveal, and numbered collection register.
+- [x] PDP Luxury Commerce Pass & Script Architecture (`template-parts/product/size-guide.php`, `template-parts/product/card.php`, `assets/js/product.js`, `assets/css/product.css`, `assets/css/product-card.css`):
+  - 65/35 editorial layout on desktop; bespoke S/M/L/XL swatch buttons synchronized with hidden native WooCommerce selects.
+  - Clean script separation: Removed inline `<script>` tags from `size-guide.php`; centralized accessible HTML5 `<dialog>` modal lifecycle, Escape key, and backdrop dismiss in `assets/js/product.js`.
+  - Secondary gallery image hover reveal (`get_gallery_image_ids`) on product cards.
+  - Mobile sticky Add to Bag bar with live price, IntersectionObserver detection, and iOS safe-area support (`env(safe-area-inset-bottom)`).
+- [x] Typographic Storytelling (About & Contact):
+  - 100% text-only execution with zero decorative imagery; 4-step brand narrative and luxury direct concierge channel (`info@mystatement.store`, `@statement.au`).
+- [x] Documentation & Test Suite:
+  - Created `docs/sprint-10-premium-ux-benchmark.md`, `docs/sprint-10-visual-defect-register.md`, `docs/sprint-10-luxury-convergence-report.md`, and `tests/sprint-10-luxury-convergence.test.mjs`.
+- [x] Verification & Packaging:
+  - Promoted Theme candidate to `0.13.0-rc.20`. Linted 100% of PHP files clean, passed all PHP contract tests, passed all Node test suites, and generated verified deterministic packages in `dist/` with SHA-256 manifest.
+
 ## SPRINT 09.1 — POST-DEPLOYMENT LIVE VISUAL ACCEPTANCE + CLIENT-READY PERFECTION PASS — COMPLETE (2026-08-19)
 
 Status: complete (Theme Candidate 0.13.0-rc.19 + Core Plugin Candidate 0.13.0-rc.15 + Client Demo 0.2.7 + Child Theme 0.1.0 packaged and verified; ZERO live mutations executed)

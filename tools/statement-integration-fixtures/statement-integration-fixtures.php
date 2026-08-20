@@ -2,14 +2,14 @@
 /*
 Plugin Name: Statement Integration Fixtures
 Description: Temporary administrator-only runtime fixture tool for Statement Atomic integration testing.
-Version: 0.3.4
+Version: 0.3.5
 Author: Statement Core Team
 Text Domain: statement-integration-fixtures
 */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'STATEMENT_INTEGRATION_FIXTURES_VERSION', '0.3.4' );
+define( 'STATEMENT_INTEGRATION_FIXTURES_VERSION', '0.3.5' );
 define( 'STATEMENT_INTEGRATION_FIXTURES_FILE', __FILE__ );
 
 require_once __DIR__ . '/src/FixtureService.php';
