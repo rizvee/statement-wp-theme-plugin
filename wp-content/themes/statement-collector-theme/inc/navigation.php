@@ -140,13 +140,49 @@ function render_mobile_primary_navigation(): void {
 			?>
 		<?php else : ?>
 			<ul class="statement-mobile-navigation__list">
-				<li><a href="<?php echo esc_url( get_shop_url() ); ?>"><?php esc_html_e( 'SHOP', 'statement-collector-theme' ); ?></a></li>
-				<li><a href="<?php echo esc_url( get_drops_url() ); ?>"><?php esc_html_e( 'DROPS', 'statement-collector-theme' ); ?></a></li>
-				<li><a href="<?php echo esc_url( get_archive_url() ); ?>"><?php esc_html_e( 'ARCHIVE', 'statement-collector-theme' ); ?></a></li>
-				<li><a href="<?php echo esc_url( get_about_url() ); ?>"><?php esc_html_e( 'ABOUT', 'statement-collector-theme' ); ?></a></li>
-				<li><a href="<?php echo esc_url( get_contact_url() ); ?>"><?php esc_html_e( 'CONTACT', 'statement-collector-theme' ); ?></a></li>
+				<li>
+					<a href="<?php echo esc_url( get_shop_url() ); ?>">
+						<span class="statement-mobile-nav-index" aria-hidden="true">01</span>
+						<span class="statement-mobile-nav-label"><?php esc_html_e( 'SHOP', 'statement-collector-theme' ); ?></span>
+						<?php render_statement_icon( 'arrow-right', array( 'class' => 'statement-mobile-nav-arrow' ) ); ?>
+					</a>
+				</li>
+				<li>
+					<a href="<?php echo esc_url( get_drops_url() ); ?>">
+						<span class="statement-mobile-nav-index" aria-hidden="true">02</span>
+						<span class="statement-mobile-nav-label"><?php esc_html_e( 'DROPS', 'statement-collector-theme' ); ?></span>
+						<?php render_statement_icon( 'arrow-right', array( 'class' => 'statement-mobile-nav-arrow' ) ); ?>
+					</a>
+				</li>
+				<li>
+					<a href="<?php echo esc_url( get_archive_url() ); ?>">
+						<span class="statement-mobile-nav-index" aria-hidden="true">03</span>
+						<span class="statement-mobile-nav-label"><?php esc_html_e( 'ARCHIVE', 'statement-collector-theme' ); ?></span>
+						<?php render_statement_icon( 'arrow-right', array( 'class' => 'statement-mobile-nav-arrow' ) ); ?>
+					</a>
+				</li>
+				<li>
+					<a href="<?php echo esc_url( get_about_url() ); ?>">
+						<span class="statement-mobile-nav-index" aria-hidden="true">04</span>
+						<span class="statement-mobile-nav-label"><?php esc_html_e( 'ABOUT', 'statement-collector-theme' ); ?></span>
+						<?php render_statement_icon( 'arrow-right', array( 'class' => 'statement-mobile-nav-arrow' ) ); ?>
+					</a>
+				</li>
+				<li>
+					<a href="<?php echo esc_url( get_contact_url() ); ?>">
+						<span class="statement-mobile-nav-index" aria-hidden="true">05</span>
+						<span class="statement-mobile-nav-label"><?php esc_html_e( 'CONTACT', 'statement-collector-theme' ); ?></span>
+						<?php render_statement_icon( 'arrow-right', array( 'class' => 'statement-mobile-nav-arrow' ) ); ?>
+					</a>
+				</li>
 				<?php if ( null !== get_account_url() ) : ?>
-					<li><a href="<?php echo esc_url( get_account_url() ); ?>"><?php esc_html_e( 'ACCOUNT', 'statement-collector-theme' ); ?></a></li>
+					<li>
+						<a href="<?php echo esc_url( get_account_url() ); ?>">
+							<span class="statement-mobile-nav-index" aria-hidden="true">06</span>
+							<span class="statement-mobile-nav-label"><?php esc_html_e( 'ACCOUNT', 'statement-collector-theme' ); ?></span>
+							<?php render_statement_icon( 'arrow-right', array( 'class' => 'statement-mobile-nav-arrow' ) ); ?>
+						</a>
+					</li>
 				<?php endif; ?>
 			</ul>
 		<?php endif; ?>

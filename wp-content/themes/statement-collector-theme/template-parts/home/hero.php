@@ -56,44 +56,44 @@ for ( $i = 1; $i <= 6; $i++ ) {
 	}
 }
 
-// Curated default high-fashion wide campaign slides & mobile video
+// Curated default high-fashion 3-chapter cinematic editorial slides
 if ( empty( $slides ) ) {
 	$slides = array(
 		array(
-			'image'        => $theme_uri . '/assets/images/statement-hero-slide-monogram-arch.jpg',
+			'image'        => $theme_uri . '/assets/images/statement-black-nwhite-hoodie-n-jacket-product-front.webp',
 			'mobile_image' => $theme_uri . '/assets/images/statement-monogram-jacket-model-front.webp',
 			'mobile_video' => $theme_uri . '/assets/video/statement-hero-mobile-monogram.mp4',
 			'poster'       => $theme_uri . '/assets/images/statement-monogram-jacket-model-front.webp',
-			'eyebrow'      => 'DROP 001',
-			'heading'      => '',
+			'eyebrow'      => 'RELEASE DOSSIER / DROP 001',
+			'heading'      => 'NOT MASS PRODUCED.',
 			'link'         => $shop_url,
-			'cta'          => __( 'EXPLORE RELEASE', 'statement-collector-theme' ),
-			'focal'        => 'center 20%',
-			'alt'          => __( 'Statement Monogram Jacquard Jacket Architectural Campaign', 'statement-collector-theme' ),
+			'cta'          => __( 'EXPLORE PIECES', 'statement-collector-theme' ),
+			'focal'        => 'center 35%',
+			'alt'          => __( 'Statement Drop 001 Creative Genesis & Studio Concept', 'statement-collector-theme' ),
 		),
 		array(
-			'image'        => $theme_uri . '/assets/images/statement-hero-slide-monogram-golden.jpg',
-			'mobile_image' => $theme_uri . '/assets/images/statement-monogram-jacket-product-front.webp',
+			'image'        => $theme_uri . '/assets/images/statement-black-nwhite-hoodie-n-jacket-product-front-02.webp',
+			'mobile_image' => $theme_uri . '/assets/images/statement-monogram-jacket-product-front-02.webp',
 			'mobile_video' => '',
 			'poster'       => '',
-			'eyebrow'      => 'MONOGRAM STUDY',
-			'heading'      => '',
-			'link'         => $shop_url,
-			'cta'          => __( 'EXPLORE RELEASE', 'statement-collector-theme' ),
-			'focal'        => 'center 20%',
-			'alt'          => __( 'Statement Monogram Jacquard Jacket Golden Light Campaign', 'statement-collector-theme' ),
+			'eyebrow'      => 'DROP 001 / MONOGRAM STUDY',
+			'heading'      => 'MONOGRAM JACQUARD & PANELLED HOOD',
+			'link'         => $drop_url,
+			'cta'          => __( 'VIEW COLLECTION', 'statement-collector-theme' ),
+			'focal'        => 'center 30%',
+			'alt'          => __( 'Statement Monogram Jacquard Jacket & Panelled Hood Duo Editorial', 'statement-collector-theme' ),
 		),
 		array(
-			'image'        => $theme_uri . '/assets/images/statement-hero-slide-hood-arch.jpg',
+			'image'        => $theme_uri . '/assets/images/statement-black-nwhite-hoodie-n-jacket-product-front-03.webp',
 			'mobile_image' => $theme_uri . '/assets/images/statement-panelled-hood-jacket-model-front.webp',
 			'mobile_video' => '',
 			'poster'       => '',
-			'eyebrow'      => 'DROP 001',
-			'heading'      => '',
-			'link'         => $drop_url,
-			'cta'          => __( 'EXPLORE RELEASE', 'statement-collector-theme' ),
-			'focal'        => 'center 25%',
-			'alt'          => __( 'Statement Panelled Hood Jacket Architectural Space Campaign', 'statement-collector-theme' ),
+			'eyebrow'      => 'EDITION 001 / RELIC STUDY',
+			'heading'      => 'CRAFTED. LIMITED. NEVER RESTOCKED.',
+			'link'         => $shop_url,
+			'cta'          => __( 'DISCOVER PIECES', 'statement-collector-theme' ),
+			'focal'        => 'center center',
+			'alt'          => __( 'Statement The Object In Focus Relic Tension Study', 'statement-collector-theme' ),
 		),
 	);
 }
@@ -182,7 +182,7 @@ $total_slides = count( $slides );
 								<div class="statement-hero-slide__actions">
 									<a class="statement-hero-slide__cta" href="<?php echo esc_url( $slide['link'] ); ?>">
 										<span><?php echo esc_html( $slide['cta'] ); ?></span>
-										<span aria-hidden="true" class="statement-hero-slide__arrow">&rarr;</span>
+										<?php render_statement_icon( 'arrow-right', array( 'class' => 'statement-hero-slide__arrow' ) ); ?>
 									</a>
 								</div>
 							<?php endif; ?>
@@ -217,12 +217,12 @@ $total_slides = count( $slides );
 				<button type="button"
 						class="statement-hero-slider__control statement-hero-slider__control--prev"
 						aria-label="<?php esc_attr_e( 'Previous slide', 'statement-collector-theme' ); ?>">
-					<span aria-hidden="true">&larr;</span>
+					<?php render_statement_icon( 'arrow-left' ); ?>
 				</button>
 				<button type="button"
 						class="statement-hero-slider__control statement-hero-slider__control--next"
 						aria-label="<?php esc_attr_e( 'Next slide', 'statement-collector-theme' ); ?>">
-					<span aria-hidden="true">&rarr;</span>
+					<?php render_statement_icon( 'arrow-right' ); ?>
 				</button>
 			</div>
 		</div>

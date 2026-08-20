@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const defaultVersion = '0.13.0-rc.22';
+const defaultVersion = '0.13.0-rc.24';
 
 export const approvedThemeFiles = [
   'style.css',
@@ -62,6 +62,9 @@ export const approvedThemeFiles = [
   'assets/images/statement-panelled-hood-jacket-product-front-02.webp',
   'assets/images/statement-panelled-hood-jacket-branding-detail.webp',
   'assets/images/statement-panelled-hood-jacket-product-front-04.webp',
+  'assets/images/statement-black-nwhite-hoodie-n-jacket-product-front.webp',
+  'assets/images/statement-black-nwhite-hoodie-n-jacket-product-front-02.webp',
+  'assets/images/statement-black-nwhite-hoodie-n-jacket-product-front-03.webp',
   'assets/images/statement-monogram-jacket-front.jpg',
   'assets/images/statement-monogram-jacket-back.jpg',
   'assets/images/statement-monogram-jacket-side.jpg',
@@ -78,6 +81,7 @@ export const approvedThemeFiles = [
   'assets/images/statement-hero-slide-hood-02.jpg',
   'assets/images/statement-hero-slide-monogram-01.jpg',
   'assets/images/statement-hero-slide-monogram-02.jpg',
+  'inc/icons.php',
   'inc/assets.php',
   'inc/navigation.php',
   'inc/home.php',

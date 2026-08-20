@@ -85,6 +85,20 @@
 	bindDialog('statement-mobile-navigation');
 	bindDialog('statement-search-dialog', '[data-dialog-focus]');
 
+	// Dynamic header elevation on scroll
+	const siteHeader = document.getElementById('statement-site-header') || document.querySelector('.statement-site-header');
+	if (siteHeader) {
+		const handleScroll = () => {
+			if (window.scrollY > 20) {
+				siteHeader.classList.add('is-scrolled');
+			} else {
+				siteHeader.classList.remove('is-scrolled');
+			}
+		};
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		handleScroll();
+	}
+
 	// Close mobile menu automatically when viewport expands to desktop layout
 	window.addEventListener('resize', () => {
 		if (window.innerWidth >= 1024) {

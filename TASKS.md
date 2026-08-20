@@ -1,5 +1,39 @@
 # Current Priority — Production Convergence & Release Candidates
 
+## MASTER SPRINT 11 & 11.1 — FLAGSHIP LUXURY CONVERGENCE, HERO REINVENTION, SCARCITY SCRUB, NAVIGATION REDESIGN, AND RC.24 RELEASE HARDENING — COMPLETE (2026-08-21)
+
+Status: complete (Theme Candidate 0.13.0-rc.24 + Core Plugin Candidate 0.13.0-rc.15 + Integration Fixtures 0.3.5 + Client Demo 0.2.7 packaged and verified; ZERO live mutations executed)
+
+- [x] Custom Thin-Line SVG Icon Subsystem (`wp-content/themes/statement-collector-theme/inc/icons.php`):
+  - Built bespoke geometric SVG icons matching ultra-luxury editorial design language (24x24 viewBox, stroke-width 1.25/1.5, stroke-linecap round/square).
+  - Supported glyphs: `search`, `account`, `bag`, `menu`, `close`, `arrow-right`, `arrow-left`, `arrow-up-right`, `chevron-right`, `plus`, `minus`, `size-guide`, `ruler`, `instagram`, `facebook`, `email`, `check`, `eye`.
+  - Defined `get_statement_icon()` and `render_statement_icon()` with accessibility attributes (`aria-hidden="true"`, `focusable="false"`).
+- [x] Split Luxury Header & Full-Screen Mobile Takeover (`template-parts/header/site-header.php`, `template-parts/header/mobile-navigation.php`, `template-parts/header/search-dialog.php`, `assets/css/header.css`, `assets/js/navigation.js`):
+  - Overhauled desktop header to high-fashion split layout: Primary Editorial Navigation on left, Centered Brand Mark, Action Utilities on right with thin-line SVG glyphs, micro-labels (`ACCOUNT`, `BAG`), and bag badge count pill.
+  - Added sticky header scroll listener in `assets/js/navigation.js` toggling `.is-scrolled` with smooth height and backdrop blur transition.
+  - Transformed mobile navigation into full-screen luxury takeover with metadata header, numbered index links (`01`–`06`), concierge care channels, and brand motto.
+  - Polished search dialog with integrated search icon and accessible close button.
+- [x] 3-Chapter Cinematic Editorial Hero Rebuild (`template-parts/home/hero.php`, `assets/css/home.css`, `tools/statement-client-demo/src/AssetRegistry.php`):
+  - Ingested 3 new high-resolution studio assets (`statement-black-nwhite-hoodie-n-jacket-product-front.webp`, `statement-black-nwhite-hoodie-n-jacket-product-front-02.webp`, `statement-black-nwhite-hoodie-n-jacket-product-front-03.webp`) across theme and demo asset registry.
+  - Curated 3 editorial chapters: Chapter 1 (Creative Genesis), Chapter 2 (Duo Editorial), and Chapter 3 (Relic Tension Study) with approved minimal copy (`NOT MASS PRODUCED.`) and SVG arrow controls.
+- [x] PDP, Size Guide & Accordions Elevation (`template-parts/product/size-guide.php`, `template-parts/product/details.php`, `assets/css/product.css`):
+  - Enhanced size guide trigger and modal dialog with thin-line SVG ruler icon and circular close button.
+  - Enhanced product details disclosure accordions with thin-line SVG `plus` and `minus` icons.
+- [x] Master 4-Column Luxury Footer (`template-parts/footer/site-footer.php`, `assets/css/footer.css`):
+  - Rebuilt footer into architectural 4-column layout: Col 1 Brand & Philosophy (`Crafted. Limited. Never Restocked.`), Col 2 Collection Navigation, Col 3 Collector Services, Col 4 Direct Channels with SVG icons (`@statement.au`, email, Facebook).
+- [x] Automated Testing & Quality Invariants:
+  - Created `tests/sprint-11-luxury-convergence.test.mjs` with 18 automated subtests.
+  - 100% PHP lint pass across all 122 PHP files (`node scripts/php-lint.mjs`).
+  - 100% pass across all 45 PHP contract test suites (`node scripts/run-php-tests.mjs`).
+  - 100% pass across all 210 Node automated tests across 29 test suites (`node --test --test-concurrency=1 tests/*.test.mjs`).
+  - Verified repository hygiene, locked rules, and allowlist (`node scripts/verify-foundation.mjs` and `node scripts/verify-git-runtime-tracking.mjs`).
+- [x] Deterministic Packaging & Release Artifacts:
+  - Packaged `statement-collector-theme-0.13.0-rc.23.zip` (SHA-256: `0a62d6a9d1bb407e50a1dd60d77c9271be4d360488bc43426abf089a5b7b1877`).
+  - Packaged `statement-collector-core-0.13.0-rc.15.zip` (SHA-256: `9d9bec49908e2442c28931f58688152a1093e9b17b1710b40997f677e0c64efb`).
+  - Packaged `statement-client-demo-0.2.7.zip` (SHA-256: `e5a3e6d5cbb041548b444238eba874a54d5a17890a31a733a759d7a9bcaba4ac`).
+  - Packaged `statement-collector-child-0.1.0.zip` (SHA-256: `229945b883b2b46ee2166477b048dbe77c3492875608fc2d0481b89c93b90231`).
+  - Updated `dist/manifest.json`.
+
 ## VISUAL SIGNOFF EVIDENCE & LUXURY POLISH GATE — COMPLETE (2026-08-20)
 
 Status: complete (Theme Candidate 0.13.0-rc.22 + Core Plugin Candidate 0.13.0-rc.15 + Integration Fixtures 0.3.5 + Client Demo 0.2.7 packaged and verified; ZERO live mutations executed)

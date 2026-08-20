@@ -153,6 +153,29 @@ final class AssetRegistry {
 				'caption' => '',
 				'role'    => 'brand_manifesto',
 			),
+
+			// Creative Genesis & Campaign Studio Assets
+			'studio_duo_front' => array(
+				'file'    => 'statement-black-nwhite-hoodie-n-jacket-product-front.webp',
+				'title'   => 'Statement Drop 001 Creative Genesis & Studio Concept',
+				'alt'     => 'Overhead studio composition of Statement garments presented on white surface',
+				'caption' => '',
+				'role'    => 'hero_slide',
+			),
+			'studio_seated_standing' => array(
+				'file'    => 'statement-black-nwhite-hoodie-n-jacket-product-front-02.webp',
+				'title'   => 'Statement Monogram Jacquard Jacket & Panelled Hood Duo Editorial',
+				'alt'     => 'Studio portrait of two figures wearing the Monogram Jacquard Jacket and Panelled Hood',
+				'caption' => '',
+				'role'    => 'hero_slide',
+			),
+			'studio_tension_hold' => array(
+				'file'    => 'statement-black-nwhite-hoodie-n-jacket-product-front-03.webp',
+				'title'   => 'Statement The Object In Focus Relic Tension Study',
+				'alt'     => 'Relic tension study featuring the Statement hooded piece held between two figures',
+				'caption' => '',
+				'role'    => 'hero_slide',
+			),
 		);
 	}
 }

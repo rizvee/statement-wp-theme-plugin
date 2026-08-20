@@ -6,16 +6,12 @@ import test from 'node:test';
 const root = resolve(import.meta.dirname, '..');
 const themeDir = resolve(root, 'wp-content', 'themes', 'statement-collector-theme');
 
-test('M14 Storefront Hardening: Theme Version & Constant Invariants (0.13.0-rc.22)', () => {
+test('M14 Storefront Hardening: Theme Version & Constant Invariants (0.13.0-rc.24)', () => {
   const styleCss = readFileSync(resolve(themeDir, 'style.css'), 'utf8');
-  const functionsPhp = readFileSync(resolve(themeDir, 'functions.php'), 'utf8');
+  assert.match(styleCss, /Version:\s*0\.13\.0-rc\.24/, 'style.css must declare version 0.13.0-rc.24');
 
-  assert.match(styleCss, /Version:\s*0\.13\.0-rc\.22/i, 'style.css must specify Version: 0.13.0-rc.22');
-  assert.match(
-    functionsPhp,
-    /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.22['"]\s*\);/,
-    'functions.php must define STATEMENT_COLLECTOR_THEME_VERSION 0.13.0-rc.22'
-  );
+  const functionsPhp = readFileSync(resolve(themeDir, 'functions.php'), 'utf8');
+  assert.match(functionsPhp, /define\(\s*['"]STATEMENT_COLLECTOR_THEME_VERSION['"]\s*,\s*['"]0\.13\.0-rc\.24['"]\s*\);/, 'functions.php must define constant 0.13.0-rc.24');
 });
 
 test('M14 Storefront Hardening: Design System & theme.json Tokens', () => {
@@ -202,7 +198,8 @@ test('M14 Storefront Hardening: Scarcity Invariant Across All Theme Templates', 
       assert.ok(!content.includes('back in stock'), `${file} must not contain "back in stock"`);
       assert.ok(!content.includes('join waitlist'), `${file} must not contain "join waitlist"`);
       assert.ok(!content.includes('hurry, only'), `${file} must not contain fake scarcity urgency`);
-      assert.ok(!content.includes('never restocked'), `${file} must not contain "never restocked"`);
+      assert.ok(!content.includes('restocked soon'), `${file} must not contain "restocked soon"`);
+      assert.ok(!content.includes('notify when restocked'), `${file} must not contain "notify when restocked"`);
     }
   }
 

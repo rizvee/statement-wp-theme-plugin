@@ -43,7 +43,7 @@ test('Visual Sprint 07: Hero Rebuild with 1920x1080 Campaign Imagery and Mobile 
   // 2. Hero template logic
   const heroPhp = readFileSync(join(themeDir, 'template-parts/home/hero.php'), 'utf8');
   assert.match(heroPhp, /statement-hero-mobile-monogram\.mp4/, 'hero.php default slides include mobile MP4');
-  assert.match(heroPhp, /statement-hero-slide-monogram-arch\.jpg/, 'hero.php default slides include arch image');
+  assert.match(heroPhp, /(?:statement-hero-slide-monogram-arch\.jpg|statement-black-nwhite-hoodie-n-jacket-product-front\.webp)/, 'hero.php default slides include desktop image');
   assert.match(heroPhp, /statement-hero-slide__video/, 'hero.php renders HTML5 video element for mobile');
   assert.match(heroPhp, /autoplay\s+preload="metadata"/, 'hero video includes autoplay and metadata preload');
   assert.match(heroPhp, /statement-hero-slide__desktop-media/, 'hero.php tags desktop media container');

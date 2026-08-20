@@ -95,7 +95,7 @@ get_header( 'shop' );
 				<span class="statement-spec-value">DROP <?php echo esc_html( $drop_number ); ?></span>
 			</div>
 			<div class="statement-spec-row">
-				<span class="statement-spec-label"><?php esc_html_e( 'PIECES', 'statement-collector-theme' ); ?></span>
+				<span class="statement-spec-label"><?php esc_html_e( 'RELEASE PIECES', 'statement-collector-theme' ); ?></span>
 				<span class="statement-spec-value"><?php echo esc_html( $piece_count ); ?></span>
 			</div>
 		</div>

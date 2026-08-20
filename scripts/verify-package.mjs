@@ -79,8 +79,13 @@ export function verifyPackage(zipPath, targetExpectedVersion = null) {
   let constantVersion = 'UNKNOWN';
 
   try {
-    const tarCmd = `tar -xf "${zipPath}" -C "${extractDir}"`;
-    execSync(tarCmd, { cwd: root, stdio: 'pipe' });
+    try {
+      const tarCmd = `tar -xf "${zipPath}" -C "${extractDir}"`;
+      execSync(tarCmd, { cwd: root, stdio: 'pipe' });
+    } catch {
+      const psCmd = `powershell -NoProfile -Command "Expand-Archive -LiteralPath '${zipPath}' -DestinationPath '${extractDir}' -Force"`;
+      execSync(psCmd, { cwd: root, stdio: 'pipe' });
+    }
 
     const topEntries = readdirSync(extractDir, { withFileTypes: true });
     if (1 !== topEntries.length || !topEntries[0].isDirectory()) {

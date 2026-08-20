@@ -19,7 +19,7 @@ $drops    = $has_api ? PublicApi::get_past_drops() : array();
 	<header class="statement-archive__header">
 		<span class="statement-eyebrow"><?php esc_html_e( 'Historical Record', 'statement-collector-theme' ); ?></span>
 		<h1 class="statement-archive__title"><?php esc_html_e( 'ARCHIVE', 'statement-collector-theme' ); ?></h1>
-		<p class="statement-archive__subtitle"><?php esc_html_e( 'Past releases and pieces.', 'statement-collector-theme' ); ?></p>
+		<p class="statement-archive__subtitle"><?php esc_html_e( 'Considered releases, permanently preserved into the archive.', 'statement-collector-theme' ); ?></p>
 	</header>
 
 	<?php if ( ! empty( $products ) ) : ?>

@@ -11,8 +11,9 @@ defined( 'ABSPATH' ) || exit;
 			id="statement-size-guide-open"
 			aria-haspopup="dialog"
 			aria-controls="statement-size-guide-dialog">
-		<span><?php esc_html_e( 'SIZE GUIDE', 'statement-collector-theme' ); ?></span>
-		<span aria-hidden="true" class="statement-size-guide-trigger__arrow">&nearr;</span>
+		<?php render_statement_icon( 'size-guide', array( 'class' => 'statement-size-guide-trigger__icon' ) ); ?>
+		<span><?php esc_html_e( 'BODY SIZE GUIDE', 'statement-collector-theme' ); ?></span>
+		<?php render_statement_icon( 'arrow-up-right', array( 'class' => 'statement-size-guide-trigger__arrow-icon' ) ); ?>
 	</button>
 
 	<dialog id="statement-size-guide-dialog" class="statement-size-guide-dialog" aria-labelledby="statement-size-guide-title">
@@ -23,7 +24,7 @@ defined( 'ABSPATH' ) || exit;
 						class="statement-size-guide-dialog__close"
 						id="statement-size-guide-close"
 						aria-label="<?php esc_attr_e( 'Close size guide', 'statement-collector-theme' ); ?>">
-					&times;
+					<?php render_statement_icon( 'close' ); ?>
 				</button>
 			</header>
 
